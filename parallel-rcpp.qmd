@@ -68,7 +68,8 @@ corner of the code block.
 
 - [OpenMP](https://www.openmp.org/) [@dagum1998openmp]
 - [RcppParallel](https://rcppcore.github.io/RcppParallel/)
-- [RcppThread](https://tnagler.github.io/RcppThread/) [@nagler2021r]
+- [RcppThread](https://tnagler.github.io/RcppThread/) [@nagler2021r] and the API 
+documentation at <https://tnagler.github.io/RcppThread/namespaceRcppThread.html>.
 
 # [OpenMP](https://www.openmp.org/)
 
@@ -1310,7 +1311,5 @@ thread to sleep for 200 milliseconds and then increment the progress bar.
 ```{r}
 pb_example()
 ```
-
-<https://tnagler.github.io/RcppThread/namespaceRcppThread.html>
 
 ## References

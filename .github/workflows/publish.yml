@@ -33,7 +33,7 @@ jobs:
                paste(getRversion(), R.version$platform, R.version$arch, R.version$os)
              )
            )
-           install.packages(c("rmarkdown", "bench", "BH", "gt", "Rcpp", "RcppParallel", "RcppThread", "roahd", "sitmo", "tidyverse"))
+           install.packages(c("rmarkdown", "bench", "BH", "gt", "Rcpp", "RcppParallel", "RcppProgress", "RcppThread", "roahd", "sitmo", "tidyverse"))
         shell: Rscript {0}
 
       - name: Render and Publish

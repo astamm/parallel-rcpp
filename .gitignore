@@ -9,8 +9,8 @@
 .DS_Store
 .quarto
 
-README.html
-README_files/
+*.html
+*_files*
 
 docs/
 _freeze/

@@ -23,6 +23,7 @@ The main webpage is at <https://astamm.github.io/parallel-rcpp/>.
     - [{gt}](https://gt.rstudio.com/)
     - [{Rcpp}](https://dirk.eddelbuettel.com/code/rcpp.html)
     - [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)
+    - [{RcppProgress}](https://github.com/kforner/rcpp_progress)
     - [{RcppThread}](https://github.com/tnagler/RcppThread)
     - [{roahd}](https://astamm.github.io/roahd/)
     - [{sitmo}](http://thecoatlessprofessor.com/projects/sitmo/)

@@ -1297,7 +1297,7 @@ void pb_example()
   // 20 iterations in loop, update progress every 1 sec
   RcppThread::ProgressBar bar(20, 1); // <1>
   RcppThread::parallelFor(0, 20, [&] (int i) { // <2>
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     ++bar;
   });
 }
@@ -1305,7 +1305,7 @@ void pb_example()
 1. Create a progress bar with 20 iterations and update the progress every 1
 second.
 2. Execute the task for each iteration in parallel. The task instructs the
-thread to sleep for 5 seconds and then increment the progress bar.
+thread to sleep for 200 milliseconds and then increment the progress bar.
 
 ```{r}
 pb_example()

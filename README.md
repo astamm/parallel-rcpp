@@ -1,0 +1,28 @@
+## Parallel Rcpp - ANF High Performance Computing with R
+
+### Material
+
+Material for the *Parallel Rcpp* tutorial at the ANF [High Performance Computing
+with R](https://indico.mathrice.fr/event/536/), Frejus, France. 
+
+Total time: 3 hours (tentatively).
+
+The main webpage is at <https://astamm.github.io/parallel-rcpp/>.
+
+### Requirements
+
+- R: <https://www.r-project.org>
+- RStudio: <https://posit.co/download/rstudio-desktop/>
+- Quarto: <https://quarto.org/docs/get-started/>
+- Quarto Drop extension: <https://github.com/r-wasm/quarto-drop>
+- [MacOS only] OpenMP support: <https://mac.r-project.org/openmp/>
+- R packages: 
+
+    - [{bench}](https://bench.r-lib.org/)
+    - [{BH}](https://dirk.eddelbuettel.com/code/bh.html)
+    - [{gt}](https://gt.rstudio.com/)
+    - [{Rcpp}](https://dirk.eddelbuettel.com/code/rcpp.html)
+    - [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)
+    - [{RcppThread}](https://github.com/tnagler/RcppThread)
+    - [{sitmo}](http://thecoatlessprofessor.com/projects/sitmo/)
+    - [{tidyverse}](https://www.tidyverse.org)

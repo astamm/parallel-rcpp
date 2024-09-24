@@ -8,7 +8,7 @@ author:
 date: today
 format:
   revealjs:
-    footer: "High-Performance Computing with R - Fréjus - <aymeric.stamm@cnrs.fr>"
+    footer: "High-Performance Computing with R - Fréjus - <aymeric.stamm@cnrs.fr> - <https://astamm.github.io/parallel-rcpp/>"
     slide-number: true
     logo: images/logo-lmjl.png
     theme: simple

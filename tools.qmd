@@ -1,0 +1,26 @@
+---
+title: "HPC with R - Required Tools"
+author: "Aymeric Stamm"
+date: today
+format: html
+---
+
+## Rcpp
+
+- RTools (Windows)
+- Rcpp
+- RcppArmadillo
+- microbenchmark
+- ggplot2
+- Jupyter-lab avec r-irkernel (via conda) —> <https://github.com/IRkernel/IRkernel>
+
+## futureverse
+
+- Install quarto: <https://quarto.org/docs/get-started/>
+- install.packages(“futureverse”)
+- install.packages(“purrr”)
+
+## Parallel computing with Rcpp in R
+
+- Install packages tidyverse, Rcpp, bench, gt, sitmo, BH, RcppParallel, RcppProgress and RcppThread
+- Install OpenMP sur macOS: <https://mac.r-project.org/openmp/>

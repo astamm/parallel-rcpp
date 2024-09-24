@@ -6,6 +6,10 @@ website:
   title: "Parallel Rcpp"
   repo-url: https://github.com/astamm/parallel-rcpp/
   repo-actions: [edit, source, issue]
+  page-footer:
+    background: light
+    left: Copyright 2024, Aymeric Stamm
+    right: This website is built with [Quarto](https://quarto.org/)
   navbar:
     left:
       - text: "Slides"

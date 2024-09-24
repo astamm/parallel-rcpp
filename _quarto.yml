@@ -3,13 +3,18 @@ project:
   output-dir: docs
 
 website:
-  title: "Parallel Rcpp - ANF High Performance Computing with R"
+  title: "Parallel Rcpp"
+  repo-url: https://github.com/astamm/parallel-rcpp/
+  repo-actions: [edit, source, issue]
   navbar:
     left:
       - text: "Slides"
         href: parallel-rcpp.qmd
       - text: "Lab"
         href: lab/hausdorff_dist.qmd
+    right:
+      - icon: github
+        href: https://github.com/astamm/parallel-rcpp/
 
   search:
     location: navbar

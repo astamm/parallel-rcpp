@@ -1,13 +1,8 @@
 ---
-title: "Instructions"
-author: "Aymeric Stamm"
-date: 2024-09-25
-format: html
+title: "Instructions for the tutorial"
 ---
 
-## Parallel Rcpp - ANF High Performance Computing with R
-
-### Material
+## Material
 
 Material for the *Parallel Rcpp* tutorial at the ANF [High Performance Computing
 with R](https://indico.mathrice.fr/event/536/), Frejus, France. 
@@ -16,7 +11,7 @@ Total time: 3 hours (tentatively).
 
 The main webpage is at <https://astamm.github.io/parallel-rcpp/>.
 
-### Requirements
+## Requirements
 
 - R: <https://www.r-project.org>
 - RStudio: <https://posit.co/download/rstudio-desktop/>

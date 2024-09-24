@@ -1,5 +1,25 @@
 project:
-  title: "parallel-rcpp"
+  type: website
+  output-dir: docs
 
+website:
+  title: "Parallel Rcpp - ANF High Performance Computing with R"
+  navbar:
+    left:
+      - text: "Slides"
+        href: parallel-rcpp.qmd
+      - text: "Lab"
+        href: lab/hausdorff_dist.qmd
 
+  search:
+    location: navbar
+    type: overlay
 
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+execute:
+  freeze: auto

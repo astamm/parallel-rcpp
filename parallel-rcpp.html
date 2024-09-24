@@ -468,7 +468,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <ul>
 <li><a href="https://www.openmp.org/">OpenMP</a> <span class="citation" data-cites="dagum1998openmp">(<a href="#/references" role="doc-biblioref" onclick="">Dagum and Menon 1998</a>)</span></li>
 <li><a href="https://rcppcore.github.io/RcppParallel/">RcppParallel</a></li>
-<li><a href="https://tnagler.github.io/RcppThread/">RcppThread</a> <span class="citation" data-cites="nagler2021r">(<a href="#/references" role="doc-biblioref" onclick="">Nagler 2021</a>)</span></li>
+<li><a href="https://tnagler.github.io/RcppThread/">RcppThread</a> <span class="citation" data-cites="nagler2021r">(<a href="#/references" role="doc-biblioref" onclick="">Nagler 2021</a>)</span> and the API documentation at <a href="https://tnagler.github.io/RcppThread/namespaceRcppThread.html" class="uri">https://tnagler.github.io/RcppThread/namespaceRcppThread.html</a>.</li>
 </ul>
 </section>
 <section>
@@ -589,7 +589,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds</span>(<span class="dv">2</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-  2.001 </code></pre>
+      2 </code></pre>
 </div>
 </div>
 </section>
@@ -645,7 +645,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds_omp</span>(<span class="dv">4</span>, <span class="dv">1</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-      4 </code></pre>
+  4.001 </code></pre>
 </div>
 </div>
 <ul>
@@ -792,23 +792,23 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="cb12-32"><a></a>  gt<span class="sc">::</span><span class="fu">data_color</span>(<span class="at">rows =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">direction =</span> <span class="st">"row"</span>, <span class="at">colors =</span> <span class="fu">c</span>(<span class="st">"grey80"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="zjurpttpff" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zjurpttpff table {
+<div id="nbrefeasgg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nbrefeasgg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zjurpttpff thead, #zjurpttpff tbody, #zjurpttpff tfoot, #zjurpttpff tr, #zjurpttpff td, #zjurpttpff th {
+#nbrefeasgg thead, #nbrefeasgg tbody, #nbrefeasgg tfoot, #nbrefeasgg tr, #nbrefeasgg td, #nbrefeasgg th {
   border-style: none;
 }
 
-#zjurpttpff p {
+#nbrefeasgg p {
   margin: 0;
   padding: 0;
 }
 
-#zjurpttpff .gt_table {
+#nbrefeasgg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -834,12 +834,12 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-left-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_caption {
+#nbrefeasgg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zjurpttpff .gt_title {
+#nbrefeasgg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -851,7 +851,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-width: 0;
 }
 
-#zjurpttpff .gt_subtitle {
+#nbrefeasgg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -863,7 +863,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-width: 0;
 }
 
-#zjurpttpff .gt_heading {
+#nbrefeasgg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -875,13 +875,13 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_bottom_border {
+#nbrefeasgg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_col_headings {
+#nbrefeasgg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -896,7 +896,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_col_heading {
+#nbrefeasgg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -916,7 +916,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#zjurpttpff .gt_column_spanner_outer {
+#nbrefeasgg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -928,15 +928,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 4px;
 }
 
-#zjurpttpff .gt_column_spanner_outer:first-child {
+#nbrefeasgg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zjurpttpff .gt_column_spanner_outer:last-child {
+#nbrefeasgg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zjurpttpff .gt_column_spanner {
+#nbrefeasgg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -948,11 +948,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   width: 100%;
 }
 
-#zjurpttpff .gt_spanner_row {
+#nbrefeasgg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zjurpttpff .gt_group_heading {
+#nbrefeasgg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -978,7 +978,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   text-align: left;
 }
 
-#zjurpttpff .gt_empty_group_heading {
+#nbrefeasgg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -993,15 +993,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: middle;
 }
 
-#zjurpttpff .gt_from_md > :first-child {
+#nbrefeasgg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zjurpttpff .gt_from_md > :last-child {
+#nbrefeasgg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zjurpttpff .gt_row {
+#nbrefeasgg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1020,7 +1020,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#zjurpttpff .gt_stub {
+#nbrefeasgg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1033,7 +1033,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zjurpttpff .gt_stub_row_group {
+#nbrefeasgg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1047,15 +1047,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: top;
 }
 
-#zjurpttpff .gt_row_group_first td {
+#nbrefeasgg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zjurpttpff .gt_row_group_first th {
+#nbrefeasgg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zjurpttpff .gt_summary_row {
+#nbrefeasgg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1065,16 +1065,16 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zjurpttpff .gt_first_summary_row {
+#nbrefeasgg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_first_summary_row.thick {
+#nbrefeasgg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zjurpttpff .gt_last_summary_row {
+#nbrefeasgg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1084,7 +1084,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_grand_summary_row {
+#nbrefeasgg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1094,7 +1094,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zjurpttpff .gt_first_grand_summary_row {
+#nbrefeasgg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1104,7 +1104,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_last_grand_summary_row_top {
+#nbrefeasgg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1114,11 +1114,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_striped {
+#nbrefeasgg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zjurpttpff .gt_table_body {
+#nbrefeasgg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1127,7 +1127,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_footnotes {
+#nbrefeasgg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1141,7 +1141,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_footnote {
+#nbrefeasgg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1150,7 +1150,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zjurpttpff .gt_sourcenotes {
+#nbrefeasgg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1164,7 +1164,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zjurpttpff .gt_sourcenote {
+#nbrefeasgg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1172,72 +1172,72 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zjurpttpff .gt_left {
+#nbrefeasgg .gt_left {
   text-align: left;
 }
 
-#zjurpttpff .gt_center {
+#nbrefeasgg .gt_center {
   text-align: center;
 }
 
-#zjurpttpff .gt_right {
+#nbrefeasgg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zjurpttpff .gt_font_normal {
+#nbrefeasgg .gt_font_normal {
   font-weight: normal;
 }
 
-#zjurpttpff .gt_font_bold {
+#nbrefeasgg .gt_font_bold {
   font-weight: bold;
 }
 
-#zjurpttpff .gt_font_italic {
+#nbrefeasgg .gt_font_italic {
   font-style: italic;
 }
 
-#zjurpttpff .gt_super {
+#nbrefeasgg .gt_super {
   font-size: 65%;
 }
 
-#zjurpttpff .gt_footnote_marks {
+#nbrefeasgg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zjurpttpff .gt_asterisk {
+#nbrefeasgg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zjurpttpff .gt_indent_1 {
+#nbrefeasgg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zjurpttpff .gt_indent_2 {
+#nbrefeasgg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zjurpttpff .gt_indent_3 {
+#nbrefeasgg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zjurpttpff .gt_indent_4 {
+#nbrefeasgg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zjurpttpff .gt_indent_5 {
+#nbrefeasgg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zjurpttpff .katex-display {
+#nbrefeasgg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zjurpttpff div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#nbrefeasgg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1265,43 +1265,43 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #CCCCCC; color: #000000">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #CCCCCC; color: #000000">all(is.finite(x))</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">194.49 ms</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">192.98 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc" style="background-color: #CCCCCC; color: #000000">400 MB </td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #CCCCCC; color: #000000">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #CCCCCC; color: #000000">is.finite(sum(x))</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">187.31 ms</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">187.21 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc" style="background-color: #CCCCCC; color: #000000">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">all_finite_cpp(x)</td>
-<td class="gt_row gt_right" headers="median">375.26 ms</td>
+<td class="gt_row gt_right" headers="median">375.05 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 1L)</td>
-<td class="gt_row gt_right" headers="median">374.14 ms</td>
+<td class="gt_row gt_right" headers="median">374.15 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 2L)</td>
-<td class="gt_row gt_right" headers="median">374.26 ms</td>
+<td class="gt_row gt_right" headers="median">374.14 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">     4.2 kB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 4L)</td>
-<td class="gt_row gt_right" headers="median">374.25 ms</td>
+<td class="gt_row gt_right" headers="median">374.26 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 8L)</td>
-<td class="gt_row gt_right" headers="median">374.23 ms</td>
+<td class="gt_row gt_right" headers="median">374.96 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 </tbody>
@@ -1647,23 +1647,23 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="cb15-32"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} s"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="zndtzfedhg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zndtzfedhg table {
+<div id="nxihwyujms" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nxihwyujms table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zndtzfedhg thead, #zndtzfedhg tbody, #zndtzfedhg tfoot, #zndtzfedhg tr, #zndtzfedhg td, #zndtzfedhg th {
+#nxihwyujms thead, #nxihwyujms tbody, #nxihwyujms tfoot, #nxihwyujms tr, #nxihwyujms td, #nxihwyujms th {
   border-style: none;
 }
 
-#zndtzfedhg p {
+#nxihwyujms p {
   margin: 0;
   padding: 0;
 }
 
-#zndtzfedhg .gt_table {
+#nxihwyujms .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1689,12 +1689,12 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-left-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_caption {
+#nxihwyujms .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zndtzfedhg .gt_title {
+#nxihwyujms .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1706,7 +1706,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-width: 0;
 }
 
-#zndtzfedhg .gt_subtitle {
+#nxihwyujms .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1718,7 +1718,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-width: 0;
 }
 
-#zndtzfedhg .gt_heading {
+#nxihwyujms .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1730,13 +1730,13 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_bottom_border {
+#nxihwyujms .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_col_headings {
+#nxihwyujms .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1751,7 +1751,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_col_heading {
+#nxihwyujms .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1771,7 +1771,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#zndtzfedhg .gt_column_spanner_outer {
+#nxihwyujms .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1783,15 +1783,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 4px;
 }
 
-#zndtzfedhg .gt_column_spanner_outer:first-child {
+#nxihwyujms .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zndtzfedhg .gt_column_spanner_outer:last-child {
+#nxihwyujms .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zndtzfedhg .gt_column_spanner {
+#nxihwyujms .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1803,11 +1803,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   width: 100%;
 }
 
-#zndtzfedhg .gt_spanner_row {
+#nxihwyujms .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zndtzfedhg .gt_group_heading {
+#nxihwyujms .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1833,7 +1833,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   text-align: left;
 }
 
-#zndtzfedhg .gt_empty_group_heading {
+#nxihwyujms .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1848,15 +1848,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: middle;
 }
 
-#zndtzfedhg .gt_from_md > :first-child {
+#nxihwyujms .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zndtzfedhg .gt_from_md > :last-child {
+#nxihwyujms .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zndtzfedhg .gt_row {
+#nxihwyujms .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1875,7 +1875,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#zndtzfedhg .gt_stub {
+#nxihwyujms .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1888,7 +1888,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zndtzfedhg .gt_stub_row_group {
+#nxihwyujms .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1902,15 +1902,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: top;
 }
 
-#zndtzfedhg .gt_row_group_first td {
+#nxihwyujms .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zndtzfedhg .gt_row_group_first th {
+#nxihwyujms .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zndtzfedhg .gt_summary_row {
+#nxihwyujms .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1920,16 +1920,16 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zndtzfedhg .gt_first_summary_row {
+#nxihwyujms .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_first_summary_row.thick {
+#nxihwyujms .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zndtzfedhg .gt_last_summary_row {
+#nxihwyujms .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1939,7 +1939,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_grand_summary_row {
+#nxihwyujms .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1949,7 +1949,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zndtzfedhg .gt_first_grand_summary_row {
+#nxihwyujms .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1959,7 +1959,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_last_grand_summary_row_top {
+#nxihwyujms .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1969,11 +1969,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_striped {
+#nxihwyujms .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zndtzfedhg .gt_table_body {
+#nxihwyujms .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1982,7 +1982,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_footnotes {
+#nxihwyujms .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1996,7 +1996,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_footnote {
+#nxihwyujms .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2005,7 +2005,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zndtzfedhg .gt_sourcenotes {
+#nxihwyujms .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2019,7 +2019,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#zndtzfedhg .gt_sourcenote {
+#nxihwyujms .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2027,72 +2027,72 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#zndtzfedhg .gt_left {
+#nxihwyujms .gt_left {
   text-align: left;
 }
 
-#zndtzfedhg .gt_center {
+#nxihwyujms .gt_center {
   text-align: center;
 }
 
-#zndtzfedhg .gt_right {
+#nxihwyujms .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zndtzfedhg .gt_font_normal {
+#nxihwyujms .gt_font_normal {
   font-weight: normal;
 }
 
-#zndtzfedhg .gt_font_bold {
+#nxihwyujms .gt_font_bold {
   font-weight: bold;
 }
 
-#zndtzfedhg .gt_font_italic {
+#nxihwyujms .gt_font_italic {
   font-style: italic;
 }
 
-#zndtzfedhg .gt_super {
+#nxihwyujms .gt_super {
   font-size: 65%;
 }
 
-#zndtzfedhg .gt_footnote_marks {
+#nxihwyujms .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zndtzfedhg .gt_asterisk {
+#nxihwyujms .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zndtzfedhg .gt_indent_1 {
+#nxihwyujms .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zndtzfedhg .gt_indent_2 {
+#nxihwyujms .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zndtzfedhg .gt_indent_3 {
+#nxihwyujms .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zndtzfedhg .gt_indent_4 {
+#nxihwyujms .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zndtzfedhg .gt_indent_5 {
+#nxihwyujms .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zndtzfedhg .katex-display {
+#nxihwyujms .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zndtzfedhg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#nxihwyujms div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2117,12 +2117,12 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">R</td>
 <td class="gt_row gt_left" headers="expression">rowSums(matrix(runif(n * nstep), n, nstep))</td>
-<td class="gt_row gt_right" headers="median">20.56 s</td>
+<td class="gt_row gt_right" headers="median">63.54 s</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo(n, nstep, seeds[1])</td>
-<td class="gt_row gt_right" headers="median"> 5.82 s</td>
+<td class="gt_row gt_right" headers="median"> 5.83 s</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
@@ -2132,7 +2132,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:2])</td>
-<td class="gt_row gt_right" headers="median"> 5.81 s</td>
+<td class="gt_row gt_right" headers="median"> 5.82 s</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
@@ -2142,7 +2142,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:8])</td>
-<td class="gt_row gt_right" headers="median"> 5.80 s</td>
+<td class="gt_row gt_right" headers="median"> 5.76 s</td>
 </tr>
 </tbody>
 </table>
@@ -2541,23 +2541,23 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="cb26-38"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="eaxxnjxgxo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#eaxxnjxgxo table {
+<div id="zjdtvplirh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zjdtvplirh table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#eaxxnjxgxo thead, #eaxxnjxgxo tbody, #eaxxnjxgxo tfoot, #eaxxnjxgxo tr, #eaxxnjxgxo td, #eaxxnjxgxo th {
+#zjdtvplirh thead, #zjdtvplirh tbody, #zjdtvplirh tfoot, #zjdtvplirh tr, #zjdtvplirh td, #zjdtvplirh th {
   border-style: none;
 }
 
-#eaxxnjxgxo p {
+#zjdtvplirh p {
   margin: 0;
   padding: 0;
 }
 
-#eaxxnjxgxo .gt_table {
+#zjdtvplirh .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2583,12 +2583,12 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-left-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_caption {
+#zjdtvplirh .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#eaxxnjxgxo .gt_title {
+#zjdtvplirh .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2600,7 +2600,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-width: 0;
 }
 
-#eaxxnjxgxo .gt_subtitle {
+#zjdtvplirh .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2612,7 +2612,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-top-width: 0;
 }
 
-#eaxxnjxgxo .gt_heading {
+#zjdtvplirh .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2624,13 +2624,13 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_bottom_border {
+#zjdtvplirh .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_col_headings {
+#zjdtvplirh .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2645,7 +2645,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_col_heading {
+#zjdtvplirh .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2665,7 +2665,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   overflow-x: hidden;
 }
 
-#eaxxnjxgxo .gt_column_spanner_outer {
+#zjdtvplirh .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2677,15 +2677,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 4px;
 }
 
-#eaxxnjxgxo .gt_column_spanner_outer:first-child {
+#zjdtvplirh .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#eaxxnjxgxo .gt_column_spanner_outer:last-child {
+#zjdtvplirh .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#eaxxnjxgxo .gt_column_spanner {
+#zjdtvplirh .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2697,11 +2697,11 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   width: 100%;
 }
 
-#eaxxnjxgxo .gt_spanner_row {
+#zjdtvplirh .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#eaxxnjxgxo .gt_group_heading {
+#zjdtvplirh .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2727,7 +2727,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   text-align: left;
 }
 
-#eaxxnjxgxo .gt_empty_group_heading {
+#zjdtvplirh .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2742,15 +2742,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   vertical-align: middle;
 }
 
-#eaxxnjxgxo .gt_from_md > :first-child {
+#zjdtvplirh .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#eaxxnjxgxo .gt_from_md > :last-child {
+#zjdtvplirh .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#eaxxnjxgxo .gt_row {
+#zjdtvplirh .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2769,7 +2769,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   overflow-x: hidden;
 }
 
-#eaxxnjxgxo .gt_stub {
+#zjdtvplirh .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2782,7 +2782,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#eaxxnjxgxo .gt_stub_row_group {
+#zjdtvplirh .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2796,15 +2796,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   vertical-align: top;
 }
 
-#eaxxnjxgxo .gt_row_group_first td {
+#zjdtvplirh .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#eaxxnjxgxo .gt_row_group_first th {
+#zjdtvplirh .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#eaxxnjxgxo .gt_summary_row {
+#zjdtvplirh .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2814,16 +2814,16 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#eaxxnjxgxo .gt_first_summary_row {
+#zjdtvplirh .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_first_summary_row.thick {
+#zjdtvplirh .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#eaxxnjxgxo .gt_last_summary_row {
+#zjdtvplirh .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2833,7 +2833,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_grand_summary_row {
+#zjdtvplirh .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2843,7 +2843,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#eaxxnjxgxo .gt_first_grand_summary_row {
+#zjdtvplirh .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2853,7 +2853,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-top-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_last_grand_summary_row_top {
+#zjdtvplirh .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2863,11 +2863,11 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_striped {
+#zjdtvplirh .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#eaxxnjxgxo .gt_table_body {
+#zjdtvplirh .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2876,7 +2876,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_footnotes {
+#zjdtvplirh .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2890,7 +2890,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_footnote {
+#zjdtvplirh .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2899,7 +2899,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#eaxxnjxgxo .gt_sourcenotes {
+#zjdtvplirh .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2913,7 +2913,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#eaxxnjxgxo .gt_sourcenote {
+#zjdtvplirh .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2921,72 +2921,72 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#eaxxnjxgxo .gt_left {
+#zjdtvplirh .gt_left {
   text-align: left;
 }
 
-#eaxxnjxgxo .gt_center {
+#zjdtvplirh .gt_center {
   text-align: center;
 }
 
-#eaxxnjxgxo .gt_right {
+#zjdtvplirh .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#eaxxnjxgxo .gt_font_normal {
+#zjdtvplirh .gt_font_normal {
   font-weight: normal;
 }
 
-#eaxxnjxgxo .gt_font_bold {
+#zjdtvplirh .gt_font_bold {
   font-weight: bold;
 }
 
-#eaxxnjxgxo .gt_font_italic {
+#zjdtvplirh .gt_font_italic {
   font-style: italic;
 }
 
-#eaxxnjxgxo .gt_super {
+#zjdtvplirh .gt_super {
   font-size: 65%;
 }
 
-#eaxxnjxgxo .gt_footnote_marks {
+#zjdtvplirh .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#eaxxnjxgxo .gt_asterisk {
+#zjdtvplirh .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#eaxxnjxgxo .gt_indent_1 {
+#zjdtvplirh .gt_indent_1 {
   text-indent: 5px;
 }
 
-#eaxxnjxgxo .gt_indent_2 {
+#zjdtvplirh .gt_indent_2 {
   text-indent: 10px;
 }
 
-#eaxxnjxgxo .gt_indent_3 {
+#zjdtvplirh .gt_indent_3 {
   text-indent: 15px;
 }
 
-#eaxxnjxgxo .gt_indent_4 {
+#zjdtvplirh .gt_indent_4 {
   text-indent: 20px;
 }
 
-#eaxxnjxgxo .gt_indent_5 {
+#zjdtvplirh .gt_indent_5 {
   text-indent: 25px;
 }
 
-#eaxxnjxgxo .katex-display {
+#zjdtvplirh .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#eaxxnjxgxo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#zjdtvplirh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3014,61 +3014,61 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">R</td>
 <td class="gt_row gt_left" headers="expression">erf_r(x)</td>
-<td class="gt_row gt_right" headers="median">51.03 ms</td>
+<td class="gt_row gt_right" headers="median">50.26 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">16 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">erf_cpp(x)</td>
-<td class="gt_row gt_right" headers="median">94.55 ms</td>
+<td class="gt_row gt_right" headers="median">94.99 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 1)</td>
-<td class="gt_row gt_right" headers="median">90.03 ms</td>
+<td class="gt_row gt_right" headers="median">90.14 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 2)</td>
-<td class="gt_row gt_right" headers="median">90.08 ms</td>
+<td class="gt_row gt_right" headers="median">90.12 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 4)</td>
-<td class="gt_row gt_right" headers="median">90.02 ms</td>
+<td class="gt_row gt_right" headers="median">90.14 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 8)</td>
-<td class="gt_row gt_right" headers="median">90.01 ms</td>
+<td class="gt_row gt_right" headers="median">90.09 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 1)</td>
-<td class="gt_row gt_right" headers="median">91.26 ms</td>
+<td class="gt_row gt_right" headers="median">90.67 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 2)</td>
-<td class="gt_row gt_right" headers="median">49.88 ms</td>
+<td class="gt_row gt_right" headers="median">50.57 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 4)</td>
-<td class="gt_row gt_right" headers="median">32.56 ms</td>
+<td class="gt_row gt_right" headers="median">32.61 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 8)</td>
-<td class="gt_row gt_right" headers="median">32.71 ms</td>
+<td class="gt_row gt_right" headers="median">32.46 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 </tbody>
@@ -3541,11 +3541,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="fu">pb_example</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Computing: [==================================      ] 95%  (~0s remaining)       
+Computing: [========================================] 100% (done)                         
+
+Computing: [========================================] 100% (done)                         
+
+Computing: [========================================] 100% (done)                         
+
 Computing: [========================================] 100% (done)                         </code></pre>
 </div>
 </div>
-<p><a href="https://tnagler.github.io/RcppThread/namespaceRcppThread.html" class="uri">https://tnagler.github.io/RcppThread/namespaceRcppThread.html</a></p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>

@@ -93,11 +93,10 @@ system.time(D <- dist_hausdorff(dat))
 ## Your turn
 
 - Optimize the R code;
-- Parallelize the optimized R code with futureverse;
 - Convert the R code into C++ code;
 - Parallelize the C++ code using OpenMP;
 - Parallelize the C++ code using RcppParallel;
 - Parallelize the C++ code using RcppThread;
 - Benchmark everything.
 
-Which framework were you most pleased to work with?
+Which framework were you most pleased to work with? And compared to the futureverse?

@@ -13,6 +13,7 @@ format:
     logo: images/logo-lmjl.png
     theme: simple
     code-annotations: select
+    chalkboard: true
     drop:
       engine: webr
       webr:
@@ -1108,6 +1109,7 @@ checking for user interruptions.
 ## Thread pool - Basic usage
 
 ```{Rcpp}
+#| code-line-numbers: "|11,13,15-16"
 #include <Rcpp.h>
 
 // [[Rcpp::plugins(cpp11)]]
@@ -1118,15 +1120,26 @@ checking for user interruptions.
 std::vector<unsigned int> rcpp_thread_example1(unsigned int n, 
                                                unsigned int ncores)
 {
-  RcppThread::ThreadPool pool(ncores);
+  RcppThread::ThreadPool pool(ncores); // <1>
   std::vector<unsigned int> x(n);
-  auto task = [&x] (unsigned int i) { x[i] = i; };
+  auto task = [&x] (unsigned int i) { x[i] = i; }; // <2>
   for (unsigned int i = 0;i < x.size();++i)
-    pool.push(task, i);
-  pool.join();
+    pool.push(task, i); // <3>
+  pool.join(); // <4>
   return x;
 }
 ```
+1. Create a thread pool with `ncores` threads. Useful when the number of tasks
+is known in advance.
+2. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `i` as argument and assigns `i` to the `i`-th element of
+`x`. The lambda function captures `x` by reference. This is necessary because
+the lambda function is executed in a different context than the main thread.
+3. Push the task to the thread pool for each element of `x`. The `push` method
+takes the task and its arguments as arguments.
+4. Wait for all threads to finish. This is necessary because the main thread
+should not finish before the threads have finished. It also starts synchronizing
+with R and checking for user interruptions.
 
 ```{r}
 rcpp_thread_example1(10, 3)
@@ -1135,6 +1148,7 @@ rcpp_thread_example1(10, 3)
 ## Thread pool which returns a value
 
 ```{Rcpp}
+#| code-line-numbers: "|13-15|17-19|21-23|25-27|29"
 #include <Rcpp.h>
 
 // [[Rcpp::plugins(cpp11)]]
@@ -1146,27 +1160,43 @@ std::vector<unsigned int> rcpp_thread_example2(unsigned int n,
                                                unsigned int ncores)
 {
   RcppThread::ThreadPool pool(ncores);
-  std::vector<unsigned int> x(n);
-  for (unsigned int i = 0;i < n;++i)
-    x[i] = i;
 
-  auto task = [&x] (unsigned int i) {
+  std::vector<unsigned int> x(n); // <1>
+  for (unsigned int i = 0;i < n;++i)
+    x[i] = i + 1;
+
+  auto task = [&x] (unsigned int i) { // <2>
     return x[i] * x[i];
   };
 
-  std::vector<std::future<unsigned int>> futures(n);
+  std::vector<std::future<unsigned int>> futures(n); // <3>
   for (unsigned int i = 0;i < n;++i)
     futures[i] = pool.pushReturn(task, i);
 
-  std::vector<unsigned int> results(n);
+  std::vector<unsigned int> results(n); // <4>
   for (unsigned int i = 0;i < n;++i)
     results[i] = futures[i].get();
 
-  pool.join();
+  pool.join(); // <5>
 
   return results;
 }
 ```
+1. Create a vector `x` of `n` elements and initialize it with the integers from
+1 to `n`.
+2. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `i` as argument and returns the square of the `i`-th
+element of `x`. The lambda function captures `x` by reference. This is necessary
+because the lambda function is executed in a different context than the main
+thread.
+3. Create a vector of `std::future` objects to store the results of the tasks
+because the `pushReturn()` method returns a `std::future` object which can be
+used to later retrieve the result of the task.
+4. Retrieve the results of the tasks from the `std::future` objects and store
+them in a vector `results`.
+5. Wait for all threads to finish. This is necessary because the main thread
+should not finish before the threads have finished. It also starts synchronizing
+with R and checking for user interruptions.
 
 ```{r}
 rcpp_thread_example2(10, 3)
@@ -1175,6 +1205,7 @@ rcpp_thread_example2(10, 3)
 ## Parallel for loop
 
 ```{Rcpp}
+#| code-line-numbers: "|17"
 #include <Rcpp.h>
 
 // [[Rcpp::plugins(cpp11)]]
@@ -1186,12 +1217,18 @@ std::vector<unsigned int> parallelfor_example(unsigned int n)
 {
   // Index-based
   std::vector<unsigned int> x(n);
-  RcppThread::parallelFor(0, x.size(), [&x] (unsigned int i) {
+  
+  auto task = [&x] (unsigned int i) {
     x[i] = i;
-  });
+  };
+
+  RcppThread::parallelFor(0, x.size(), task); // <1>
+
   return x;
 }
 ```
+1. Execute the task for each element of `x` in parallel. The `parallelFor()`
+function takes the start index, end index, and the task as arguments.
 
 ```{r}
 parallelfor_example(10)
@@ -1200,6 +1237,7 @@ parallelfor_example(10)
 ## Parallel for-each loop
 
 ```{Rcpp}
+#| code-line-numbers: "|15-17|19"
 #include <Rcpp.h>
 
 // [[Rcpp::plugins(cpp11)]]
@@ -1214,13 +1252,21 @@ std::vector<unsigned int> parallelforeach_example(unsigned int n)
   for (unsigned int i = 0;i < n;++i)
     x[i] = i;
 
-  RcppThread::parallelForEach(x, [] (unsigned int& xx) {
+  auto task = [] (unsigned int &xx) { // <1>
     xx *= 2;
-  });
+  };
+
+  RcppThread::parallelForEach(x, task); // <2>
 
   return x;
 }
 ```
+1. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `xx` as argument and multiplies it by 2. The argument is
+passed by reference because the task modifies the argument.
+2. Execute the task for each element of `x` in parallel. The `parallelForEach()`
+function takes the vector and the task as arguments and applies the task to each
+element of the vector.
 
 ```{r}
 parallelforeach_example(10)
@@ -1249,13 +1295,17 @@ within the `src/` directory.
 void pb_example()
 {
   // 20 iterations in loop, update progress every 1 sec
-  RcppThread::ProgressBar bar(20, 1);
-  RcppThread::parallelFor(0, 20, [&] (int i) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    bar++;
+  RcppThread::ProgressBar bar(20, 1); // <1>
+  RcppThread::parallelFor(0, 20, [&] (int i) { // <2>
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    ++bar;
   });
 }
 ```
+1. Create a progress bar with 20 iterations and update the progress every 1
+second.
+2. Execute the task for each iteration in parallel. The task instructs the
+thread to sleep for 5 seconds and then increment the progress bar.
 
 ```{r}
 pb_example()

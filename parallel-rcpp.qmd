@@ -1311,4 +1311,6 @@ thread to sleep for 5 seconds and then increment the progress bar.
 pb_example()
 ```
 
+<https://tnagler.github.io/RcppThread/namespaceRcppThread.html>
+
 ## References

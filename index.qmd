@@ -5,23 +5,31 @@ date: 2024-09-25
 format: html
 ---
 
-## Quarto
+## Parallel Rcpp - ANF High Performance Computing with R
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+### Material
 
-## Running Code
+Material for the *Parallel Rcpp* tutorial at the ANF [High Performance Computing
+with R](https://indico.mathrice.fr/event/536/), Frejus, France. 
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Total time: 3 hours (tentatively).
 
-```{r}
-1 + 1
-```
+The main webpage is at <https://astamm.github.io/parallel-rcpp/>.
 
-You can add options to executable code like this 
+### Requirements
 
-```{r}
-#| echo: false
-2 * 2
-```
+- R: <https://www.r-project.org>
+- RStudio: <https://posit.co/download/rstudio-desktop/>
+- Quarto: <https://quarto.org/docs/get-started/>
+- Quarto Drop extension: <https://github.com/r-wasm/quarto-drop>
+- [MacOS only] OpenMP support: <https://mac.r-project.org/openmp/>
+- R packages: 
 
-The `echo: false` option disables the printing of code (only output is displayed).
+    - [{bench}](https://bench.r-lib.org/)
+    - [{BH}](https://dirk.eddelbuettel.com/code/bh.html)
+    - [{gt}](https://gt.rstudio.com/)
+    - [{Rcpp}](https://dirk.eddelbuettel.com/code/rcpp.html)
+    - [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)
+    - [{RcppThread}](https://github.com/tnagler/RcppThread)
+    - [{sitmo}](http://thecoatlessprofessor.com/projects/sitmo/)
+    - [{tidyverse}](https://www.tidyverse.org)

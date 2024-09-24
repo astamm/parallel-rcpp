@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Instructions",
-    "section": "",
-    "text": "Material for the Parallel Rcpp tutorial at the ANF High Performance Computing with R, Frejus, France.\nTotal time: 3 hours (tentatively).\nThe main webpage is at https://astamm.github.io/parallel-rcpp/.\n\n\n\n\nR: https://www.r-project.org\nRStudio: https://posit.co/download/rstudio-desktop/\nQuarto: https://quarto.org/docs/get-started/\nQuarto Drop extension: https://github.com/r-wasm/quarto-drop\n[MacOS only] OpenMP support: https://mac.r-project.org/openmp/\nR packages:\n\n{bench}\n{BH}\n{gt}\n{Rcpp}\n{RcppParallel}\n{RcppThread}\n{sitmo}\n{tidyverse}"
-  },
-  {
-    "objectID": "index.html#parallel-rcpp---anf-high-performance-computing-with-r",
-    "href": "index.html#parallel-rcpp---anf-high-performance-computing-with-r",
-    "title": "Instructions",
-    "section": "",
-    "text": "Material for the Parallel Rcpp tutorial at the ANF High Performance Computing with R, Frejus, France.\nTotal time: 3 hours (tentatively).\nThe main webpage is at https://astamm.github.io/parallel-rcpp/.\n\n\n\n\nR: https://www.r-project.org\nRStudio: https://posit.co/download/rstudio-desktop/\nQuarto: https://quarto.org/docs/get-started/\nQuarto Drop extension: https://github.com/r-wasm/quarto-drop\n[MacOS only] OpenMP support: https://mac.r-project.org/openmp/\nR packages:\n\n{bench}\n{BH}\n{gt}\n{Rcpp}\n{RcppParallel}\n{RcppThread}\n{sitmo}\n{tidyverse}"
-  },
-  {
     "objectID": "parallel-rcpp.html#information-about-the-session",
     "href": "parallel-rcpp.html#information-about-the-session",
     "title": "Parallel computing with C++ from R",
@@ -60,7 +46,7 @@
     "href": "parallel-rcpp.html#a-toy-function-to-play-with",
     "title": "Parallel computing with C++ from R",
     "section": "A toy function to play with",
-    "text": "A toy function to play with\n\n//---------------------------------\n1#include &lt;unistd.h&gt;\n#include &lt;Rcpp.h&gt;\n\n2// [[Rcpp::export]]\nbool wait_k_seconds(unsigned int sec)\n{\n    for (unsigned int i = 0;i &lt; sec;++i)\n        sleep(1);\n    \n    return EXIT_SUCCESS;\n}\n\n\n1\n\nThe unistd.h header file is needed for the sleep() function.\n\n2\n\nThe [[Rcpp::export]] attribute tells Rcpp that it should generate the necessary R bindings for the function so that it can be called from R.\n\n\n\n\n\nThe previous code defines a simple function that waits for sec seconds and makes it available to R when compiled using Rcpp::sourceCpp(). We can test that it does what it is supposed to do by calling it from R:\n\n\nsystem.time(wait_k_seconds(2))[3]\n\nelapsed \n   2.01"
+    "text": "A toy function to play with\n\n//---------------------------------\n1#include &lt;unistd.h&gt;\n#include &lt;Rcpp.h&gt;\n\n2// [[Rcpp::export]]\nbool wait_k_seconds(unsigned int sec)\n{\n    for (unsigned int i = 0;i &lt; sec;++i)\n        sleep(1);\n    \n    return EXIT_SUCCESS;\n}\n\n\n1\n\nThe unistd.h header file is needed for the sleep() function.\n\n2\n\nThe [[Rcpp::export]] attribute tells Rcpp that it should generate the necessary R bindings for the function so that it can be called from R.\n\n\n\n\n\nThe previous code defines a simple function that waits for sec seconds and makes it available to R when compiled using Rcpp::sourceCpp(). We can test that it does what it is supposed to do by calling it from R:\n\n\nsystem.time(wait_k_seconds(2))[3]\n\nelapsed \n      2"
   },
   {
     "objectID": "parallel-rcpp.html#a-parallelized-version-via-openmp",
@@ -74,7 +60,7 @@
     "href": "parallel-rcpp.html#benchmarking",
     "title": "Parallel computing with C++ from R",
     "section": "Benchmarking",
-    "text": "Benchmarking\n\nRun a 4 sec task on 1 thread:\n\n\nsystem.time(wait_k_seconds_omp(4, 1))[3]\n\nelapsed \n  4.017 \n\n\n\nRun a 4 sec task on 4 threads:\n\n\nsystem.time(wait_k_seconds_omp(4, 4))[3]\n\nelapsed \n  1.006 \n\n\n\nRun a 10 sec task on 10 thread:\n\n\nsystem.time(wait_k_seconds_omp(10, 10))[3]\n\nelapsed \n  1.007"
+    "text": "Benchmarking\n\nRun a 4 sec task on 1 thread:\n\n\nsystem.time(wait_k_seconds_omp(4, 1))[3]\n\nelapsed \n  4.001 \n\n\n\nRun a 4 sec task on 4 threads:\n\n\nsystem.time(wait_k_seconds_omp(4, 4))[3]\n\nelapsed \n  4.001 \n\n\n\nRun a 10 sec task on 10 thread:\n\n\nsystem.time(wait_k_seconds_omp(10, 10))[3]\n\nelapsed \n 10.001"
   },
   {
     "objectID": "parallel-rcpp.html#a-more-realistic-example-r",
@@ -102,7 +88,7 @@
     "href": "parallel-rcpp.html#benchmarking-1",
     "title": "Parallel computing with C++ from R",
     "section": "Benchmarking",
-    "text": "Benchmarking\n\n\nCode\nx &lt;- rnorm(1e8)\nbm &lt;- bench::mark(\n  all(is.finite(x)),\n  is.finite(sum(x)),\n  all_finite_cpp(x),\n  all_finite_omp(x,  1L), \n  all_finite_omp(x,  2L),\n  all_finite_omp(x,  4L), \n  all_finite_omp(x,  8L),\n  iterations = bch_runs, \n  time_unit = \"ms\"\n)\nbm |&gt; \n  dplyr::mutate(lang = c(\"R\", \"R\", \"C++\", rep(\"C++ (OpenMP)\", 4))) |&gt;\n  dplyr::select(lang, expression, median, mem_alloc) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse),\n    mem_alloc = as.numeric(mem_alloc)\n  ) |&gt; \n  gt::gt() |&gt; \n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\"),\n    mem_alloc = gt::md(\"**Memory allocation**\")\n  ) |&gt;\n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt; \n  gt::cols_align(align = \"right\", columns = median:mem_alloc) |&gt; \n  gt::cols_align_decimal() |&gt; \n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} ms\") |&gt;\n  gt::fmt_bytes(columns = \"mem_alloc\") |&gt; \n  gt::data_color(rows = 1:2, direction = \"row\", colors = c(\"grey80\"))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\nMemory allocation\n\n\n\n\nR\nall(is.finite(x))\n204.89 ms\n400 MB \n\n\nR\nis.finite(sum(x))\n153.91 ms\n   0 B  \n\n\nC++\nall_finite_cpp(x)\n 94.69 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 1L)\n 92.16 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 2L)\n 47.92 ms\n     4.2 kB\n\n\nC++ (OpenMP)\nall_finite_omp(x, 4L)\n 24.43 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 8L)\n 34.80 ms\n   0 B"
+    "text": "Benchmarking\n\n\nCode\nx &lt;- rnorm(1e8)\nbm &lt;- bench::mark(\n  all(is.finite(x)),\n  is.finite(sum(x)),\n  all_finite_cpp(x),\n  all_finite_omp(x,  1L), \n  all_finite_omp(x,  2L),\n  all_finite_omp(x,  4L), \n  all_finite_omp(x,  8L),\n  iterations = bch_runs, \n  time_unit = \"ms\"\n)\nbm |&gt; \n  dplyr::mutate(lang = c(\"R\", \"R\", \"C++\", rep(\"C++ (OpenMP)\", 4))) |&gt;\n  dplyr::select(lang, expression, median, mem_alloc) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse),\n    mem_alloc = as.numeric(mem_alloc)\n  ) |&gt; \n  gt::gt() |&gt; \n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\"),\n    mem_alloc = gt::md(\"**Memory allocation**\")\n  ) |&gt;\n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt; \n  gt::cols_align(align = \"right\", columns = median:mem_alloc) |&gt; \n  gt::cols_align_decimal() |&gt; \n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} ms\") |&gt;\n  gt::fmt_bytes(columns = \"mem_alloc\") |&gt; \n  gt::data_color(rows = 1:2, direction = \"row\", colors = c(\"grey80\"))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\nMemory allocation\n\n\n\n\nR\nall(is.finite(x))\n193.66 ms\n400 MB \n\n\nR\nis.finite(sum(x))\n187.47 ms\n   0 B  \n\n\nC++\nall_finite_cpp(x)\n375.32 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 1L)\n374.37 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 2L)\n374.32 ms\n     4.2 kB\n\n\nC++ (OpenMP)\nall_finite_omp(x, 4L)\n374.30 ms\n   0 B  \n\n\nC++ (OpenMP)\nall_finite_omp(x, 8L)\n374.57 ms\n   0 B"
   },
   {
     "objectID": "parallel-rcpp.html#cheatsheet-for-openmp",
@@ -172,7 +158,7 @@
     "href": "parallel-rcpp.html#benchmarking-2",
     "title": "Parallel computing with C++ from R",
     "section": "Benchmarking",
-    "text": "Benchmarking\n\n\nCode\nn &lt;- 1e6\nnstep &lt;- 1e3\nseeds &lt;- sample.int(1e6, 8)\n\nbm &lt;- bench::mark(\n  rowSums(matrix(runif(n*nstep), n, nstep)),\n  sumunif_sitmo(n, nstep, seeds[1]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:1]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:2]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:4]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:8]),\n  iterations = bch_runs, \n  time_unit = \"s\", \n  check = FALSE\n)\n\nbm |&gt; \n  dplyr::mutate(lang = c(\"R\", \"C++\", rep(\"C++ (OpenMP)\", 4))) |&gt;\n  dplyr::select(lang, expression, median) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse)\n  ) |&gt; \n  gt::gt() |&gt; \n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\")\n  ) |&gt; \n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt; \n  gt::cols_align(align = \"right\", columns = median) |&gt; \n  gt::cols_align_decimal() |&gt; \n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} s\")\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\n\n\n\n\nR\nrowSums(matrix(runif(n * nstep), n, nstep))\n8.04 s\n\n\nC++\nsumunif_sitmo(n, nstep, seeds[1])\n2.49 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:1])\n2.43 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:2])\n1.23 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:4])\n0.63 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:8])\n0.32 s"
+    "text": "Benchmarking\n\n\nCode\nn &lt;- 1e6\nnstep &lt;- 1e3\nseeds &lt;- sample.int(1e6, 8)\n\nbm &lt;- bench::mark(\n  rowSums(matrix(runif(n*nstep), n, nstep)),\n  sumunif_sitmo(n, nstep, seeds[1]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:1]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:2]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:4]),\n  sumunif_sitmo_omp(n, nstep, seeds[1:8]),\n  iterations = bch_runs, \n  time_unit = \"s\", \n  check = FALSE\n)\n\nbm |&gt; \n  dplyr::mutate(lang = c(\"R\", \"C++\", rep(\"C++ (OpenMP)\", 4))) |&gt;\n  dplyr::select(lang, expression, median) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse)\n  ) |&gt; \n  gt::gt() |&gt; \n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\")\n  ) |&gt; \n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt; \n  gt::cols_align(align = \"right\", columns = median) |&gt; \n  gt::cols_align_decimal() |&gt; \n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} s\")\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\n\n\n\n\nR\nrowSums(matrix(runif(n * nstep), n, nstep))\n69.40 s\n\n\nC++\nsumunif_sitmo(n, nstep, seeds[1])\n 5.84 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:1])\n 5.82 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:2])\n 5.88 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:4])\n 5.87 s\n\n\nC++ (OpenMP)\nsumunif_sitmo_omp(n, nstep, seeds[1:8])\n 5.80 s"
   },
   {
     "objectID": "parallel-rcpp.html#overview-1",
@@ -235,7 +221,7 @@
     "href": "parallel-rcpp.html#benchmarking-3",
     "title": "Parallel computing with C++ from R",
     "section": "Benchmarking",
-    "text": "Benchmarking\n\n\nCode\nbm &lt;- bench::mark(\n  erf_r(x),\n  erf_cpp(x),\n  erf_omp(x, 1),\n  erf_omp(x, 2),\n  erf_omp(x, 4),\n  erf_omp(x, 8),\n  erf_parallel(x, 1),\n  erf_parallel(x, 2),\n  erf_parallel(x, 4),\n  erf_parallel(x, 8),\n  iterations = bch_runs, \n  time_unit = \"ms\"\n)\n\nbm |&gt; \n  dplyr::mutate(lang = c(\n    \"R\", \"C++\", \n    rep(\"C++ (OpenMP)\", 4), \n    rep(\"C++ (RcppParallel)\", 4)\n  )) |&gt;\n  dplyr::select(lang, expression, median, mem_alloc) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse),\n    mem_alloc = as.numeric(mem_alloc)\n  ) |&gt;\n  gt::gt() |&gt;\n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\"),\n    mem_alloc = gt::md(\"**Memory allocation**\")\n  ) |&gt;\n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt;\n  gt::cols_align(align = \"right\", columns = median:mem_alloc) |&gt;\n  gt::cols_align_decimal() |&gt;\n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} ms\") |&gt;\n  gt::fmt_bytes(columns = \"mem_alloc\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\nMemory allocation\n\n\n\n\nR\nerf_r(x)\n28.80 ms\n16 MB \n\n\nC++\nerf_cpp(x)\n19.10 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 1)\n18.25 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 2)\n 9.67 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 4)\n 5.38 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 8)\n 3.04 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 1)\n19.54 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 2)\n10.22 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 4)\n 5.47 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 8)\n 3.09 ms\n 8 MB"
+    "text": "Benchmarking\n\n\nCode\nbm &lt;- bench::mark(\n  erf_r(x),\n  erf_cpp(x),\n  erf_omp(x, 1),\n  erf_omp(x, 2),\n  erf_omp(x, 4),\n  erf_omp(x, 8),\n  erf_parallel(x, 1),\n  erf_parallel(x, 2),\n  erf_parallel(x, 4),\n  erf_parallel(x, 8),\n  iterations = bch_runs, \n  time_unit = \"ms\"\n)\n\nbm |&gt; \n  dplyr::mutate(lang = c(\n    \"R\", \"C++\", \n    rep(\"C++ (OpenMP)\", 4), \n    rep(\"C++ (RcppParallel)\", 4)\n  )) |&gt;\n  dplyr::select(lang, expression, median, mem_alloc) |&gt; \n  dplyr::mutate(\n    expression = purrr::map_chr(expression, deparse),\n    mem_alloc = as.numeric(mem_alloc)\n  ) |&gt;\n  gt::gt() |&gt;\n  gt::cols_label(\n    lang = gt::md(\"**Programming language**\"),\n    expression = gt::md(\"**Expression**\"),\n    median = gt::md(\"**Median computation time**\"),\n    mem_alloc = gt::md(\"**Memory allocation**\")\n  ) |&gt;\n  gt::cols_align(align =  \"left\", columns = lang:expression) |&gt;\n  gt::cols_align(align = \"right\", columns = median:mem_alloc) |&gt;\n  gt::cols_align_decimal() |&gt;\n  gt::fmt_number(columns = \"median\", decimals = 2, pattern = \"{x} ms\") |&gt;\n  gt::fmt_bytes(columns = \"mem_alloc\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nProgramming language\nExpression\nMedian computation time\nMemory allocation\n\n\n\n\nR\nerf_r(x)\n50.46 ms\n16 MB \n\n\nC++\nerf_cpp(x)\n94.47 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 1)\n90.15 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 2)\n90.23 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 4)\n89.97 ms\n 8 MB \n\n\nC++ (OpenMP)\nerf_omp(x, 8)\n90.09 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 1)\n90.45 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 2)\n49.77 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 4)\n32.48 ms\n 8 MB \n\n\nC++ (RcppParallel)\nerf_parallel(x, 8)\n33.31 ms\n 8 MB"
   },
   {
     "objectID": "parallel-rcpp.html#progress-bars-via-rcppprogress",
@@ -312,42 +298,28 @@
     "href": "parallel-rcpp.html#progress-report-1",
     "title": "Parallel computing with C++ from R",
     "section": "Progress report",
-    "text": "Progress report\n\n#include &lt;Rcpp.h&gt;\n\n// [[Rcpp::plugins(cpp11)]]\n// [[Rcpp::depends(RcppThread)]]\n#include &lt;RcppThread.h&gt;\n\n// [[Rcpp::export]]\nvoid pb_example()\n{\n  // 20 iterations in loop, update progress every 1 sec\n  RcppThread::ProgressBar bar(20, 1);\n  RcppThread::parallelFor(0, 20, [&] (int i) {\n    std::this_thread::sleep_for(std::chrono::milliseconds(200));\n    bar++;\n  });\n}\n\n\npb_example()\n\n\nComputing: [========================================] 100% (done)"
+    "text": "Progress report\n\n#include &lt;Rcpp.h&gt;\n\n// [[Rcpp::plugins(cpp11)]]\n// [[Rcpp::depends(RcppThread)]]\n#include &lt;RcppThread.h&gt;\n\n// [[Rcpp::export]]\nvoid pb_example()\n{\n  // 20 iterations in loop, update progress every 1 sec\n  RcppThread::ProgressBar bar(20, 1);\n  RcppThread::parallelFor(0, 20, [&] (int i) {\n    std::this_thread::sleep_for(std::chrono::milliseconds(200));\n    bar++;\n  });\n}\n\n\npb_example()\n\n\nComputing: [====================================    ] 100% (done)                         \n\nComputing: [====================================    ] 100% (done)                         \n\nComputing: [========================================] 100% (done)                         \n\nComputing: [========================================] 100% (done)"
   },
   {
     "objectID": "parallel-rcpp.html#references",
     "href": "parallel-rcpp.html#references",
     "title": "Parallel computing with C++ from R",
     "section": "References",
-    "text": "References\n\n\n\n\nHigh-Performance Computing with R - Fréjus - aymeric.stamm@cnrs.fr\n\n\n\n\n“Beginning OpenMP.” http://chryswoods.com/beginning_openmp/.\n\n\nDagum, Leonardo, and Ramesh Menon. 1998. “OpenMP: An Industry Standard API for Shared-Memory Programming.” IEEE Computational Science and Engineering 5 (1): 46–55.\n\n\nNagler, Thomas. 2021. “R-Friendly Multi-Threading in c++.” Journal of Statistical Software, Code Snippets 97 (1): 1–18. https://doi.org/10.18637/jss.v097.c01.\n\n\n“OpenMP API Reference Guide.” https://www.openmp.org/wp-content/uploads/OpenMPRefGuide-5.2-Web-2024.pdf.\n\n\n“OpenMP Reference Sheet for C/C++.” n.d. https://cheat-sheets.org/saved-copy/OpenMP_reference.pdf.\n\n\nReinders, James. 2007. Intel Threading Building Blocks, Outfitting c++ for Multi-Core Processor Parallelism. O’Reilly Media, Inc.\n\n\nSchäling, Boris. 2014. The Boost c++ Libraries. Vol. 3. XML press Laguna Hills."
+    "text": "References\n\n\n\n\nHigh-Performance Computing with R - Fréjus - aymeric.stamm@cnrs.fr - https://astamm.github.io/parallel-rcpp/\n\n\n\n\n“Beginning OpenMP.” http://chryswoods.com/beginning_openmp/.\n\n\nDagum, Leonardo, and Ramesh Menon. 1998. “OpenMP: An Industry Standard API for Shared-Memory Programming.” IEEE Computational Science and Engineering 5 (1): 46–55.\n\n\nNagler, Thomas. 2021. “R-Friendly Multi-Threading in c++.” Journal of Statistical Software, Code Snippets 97 (1): 1–18. https://doi.org/10.18637/jss.v097.c01.\n\n\n“OpenMP API Reference Guide.” https://www.openmp.org/wp-content/uploads/OpenMPRefGuide-5.2-Web-2024.pdf.\n\n\n“OpenMP Reference Sheet for C/C++.” n.d. https://cheat-sheets.org/saved-copy/OpenMP_reference.pdf.\n\n\nReinders, James. 2007. Intel Threading Building Blocks, Outfitting c++ for Multi-Core Processor Parallelism. O’Reilly Media, Inc.\n\n\nSchäling, Boris. 2014. The Boost c++ Libraries. Vol. 3. XML press Laguna Hills."
   },
   {
-    "objectID": "tools.html",
-    "href": "tools.html",
-    "title": "HPC with R - Required Tools",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Instructions",
     "section": "",
-    "text": "RTools (Windows)\nRcpp\nRcppArmadillo\nmicrobenchmark\nggplot2\nJupyter-lab avec r-irkernel (via conda) —&gt; https://github.com/IRkernel/IRkernel"
+    "text": "Material for the Parallel Rcpp tutorial at the ANF High Performance Computing with R, Frejus, France.\nTotal time: 3 hours (tentatively).\nThe main webpage is at https://astamm.github.io/parallel-rcpp/.\n\n\n\n\nR: https://www.r-project.org\nRStudio: https://posit.co/download/rstudio-desktop/\nQuarto: https://quarto.org/docs/get-started/\nQuarto Drop extension: https://github.com/r-wasm/quarto-drop\n[MacOS only] OpenMP support: https://mac.r-project.org/openmp/\nR packages:\n\n{bench}\n{BH}\n{gt}\n{Rcpp}\n{RcppParallel}\n{RcppProgress}\n{RcppThread}\n{roahd}\n{sitmo}\n{tidyverse}"
   },
   {
-    "objectID": "tools.html#rcpp",
-    "href": "tools.html#rcpp",
-    "title": "HPC with R - Required Tools",
+    "objectID": "index.html#parallel-rcpp---anf-high-performance-computing-with-r",
+    "href": "index.html#parallel-rcpp---anf-high-performance-computing-with-r",
+    "title": "Instructions",
     "section": "",
-    "text": "RTools (Windows)\nRcpp\nRcppArmadillo\nmicrobenchmark\nggplot2\nJupyter-lab avec r-irkernel (via conda) —&gt; https://github.com/IRkernel/IRkernel"
-  },
-  {
-    "objectID": "tools.html#futureverse",
-    "href": "tools.html#futureverse",
-    "title": "HPC with R - Required Tools",
-    "section": "futureverse",
-    "text": "futureverse\n\nInstall quarto: https://quarto.org/docs/get-started/\ninstall.packages(“futureverse”)\ninstall.packages(“purrr”)"
-  },
-  {
-    "objectID": "tools.html#parallel-computing-with-rcpp-in-r",
-    "href": "tools.html#parallel-computing-with-rcpp-in-r",
-    "title": "HPC with R - Required Tools",
-    "section": "Parallel computing with Rcpp in R",
-    "text": "Parallel computing with Rcpp in R\n\nInstall packages tidyverse, Rcpp, bench, gt, sitmo, BH, RcppParallel, RcppProgress and RcppThread\nInstall OpenMP sur macOS: https://mac.r-project.org/openmp/"
+    "text": "Material for the Parallel Rcpp tutorial at the ANF High Performance Computing with R, Frejus, France.\nTotal time: 3 hours (tentatively).\nThe main webpage is at https://astamm.github.io/parallel-rcpp/.\n\n\n\n\nR: https://www.r-project.org\nRStudio: https://posit.co/download/rstudio-desktop/\nQuarto: https://quarto.org/docs/get-started/\nQuarto Drop extension: https://github.com/r-wasm/quarto-drop\n[MacOS only] OpenMP support: https://mac.r-project.org/openmp/\nR packages:\n\n{bench}\n{BH}\n{gt}\n{Rcpp}\n{RcppParallel}\n{RcppProgress}\n{RcppThread}\n{roahd}\n{sitmo}\n{tidyverse}"
   },
   {
     "objectID": "lab/hausdorff_dist.html",
@@ -376,5 +348,33 @@
     "title": "Hausdorff Distance Matrix Computation",
     "section": "Your turn",
     "text": "Your turn\n\nOptimize the R code;\nParallelize the optimized R code with futureverse;\nConvert the R code into C++ code;\nParallelize the C++ code using OpenMP;\nParallelize the C++ code using RcppParallel;\nParallelize the C++ code using RcppThread;\nBenchmark everything.\n\nWhich framework were you most pleased to work with?"
+  },
+  {
+    "objectID": "tools.html",
+    "href": "tools.html",
+    "title": "HPC with R - Required Tools",
+    "section": "",
+    "text": "RTools (Windows)\nRcpp\nRcppArmadillo\nmicrobenchmark\nggplot2\nJupyter-lab avec r-irkernel (via conda) —&gt; https://github.com/IRkernel/IRkernel"
+  },
+  {
+    "objectID": "tools.html#rcpp",
+    "href": "tools.html#rcpp",
+    "title": "HPC with R - Required Tools",
+    "section": "",
+    "text": "RTools (Windows)\nRcpp\nRcppArmadillo\nmicrobenchmark\nggplot2\nJupyter-lab avec r-irkernel (via conda) —&gt; https://github.com/IRkernel/IRkernel"
+  },
+  {
+    "objectID": "tools.html#futureverse",
+    "href": "tools.html#futureverse",
+    "title": "HPC with R - Required Tools",
+    "section": "futureverse",
+    "text": "futureverse\n\nInstall quarto: https://quarto.org/docs/get-started/\ninstall.packages(“futureverse”)\ninstall.packages(“purrr”)"
+  },
+  {
+    "objectID": "tools.html#parallel-computing-with-rcpp-in-r",
+    "href": "tools.html#parallel-computing-with-rcpp-in-r",
+    "title": "HPC with R - Required Tools",
+    "section": "Parallel computing with Rcpp in R",
+    "text": "Parallel computing with Rcpp in R\n\nInstall packages tidyverse, Rcpp, bench, gt, sitmo, BH, RcppParallel, RcppProgress and RcppThread\nInstall OpenMP sur macOS: https://mac.r-project.org/openmp/"
   }
 ]

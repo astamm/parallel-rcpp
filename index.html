@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.56">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -178,7 +178,9 @@ ul.task-list li input[type="checkbox"] {
 <li><a href="https://gt.rstudio.com/">{gt}</a></li>
 <li><a href="https://dirk.eddelbuettel.com/code/rcpp.html">{Rcpp}</a></li>
 <li><a href="https://rcppcore.github.io/RcppParallel/">{RcppParallel}</a></li>
+<li><a href="https://github.com/kforner/rcpp_progress">{RcppProgress}</a></li>
 <li><a href="https://github.com/tnagler/RcppThread">{RcppThread}</a></li>
+<li><a href="https://astamm.github.io/roahd/">{roahd}</a></li>
 <li><a href="http://thecoatlessprofessor.com/projects/sitmo/">{sitmo}</a></li>
 <li><a href="https://www.tidyverse.org">{tidyverse}</a></li>
 </ul></li>
@@ -281,7 +283,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/astamm\.github\.io\/parallel-rcpp\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

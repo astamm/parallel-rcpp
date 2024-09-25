@@ -310,7 +310,7 @@ dist objects
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(D <span class="ot">&lt;-</span> <span class="fu">dist_hausdorff</span>(dat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
- 52.723   1.178  53.905 </code></pre>
+ 52.208   1.236  53.450 </code></pre>
 </div>
 </div>
 </section>
@@ -319,7 +319,45 @@ dist objects
 <h2 class="anchored" data-anchor-id="your-turn">Your turn</h2>
 <ul>
 <li>Optimize the R code;</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+From linear index to matrix index (R)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nrow</span>(A)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> ((ind <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> m) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">floor</span>((ind <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> m) <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<ul>
 <li>Convert the R code into C++ code;</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+From linear index to matrix index (C++)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://stackoverflow.com/questions/27086195/linear-index-upper-triangular-matrix</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<ul>
 <li>Parallelize the C++ code using OpenMP;</li>
 <li>Parallelize the C++ code using RcppParallel;</li>
 <li>Parallelize the C++ code using RcppThread;</li>

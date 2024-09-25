@@ -93,7 +93,31 @@ system.time(D <- dist_hausdorff(dat))
 ## Your turn
 
 - Optimize the R code;
+
+::: {.callout-tip}
+## From linear index to matrix index (R)
+
+```{r}
+#| eval: false
+m <- nrow(A)
+r <- ((ind - 1) %% m) + 1
+c <- floor((ind - 1) / m) + 1
+```
+:::
+
 - Convert the R code into C++ code;
+
+::: {.callout-tip}
+## From linear index to matrix index (C++)
+
+```{Rcpp}
+#| eval: false
+// https://stackoverflow.com/questions/27086195/linear-index-upper-triangular-matrix
+unsigned int i = N - 2 - std::floor(std::sqrt(-8 * k + 4 * N * (N - 1) - 7) / 2.0 - 0.5);
+unsigned int j = k + i + 1 - N * (N - 1) / 2 + (N - i) * ((N - i) - 1) / 2;
+```
+:::
+
 - Parallelize the C++ code using OpenMP;
 - Parallelize the C++ code using RcppParallel;
 - Parallelize the C++ code using RcppThread;

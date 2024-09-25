@@ -166,7 +166,7 @@ system.time(wait_k_seconds(2))[3]
 #include <unistd.h>
 #include <Rcpp.h>
 
-// // [[Rcpp::plugins(openmp)]] // <1>
+// [[Rcpp::plugins(openmp)]] // <1>
 
 // [[Rcpp::export]]
 bool wait_k_seconds_omp(unsigned int sec, unsigned int ncores)
@@ -182,8 +182,7 @@ bool wait_k_seconds_omp(unsigned int sec, unsigned int ncores)
 }
 ```
 1. Includes the correct OpenMP flags during compilation. **Must not be included
-on macOS as OpenMP flags are handled in `~/.R/Makevars`**. Uncomment (remove the
-first `//`) to use on Windows and Linux.
+on macOS as OpenMP flags are handled in `~/.R/Makevars`**.
 2. Checks if OpenMP is available and inserts the following code only if it is.
 3. Indicates the beginning of a parallel section, to be executed on `ncores` 
 parallel threads.
@@ -236,7 +235,7 @@ all_finite_r_v2 <- function(x) {
 //---------------------------------
 #include <Rcpp.h>
 
-// // [[Rcpp::plugins(openmp)]] // Remove `//` to use on Windows and Linux
+// [[Rcpp::plugins(openmp)]] // Comment on macOS
 
 // [[Rcpp::export]]
 bool all_finite_cpp(Rcpp::NumericVector x) // <1>
@@ -263,7 +262,7 @@ that checks if `out` is finite.
 //---------------------------------
 #include <Rcpp.h>
 
-// // [[Rcpp::plugins(openmp)]] // Remove `//` to use on Windows and Linux
+// [[Rcpp::plugins(openmp)]] // Comment on macOS
 
 // [[Rcpp::export]]
 bool all_finite_omp(Rcpp::NumericVector x, unsigned int ncores) // <1>
@@ -495,7 +494,7 @@ would be done in the `DESCRIPTION` file by adding `LinkingTo: sitmo`.
 #include <Rcpp.h>
 #include <sitmo.h>
 
-// // [[Rcpp::plugins(openmp)]] // Remove `//` to use on Windows and Linux
+// [[Rcpp::plugins(openmp)]] // Comment on macOS
 
 #ifdef _OPENMP
 #include <omp.h> // <1>
@@ -793,7 +792,7 @@ The numerical difference is of the order of the machine precision.
 // [[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h>
 
-// // [[Rcpp::plugin(openmp)]] // Remove `//` on Windows and Linux
+// [[Rcpp::plugin(openmp)]] // Remove `//` on Windows and Linux
 
 // [[Rcpp::export]]
 Rcpp::NumericVector erf_omp(Rcpp::NumericVector x, unsigned int ncores)
@@ -969,7 +968,7 @@ issue](https://github.com/kforner/rcpp_progress/issues/21).
 //---------------------------------
 #include <Rcpp.h>
 
-// // [[Rcpp::plugins(openmp)]] // Remove `//` to use on Windows and Linux
+// [[Rcpp::plugins(openmp)]] // Comment on macOS
 
 // [[Rcpp::depends(BH)]]
 #include <boost/math/special_functions/erf.hpp>

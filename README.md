@@ -20,6 +20,7 @@ The main webpage is at <https://astamm.github.io/parallel-rcpp/>.
 
     - [{bench}](https://bench.r-lib.org/)
     - [{BH}](https://dirk.eddelbuettel.com/code/bh.html)
+    - [{futureverse}](https://futureverse.org/)
     - [{gt}](https://gt.rstudio.com/)
     - [{Rcpp}](https://dirk.eddelbuettel.com/code/rcpp.html)
     - [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)

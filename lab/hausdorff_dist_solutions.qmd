@@ -5,16 +5,13 @@ author: "Aymeric Stamm"
 date: today
 format: html
 toc: true
-execute:
-  cache: true
-  enabled: false
 ---
 
 ```{r setup}
 #| include: false
-#| cache: false
 mfdat <- readRDS("mfdat.rds")
 dat <- readRDS("dat.rds")
+dat <- dat[1:21]
 library(purrr)
 library(rlang)
 library(roahd)
@@ -31,7 +28,7 @@ curves observed on a common grid of size $200$ of the interval $[0, 1]$.
 
 As a result, each element of the `dat` list is a $3 \times 200$ matrix.
 
-The data looks like this:
+Here we focus on a subset of the data, the first $21$ curves, which looks like:
 
 ```{r data-viz}
 plot(mfdat)
@@ -106,6 +103,10 @@ bm <- bench::mark(
   hausdorff_distance_vec(dat[[1]], dat[[2]]),
   hausdorff_distance_for(dat[[1]], dat[[2]])
 )
+```
+
+```{r}
+#| echo: false
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
@@ -173,9 +174,13 @@ We can benchmark the two versions:
 
 ```{r}
 bm <- bench::mark(
-  dist_r_v1(dat[1:20], vectorized = TRUE),
-  dist_r_v1(dat[1:20], vectorized = FALSE)
+  dist_r_v1(dat, vectorized = TRUE),
+  dist_r_v1(dat, vectorized = FALSE)
 )
+```
+
+```{r}
+#| echo: false
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
@@ -319,58 +324,43 @@ on the GitHub repository.
 library(future)
 
 bm <- bench::mark(
-  sequential = dist_r_v1(dat[1:21], vectorized = FALSE),
+  sequential = dist_r_v1(dat, vectorized = FALSE),
   outer = {
-    plan(multisession, workers = 5L)
-    out <- dist_r_v2(dat[1:21])
+    plan(multisession, workers = 4L)
+    out <- dist_r_v2(dat)
     plan(sequential)
     out
   },
   chunksize = {
-    plan(multisession, workers = 5L)
-    out <- dist_r_v3(dat[1:21])
+    plan(multisession, workers = 4L)
+    out <- dist_r_v3(dat)
     plan(sequential)
     out
   },
-  nested1 = {
+  nested = {
     plan(list(
       tweak(multisession, workers = 2L),
-      tweak(multisession, workers = I(3L))
-    ))
-    out <- dist_r_v4(dat[1:21])
-    plan(sequential)
-    out
-  },
-  nested2 = {
-    plan(list(
-      tweak(multisession, workers = 3L),
       tweak(multisession, workers = I(2L))
     ))
-    out <- dist_r_v4(dat[1:21])
-    plan(sequential)
-    out
-  },
-  nested3 = {
-    plan(list(
-      tweak(multisession, workers = 5L),
-      tweak(multisession, workers = I(2L))
-    ))
-    out <- dist_r_v4(dat[1:21])
+    out <- dist_r_v4(dat)
     plan(sequential)
     out
   },
   singleloop = {
-    plan(multisession, workers = 5L)
-    out <- dist_r_v5(dat[1:21])
+    plan(multisession, workers = 4L)
+    out <- dist_r_v5(dat)
     plan(sequential)
     out
   },
-  openmp1 = dist_cpp_omp(dat[1:21], dimension = 3L, ncores = 1L),
-  openmp5 = dist_cpp_omp(dat[1:21], dimension = 3L, ncores = 5L),
-  rcppparallel1 = dist_rcppparallel(dat[1:21], dimension = 3L, ncores = 1L),
-  rcppparallel5 = dist_rcppparallel(dat[1:21], dimension = 3L, ncores = 5L)
+  openmp1 = dist_cpp_omp(dat, dimension = 3L, ncores = 1L),
+  openmp5 = dist_cpp_omp(dat, dimension = 3L, ncores = 4L),
+  rcppparallel1 = dist_rcppparallel(dat, dimension = 3L, ncores = 1L),
+  rcppparallel5 = dist_rcppparallel(dat, dimension = 3L, ncores = 4L)
 )
+```
 
+```{r}
+#| echo: false
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
@@ -424,8 +414,7 @@ double loop.
 - The outer loop generates unbalanced chunks, which is not optimal (`outer`
 entry).
 - Load balancing is better with a fixed chunk size of 1 (`chunksize` entry). 
-- Using nested parallelization does not help (`nested1`, `nested2`, `nested3`
-entries).
+- Using nested parallelization does not help (`nested` entry).
 - Transforming the original double loop into a single loop (`singleloop` entry)
 is as fast as parallelizing the outer loop using a chunk size of 1 (`singleloop`
 entry) but its memory allocation is much lower. This is because, when the chunk

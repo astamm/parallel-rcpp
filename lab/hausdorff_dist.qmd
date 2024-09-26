@@ -10,6 +10,7 @@ execute:
 #| include: false
 mfdat <- readRDS("mfdat.rds")
 dat <- readRDS("dat.rds")
+dat <- dat[1:21]
 library(purrr)
 library(rlang)
 library(roahd)
@@ -168,8 +169,8 @@ We can benchmark the two versions:
 
 ```{r}
 bm <- bench::mark(
-  dist_r_v1(dat[1:20], vectorized = TRUE),
-  dist_r_v1(dat[1:20], vectorized = FALSE)
+  dist_r_v1(dat, vectorized = TRUE),
+  dist_r_v1(dat, vectorized = FALSE)
 )
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 

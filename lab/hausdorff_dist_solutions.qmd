@@ -8,6 +8,7 @@ execute:
 
 ```{r setup}
 #| include: false
+#| cache: false
 mfdat <- readRDS("mfdat.rds")
 dat <- readRDS("dat.rds")
 library(purrr)

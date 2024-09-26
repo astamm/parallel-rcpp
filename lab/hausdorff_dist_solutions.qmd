@@ -15,7 +15,6 @@ dat <- dat[1:21]
 library(purrr)
 library(rlang)
 library(roahd)
-Rcpp::sourceCpp("hausdorff.cpp")
 ```
 
 ## Data & Goal
@@ -314,9 +313,9 @@ dist_r_v5 <- function(x) {
 
 ## C++ implementation
 
-All the code in the
-[`lab/hausdorff.cpp`](https://github.com/astamm/parallel-rcpp/blob/main/lab/hausdorff.cpp)
-on the GitHub repository.
+```{Rcpp}
+#| file: hausdorff.cpp
+```
 
 ## Benchmark
 
@@ -364,7 +363,7 @@ bm <- bench::mark(
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
-    lang = c(rep("R", 7), rep("C++", 4)),
+    lang = c(rep("R", 5), rep("C++", 4)),
     expression = names(expression),
     median = as.numeric(median) * 1000,
     mem_alloc = as.numeric(mem_alloc)

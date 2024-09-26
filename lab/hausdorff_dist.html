@@ -155,10 +155,21 @@ window.Quarto = {
     <a class="nav-link" href="../parallel-rcpp.html"> 
 <span class="menu-text">Slides</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../lab/hausdorff_dist.html" aria-current="page"> 
-<span class="menu-text">Lab</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab">    
+        <li>
+    <a class="dropdown-item" href="../lab/hausdorff_dist.html">
+ <span class="dropdown-text">Lab</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../lab/hausdorff_dist_solutions.html">
+ <span class="dropdown-text">Solution</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -183,12 +194,8 @@ window.Quarto = {
    
   <ul>
   <li><a href="#data-goal" id="toc-data-goal" class="nav-link active" data-scroll-target="#data-goal">Data &amp; Goal</a></li>
-  <li><a href="#basic-r-sequential-version" id="toc-basic-r-sequential-version" class="nav-link" data-scroll-target="#basic-r-sequential-version">Basic R sequential version</a>
-  <ul class="collapse">
-  <li><a href="#hausdorff-distance" id="toc-hausdorff-distance" class="nav-link" data-scroll-target="#hausdorff-distance">Hausdorff distance</a></li>
-  <li><a href="#a-first-solution" id="toc-a-first-solution" class="nav-link" data-scroll-target="#a-first-solution">A first solution</a></li>
-  </ul></li>
-  <li><a href="#your-turn" id="toc-your-turn" class="nav-link" data-scroll-target="#your-turn">Your turn</a></li>
+  <li><a href="#hausdorff-distance-in-r" id="toc-hausdorff-distance-in-r" class="nav-link" data-scroll-target="#hausdorff-distance-in-r">Hausdorff distance in R</a></li>
+  <li><a href="#pairwise-distance-matrix-in-r" id="toc-pairwise-distance-matrix-in-r" class="nav-link" data-scroll-target="#pairwise-distance-matrix-in-r">Pairwise distance matrix in R</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/astamm/parallel-rcpp/edit/main/lab/hausdorff_dist.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/astamm/parallel-rcpp/blob/main/lab/hausdorff_dist.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/astamm/parallel-rcpp/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -231,7 +238,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="hausdorff_dist_files/figure-html/dat-viz-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="hausdorff_dist_files/figure-html/data-viz-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -250,30 +257,570 @@ Objective
 </div>
 </div>
 </section>
-<section id="basic-r-sequential-version" class="level2">
-<h2 class="anchored" data-anchor-id="basic-r-sequential-version">Basic R sequential version</h2>
-<section id="hausdorff-distance" class="level3">
-<h3 class="anchored" data-anchor-id="hausdorff-distance">Hausdorff distance</h3>
+<section id="hausdorff-distance-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="hausdorff-distance-in-r">Hausdorff distance in R</h2>
 <p>We can implement the Hausdorff distance between two curves as:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hausdorff_distance <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dX <span class="ot">&lt;-</span> <span class="fu">max</span>(purrr<span class="sc">::</span><span class="fu">map_dbl</span>(x, \(.x) {</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(<span class="fu">sqrt</span>(<span class="fu">colSums</span>((y <span class="sc">-</span> .x)<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  dY <span class="ot">&lt;-</span> <span class="fu">max</span>(purrr<span class="sc">::</span><span class="fu">map_dbl</span>(y, \(.y) {</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(<span class="fu">sqrt</span>(<span class="fu">colSums</span>((x <span class="sc">-</span> .y)<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">max</span>(dX, dY)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">hausdorff_distance</span>(dat[[<span class="dv">1</span>]], dat[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 6.505233</code></pre>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hausdorff_distance_vec <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  dX <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>P <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map_dbl</span>(\(p) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">min</span>(<span class="fu">colSums</span>((y <span class="sc">-</span> x[, p])<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  dY <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>P <span class="sc">|&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map_dbl</span>(\(p) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">min</span>(<span class="fu">colSums</span>((x <span class="sc">-</span> y[, p])<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>(<span class="fu">max</span>(dX, dY))</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This version exploits the vectorized nature of R to compute the Hausdorff distance via calls to <code>colSums()</code> and <code>max()</code>. Another version based on a double loop is provided by the following <code>hausdorff_distance_for()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hausdorff_distance_for <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dX <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  dY <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>P) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    min_dist_x <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    min_dist_y <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>P) {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      dist_x <span class="ot">&lt;-</span> <span class="fu">sum</span>((y[, j] <span class="sc">-</span> x[, i])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (dist_x <span class="sc">&lt;</span> min_dist_x) {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        min_dist_x <span class="ot">&lt;-</span> dist_x</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      dist_y <span class="ot">&lt;-</span> <span class="fu">sum</span>((x[, j] <span class="sc">-</span> y[, i])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (dist_y <span class="sc">&lt;</span> min_dist_y) {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        min_dist_y <span class="ot">&lt;-</span> dist_y</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (min_dist_x <span class="sc">&gt;</span> dX) {</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      dX <span class="ot">&lt;-</span> min_dist_x</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (min_dist_y <span class="sc">&gt;</span> dY) {</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      dY <span class="ot">&lt;-</span> min_dist_y</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>(<span class="fu">max</span>(dX, dY))</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can benchmark the two versions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hausdorff_distance_vec</span>(dat[[<span class="dv">1</span>]], dat[[<span class="dv">2</span>]]),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hausdorff_distance_for</span>(dat[[<span class="dv">1</span>]], dat[[<span class="dv">2</span>]])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is
+disabled.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>bm <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(expression, median, mem_alloc) <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(expression, deparse),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">as.numeric</span>(median) <span class="sc">*</span> <span class="dv">1000</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> <span class="fu">as.numeric</span>(mem_alloc)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Expression**"</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Median computation time**"</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Memory allocation**"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span>  <span class="st">"left"</span>, <span class="at">columns =</span> expression) <span class="sc">|&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span> <span class="st">"right"</span>, <span class="at">columns =</span> median<span class="sc">:</span>mem_alloc) <span class="sc">|&gt;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align_decimal</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} ms"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="oicffbdamr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#oicffbdamr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#oicffbdamr thead, #oicffbdamr tbody, #oicffbdamr tfoot, #oicffbdamr tr, #oicffbdamr td, #oicffbdamr th {
+  border-style: none;
+}
+
+#oicffbdamr p {
+  margin: 0;
+  padding: 0;
+}
+
+#oicffbdamr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#oicffbdamr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#oicffbdamr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#oicffbdamr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#oicffbdamr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#oicffbdamr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#oicffbdamr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#oicffbdamr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#oicffbdamr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#oicffbdamr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#oicffbdamr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#oicffbdamr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#oicffbdamr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#oicffbdamr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#oicffbdamr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oicffbdamr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#oicffbdamr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#oicffbdamr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#oicffbdamr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oicffbdamr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#oicffbdamr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oicffbdamr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#oicffbdamr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oicffbdamr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oicffbdamr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oicffbdamr .gt_left {
+  text-align: left;
+}
+
+#oicffbdamr .gt_center {
+  text-align: center;
+}
+
+#oicffbdamr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#oicffbdamr .gt_font_normal {
+  font-weight: normal;
+}
+
+#oicffbdamr .gt_font_bold {
+  font-weight: bold;
+}
+
+#oicffbdamr .gt_font_italic {
+  font-style: italic;
+}
+
+#oicffbdamr .gt_super {
+  font-size: 65%;
+}
+
+#oicffbdamr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#oicffbdamr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#oicffbdamr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#oicffbdamr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#oicffbdamr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#oicffbdamr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#oicffbdamr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#oicffbdamr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#oicffbdamr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<div data-qmd-base64=&quot;KipFeHByZXNzaW9uKio=&quot;><div class='gt_from_md'><p><strong>Expression</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><p><strong>Expression</strong></p></th>
+<th id="<div data-qmd-base64=&quot;KipNZWRpYW4gY29tcHV0YXRpb24gdGltZSoq&quot;><div class='gt_from_md'><p><strong>Median computation time</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><strong>Median computation time</strong></p></th>
+<th id="<div data-qmd-base64=&quot;KipNZW1vcnkgYWxsb2NhdGlvbioq&quot;><div class='gt_from_md'><p><strong>Memory allocation</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><strong>Memory allocation</strong></p></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="expression">hausdorff_distance_vec(dat[[1]], dat[[2]])</td>
+<td class="gt_row gt_right" headers="median"> 1.94 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc">  2.8 MB</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="expression">hausdorff_distance_for(dat[[1]], dat[[2]])</td>
+<td class="gt_row gt_right" headers="median">58.17 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc">124.1 kB</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
+</div>
+<p>We conclude that the vectorized version is faster but has a huge memory footprint compared to the loop-based version. This means that the vectorized version is not suitable for even moderately large data sets.</p>
 </section>
-<section id="a-first-solution" class="level3">
-<h3 class="anchored" data-anchor-id="a-first-solution">A first solution</h3>
+<section id="pairwise-distance-matrix-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="pairwise-distance-matrix-in-r">Pairwise distance matrix in R</h2>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -284,86 +831,561 @@ dist objects
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Take a look at the documention of the <code>stats::dist()</code> function to understand how to make an object of class <code>dist</code>.</p>
+<p>Take a look at the documentation of the <code>stats::dist()</code> function to understand how to make an object of class <code>dist</code>.</p>
 </div>
 </div>
+<p>We can exploit the previous functions to compute the pairwise distance matrix using the Hausdorff distance:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dist_hausdorff <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(<span class="dv">1</span><span class="sc">:</span>(N <span class="sc">-</span> <span class="dv">1</span>), \(.i) {</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map_dbl</span>((.i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>N, \(.j) {</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">hausdorff_distance</span>(x[[.i]], x[[.j]])</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attributes</span>(out) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Size"</span>) <span class="ot">&lt;-</span> N</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  lbls <span class="ot">&lt;-</span> <span class="fu">rownames</span>(x)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Labels"</span>) <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(lbls)) <span class="dv">1</span><span class="sc">:</span>N <span class="cf">else</span> lbls</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Diag"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Upper"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"call"</span>) <span class="ot">&lt;-</span> rlang<span class="sc">::</span><span class="fu">call_match</span>()</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"method"</span>) <span class="ot">&lt;-</span> <span class="st">"dist_l2"</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="st">"dist"</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  out</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(D <span class="ot">&lt;-</span> <span class="fu">dist_hausdorff</span>(dat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   user  system elapsed 
- 55.076   1.201  56.282 </code></pre>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dist_r_v1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">vectorized =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  hausdorff_distance <span class="ot">&lt;-</span> <span class="cf">if</span> (vectorized) </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_vec</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_for</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>(N <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(i) {</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>((i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>N, \(j) {</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">hausdorff_distance</span>(x[[i]], x[[j]])</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">list_c</span>()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attributes</span>(out) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Size"</span>) <span class="ot">&lt;-</span> N</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  lbls <span class="ot">&lt;-</span> <span class="fu">names</span>(x)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Labels"</span>) <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(lbls)) <span class="dv">1</span><span class="sc">:</span>N <span class="cf">else</span> lbls</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Diag"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Upper"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"method"</span>) <span class="ot">&lt;-</span> <span class="st">"hausdorff"</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="st">"dist"</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  out</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can benchmark the two versions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>], <span class="at">vectorized =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>], <span class="at">vectorized =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is
+disabled.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bm <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(expression, median, mem_alloc) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(expression, deparse),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">as.numeric</span>(median),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> <span class="fu">as.numeric</span>(mem_alloc)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Expression**"</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Median computation time**"</span>),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Memory allocation**"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span>  <span class="st">"left"</span>, <span class="at">columns =</span> expression) <span class="sc">|&gt;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span> <span class="st">"right"</span>, <span class="at">columns =</span> median<span class="sc">:</span>mem_alloc) <span class="sc">|&gt;</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align_decimal</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} s"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="kmpwfjntos" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kmpwfjntos table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#kmpwfjntos thead, #kmpwfjntos tbody, #kmpwfjntos tfoot, #kmpwfjntos tr, #kmpwfjntos td, #kmpwfjntos th {
+  border-style: none;
+}
+
+#kmpwfjntos p {
+  margin: 0;
+  padding: 0;
+}
+
+#kmpwfjntos .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#kmpwfjntos .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kmpwfjntos .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kmpwfjntos .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kmpwfjntos .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kmpwfjntos .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kmpwfjntos .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kmpwfjntos .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kmpwfjntos .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#kmpwfjntos .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#kmpwfjntos .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kmpwfjntos .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kmpwfjntos .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kmpwfjntos .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kmpwfjntos .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kmpwfjntos .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kmpwfjntos .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kmpwfjntos .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#kmpwfjntos .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kmpwfjntos .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kmpwfjntos .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kmpwfjntos .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kmpwfjntos .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kmpwfjntos .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kmpwfjntos .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kmpwfjntos .gt_left {
+  text-align: left;
+}
+
+#kmpwfjntos .gt_center {
+  text-align: center;
+}
+
+#kmpwfjntos .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kmpwfjntos .gt_font_normal {
+  font-weight: normal;
+}
+
+#kmpwfjntos .gt_font_bold {
+  font-weight: bold;
+}
+
+#kmpwfjntos .gt_font_italic {
+  font-style: italic;
+}
+
+#kmpwfjntos .gt_super {
+  font-size: 65%;
+}
+
+#kmpwfjntos .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#kmpwfjntos .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kmpwfjntos .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#kmpwfjntos .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#kmpwfjntos .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#kmpwfjntos .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#kmpwfjntos .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#kmpwfjntos .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#kmpwfjntos div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<div data-qmd-base64=&quot;KipFeHByZXNzaW9uKio=&quot;><div class='gt_from_md'><p><strong>Expression</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><p><strong>Expression</strong></p></th>
+<th id="<div data-qmd-base64=&quot;KipNZWRpYW4gY29tcHV0YXRpb24gdGltZSoq&quot;><div class='gt_from_md'><p><strong>Median computation time</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><strong>Median computation time</strong></p></th>
+<th id="<div data-qmd-base64=&quot;KipNZW1vcnkgYWxsb2NhdGlvbioq&quot;><div class='gt_from_md'><p><strong>Memory allocation</strong></p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><strong>Memory allocation</strong></p></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="expression">dist_r_v1(dat[1:20], vectorized = TRUE)</td>
+<td class="gt_row gt_right" headers="median">0.44 s</td>
+<td class="gt_row gt_right" headers="mem_alloc">494.4 MB</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="expression">dist_r_v1(dat[1:20], vectorized = FALSE)</td>
+<td class="gt_row gt_right" headers="median">9.61 s</td>
+<td class="gt_row gt_right" headers="mem_alloc">  2.8 kB</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
-</section>
-</section>
-<section id="your-turn" class="level2">
-<h2 class="anchored" data-anchor-id="your-turn">Your turn</h2>
-<ul>
-<li>Optimize the R code;</li>
-</ul>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-From linear index to matrix index (R)
+Memory footprint
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nrow</span>(A)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> ((ind <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> m) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">floor</span>((ind <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> m) <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We confirm that the vectorized version is not scalable to large datasets. Using it on the full dataset actually requires 12GB of memory! We will therefore focus on the loop-based version from now on.</p>
 </div>
 </div>
-</div>
-<ul>
-<li>Convert the R code into C++ code;</li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-From linear index to matrix index (C++)
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://stackoverflow.com/questions/27086195/linear-index-upper-triangular-matrix</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<ul>
-<li>Parallelize the C++ code using OpenMP;</li>
-<li>Parallelize the C++ code using RcppParallel;</li>
-<li>Parallelize the C++ code using RcppThread;</li>
-<li>Benchmark everything.</li>
-</ul>
-<p>Which framework were you most pleased to work with? And compared to the futureverse?</p>
 
 
 </section>

@@ -91,10 +91,21 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="./parallel-rcpp.html"> 
 <span class="menu-text">Slides</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./lab/hausdorff_dist.html"> 
-<span class="menu-text">Lab</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab">    
+        <li>
+    <a class="dropdown-item" href="./lab/hausdorff_dist.html">
+ <span class="dropdown-text">Lab</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./lab/hausdorff_dist_solutions.html">
+ <span class="dropdown-text">Solution</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -163,6 +174,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><a href="https://bench.r-lib.org/">{bench}</a></li>
 <li><a href="https://dirk.eddelbuettel.com/code/bh.html">{BH}</a></li>
+<li><a href="https://futureverse.org/">{futureverse}</a></li>
 <li><a href="https://gt.rstudio.com/">{gt}</a></li>
 <li><a href="https://dirk.eddelbuettel.com/code/rcpp.html">{Rcpp}</a></li>
 <li><a href="https://rcppcore.github.io/RcppParallel/">{RcppParallel}</a></li>

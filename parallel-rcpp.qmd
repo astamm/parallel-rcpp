@@ -232,22 +232,7 @@ all_finite_r_v2 <- function(x) {
 
 ```{Rcpp all-finite-cpp}
 #| code-line-numbers: "|7|15"
-//---------------------------------
-#include <Rcpp.h>
-
-// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
-
-// [[Rcpp::export]]
-bool all_finite_cpp(Rcpp::NumericVector x) // <1>
-{
-    unsigned int nbInputs = x.size();
-    
-    double out = 0;
-    for (unsigned int i = 0;i < nbInputs;++i)
-        out += x[i];
-    
-    return R_FINITE(out); // <2>
-}
+#| file: src/all-finite-cpp.cpp
 ```
 1. The function takes a `Rcpp::NumericVector` as input. This is used because
 Rcpp automatically converts between R vectors and C++ vectors which is why we
@@ -259,25 +244,7 @@ that checks if `out` is finite.
 
 ```{Rcpp all-finite-omp}
 #| code-line-numbers: "|7|12-14"
-//---------------------------------
-#include <Rcpp.h>
-
-// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
-
-// [[Rcpp::export]]
-bool all_finite_omp(Rcpp::NumericVector x, unsigned int ncores) // <1>
-{
-    unsigned int nbInputs = x.size();
-    double out = 0;
-    
-#ifdef _OPENMP
-    #pragma omp parallel for reduction(+:out) num_threads(ncores) // <2>
-#endif
-    for (unsigned int i = 0;i < nbInputs;++i)
-       out += x[i];
-    
-    return R_FINITE(out);
-}
+#| file: src/all-finite-omp.cpp
 ```
 1. The function takes a `Rcpp::NumericVector` as input and an additional
 argument `ncores` which specifies the number of threads to use.
@@ -448,33 +415,7 @@ its original value after the function call.
 
 ```{Rcpp sumunif-cpp}
 #| code-line-numbers: "|3|5|13|14,21"
-//---------------------------------
-#include <Rcpp.h>
-#include <sitmo.h> // <1>
-
-// [[Rcpp::depends(sitmo)]] // <2>
-
-// [[Rcpp::export]]
-Rcpp::NumericVector sumunif_sitmo(unsigned int n,
-                                  unsigned int nstep,
-                                  unsigned int seed)
-{
-    Rcpp::NumericVector out(n);
-    sitmo::prng eng(seed); // <3>
-    double mx = sitmo::prng::max(); // <4>
-    double tmp = 0;
-    
-    for (unsigned int i = 0;i < n;++i)
-    {
-        tmp = 0.0;
-        for (unsigned int k = 0;k < nstep;++k)
-            tmp += eng() / mx; // <5>
-        
-        out[i] = tmp;
-   }
-   
-   return out;
-}
+#| file: src/sumunif-cpp.cpp
 ```
 1. Include the [{**sitmo**}](https://thecoatlessprofessor.com/projects/sitmo/)
 package header to access the `prng` class.
@@ -490,59 +431,7 @@ would be done in the `DESCRIPTION` file by adding `LinkingTo: sitmo`.
 
 ```{Rcpp sumunif-omp}
 #| code-line-numbers: "|7-9|16,20|22-25|26|28-30|36-38|48-50"
-//---------------------------------
-#include <Rcpp.h>
-#include <sitmo.h>
-
-// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
-
-#ifdef _OPENMP
-#include <omp.h> // <1>
-#endif
-
-// [[Rcpp::depends(sitmo)]]
-
-// [[Rcpp::export]]
-Rcpp::NumericVector sumunif_sitmo_omp(unsigned int n,
-                                      unsigned int nstep,
-                                      Rcpp::IntegerVector seeds) // <2>
-{
-    Rcpp::NumericVector out(n);
-    
-    unsigned int ncores = seeds.size(); // <3>
-    
-#ifdef _OPENMP
-    #pragma omp parallel num_threads(ncores) // <4>
-    {
-#endif
-        unsigned int seed = seeds[0]; // <5>
-    
-#ifdef _OPENMP
-        seed = seeds[omp_get_thread_num()]; // <6>
-#endif
-
-        sitmo::prng eng(seed);
-        double mx = sitmo::prng::max();
-        double tmp = 0;
-    
-#ifdef _OPENMP
-        #pragma omp for // <7>
-#endif
-        for (unsigned int i = 0;i < n;++i)
-        {
-            tmp = 0.0;
-            for (unsigned int k = 0;k < nstep;++k)
-                tmp += eng() / mx;
-        
-            out[i] = tmp;
-        }
-        
-#ifdef _OPENMP
-    } // <8>
-#endif
-    
-    return out;
-}
+#| file: src/sumunif-omp.cpp
 ```
 1. Include the OpenMP header file to access the `omp_get_thread_num()` function.
 2. Pass a vector of seeds to the function: this allows each thread to have its
@@ -622,22 +511,7 @@ use Intel TBB as a back-end if supported and TinyThread otherwise.
 
 ```{Rcpp transform-vector}
 #| code-line-numbers: "|4-5|9-11|13|15"
-//---------------------------------
-#include <Rcpp.h>
-
-// [[Rcpp::depends(RcppParallel)]] // <1>
-#include <RcppParallel.h> // <2>
-
-// [[Rcpp::export]]
-Rcpp::IntegerVector transformVector(Rcpp::IntegerVector x) {
-  RcppParallel::RVector<int> input(x); // <3>
-  Rcpp::IntegerVector y(x.size()); // <4>
-  RcppParallel::RVector<int> output(y); // <5>
-  
-  // <6>
-  
-  return y; // <7>
-}
+#| file: src/transform-vector.cpp
 ```
 1. The Rcpp attribute `[[Rcpp::depends(RcppParallel)]]` is used to indicate that
 the code depends on the RcppParallel package. It will ensure that the
@@ -735,22 +609,7 @@ error function in C++.
 
 ```{Rcpp erf-cpp}
 #| code-line-numbers: "|4-5|12"
-//---------------------------------
-#include <Rcpp.h>
-
-// [[Rcpp::depends(BH)]] // <1>
-#include <boost/math/special_functions/erf.hpp> // <2>
-
-// [[Rcpp::export]]
-Rcpp::NumericVector erf_cpp(Rcpp::NumericVector x) {
-  Rcpp::NumericVector y(x.size());
-  
-  for (int i = 0; i < x.size(); i++) {
-    y[i] = boost::math::erf(x[i]); // <3>
-  }
-  
-  return y;
-}
+#| file: src/erf-cpp.cpp
 ```
 1. The Rcpp attribute `[[Rcpp::depends(BH)]]` is used to indicate that the code
 depends on the Boost C++ libraries. It will ensure that the compilation flags
@@ -783,34 +642,7 @@ The numerical difference is of the order of the machine precision.
 
 ```{Rcpp erf-omp}
 #| code-line-numbers: "|18-19|21-23|25"
-//---------------------------------
-#include <Rcpp.h>
-
-// [[Rcpp::depends(BH)]]
-#include <boost/math/special_functions/erf.hpp>
-
-// [[Rcpp::depends(RcppParallel)]]
-#include <RcppParallel.h>
-
-// [[Rcpp::plugin(openmp)]] // Remove `//` on Windows and Linux
-
-// [[Rcpp::export]]
-Rcpp::NumericVector erf_omp(Rcpp::NumericVector x, unsigned int ncores)
-{
-    unsigned int n = x.size();
-    Rcpp::NumericVector out(n);
-    
-    RcppParallel::RVector<double> wo(out); // <1>
-    RcppParallel::RVector<double> wx(x); // <2>
- 
-#ifdef _OPENMP
-    #pragma omp parallel for num_threads(ncores) // <3>
-#endif
-    for (unsigned int i = 0;i < n;++i)
-        wo[i] = boost::math::erf(wx[i]); // <4>
- 
-    return out;
-}
+#| file: src/erf-omp.cpp
 ```
 1. Use the threadsafe wrapper class `RVector` of
 [{RcppParallel}](https://rcppcore.github.io/RcppParallel/) to manipulate the
@@ -825,43 +657,7 @@ input vector.
 
 ```{Rcpp erf-parallel}
 #| code-line-numbers: "|10|11-15|17-19|21-26|30-37"
-//---------------------------------
-#include <Rcpp.h>
-
-// [[Rcpp::depends(BH)]]
-#include <boost/math/special_functions/erf.hpp>
-
-// [[Rcpp::depends(RcppParallel)]]
-#include <RcppParallel.h>
-
-struct ErfFunctor : public RcppParallel::Worker { // <1>
-  // Threadsafe wrapper around input vector
-  const RcppParallel::RVector<double> m_InputVector; // <2>
-  
-  // Threadsafe wrapper around output vector
-  RcppParallel::RVector<double> m_OutputVector; // <3>
-  
-  // initialize with input and output vectors
-  ErfFunctor(const Rcpp::NumericVector input, Rcpp::NumericVector output)
-    : m_InputVector(input), m_OutputVector(output) {} // <4>
-  
-  // function call operator that work for the specified range (begin/end)
-  void operator()(std::size_t begin, std::size_t end) { // <5>
-    for (unsigned int i = begin;i < end;++i) {
-      m_OutputVector[i] = boost::math::erf(m_InputVector[i]);
-    }
-  }
-};
-
-// [[Rcpp::export]]
-Rcpp::NumericVector erf_parallel_impl(Rcpp::NumericVector x) { // <6>
-  Rcpp::NumericVector y(x.size());
-  
-  ErfFunctor erfFunctor(x, y);
-  RcppParallel::parallelFor(0, x.size(), erfFunctor);
-  
-  return y;
-}
+#| file: src/erf-parallel.cpp
 ```
 1. Define a functor class `ErfFunctor` that inherits from `RcppParallel::Worker`
 for later use with `RcppParallel::parallelFor()`.
@@ -965,47 +761,7 @@ issue](https://github.com/kforner/rcpp_progress/issues/21).
 
 ```{Rcpp openmp-progress}
 #| code-line-numbers: "|12-14|19|23|33,35"
-//---------------------------------
-#include <Rcpp.h>
-
-// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
-
-// [[Rcpp::depends(BH)]]
-#include <boost/math/special_functions/erf.hpp>
-
-// [[Rcpp::depends(RcppParallel)]]
-#include <RcppParallel.h>
-
-// [[Rcpp::depends(RcppProgress)]] // <1>
-#include <progress.hpp> // <2>
-#include <progress_bar.hpp>
-
-// [[Rcpp::export]]
-Rcpp::NumericVector erf_omp_progress(Rcpp::NumericVector x,
-                                     unsigned int ncores,
-                                     bool display_progress = false) // <3>
-{
-  unsigned int n = x.size();
-  Rcpp::NumericVector out(n);
-  Progress p(n, display_progress); // <4>
-
-  RcppParallel::RVector<double> wo(out);
-  RcppParallel::RVector<double> wx(x);
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(ncores)
-#endif
-  for (unsigned int i = 0;i < n;++i)
-  {
-    if (!Progress::check_abort()) // <5>
-    {
-      p.increment(); // <6>
-      wo[i] = boost::math::erf(wx[i]);
-    }
-  }
-
-  return out;
-}
+#| file: src/omp-progress.cpp
 ```
 1. The Rcpp attribute `Rcpp::depends(RcppProgress)` ensures that compilation
 flags to link to the
@@ -1064,27 +820,7 @@ threaded computation, any thread will stop as soon it encounters
 
 ```{Rcpp rcppthread-thread}
 #| code-line-numbers: "|3-5|10-16|17-18|19-20"
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]] // <1>
-// [[Rcpp::depends(RcppThread)]] // <2>
-#include <RcppThread.h> // <3>
-
-// [[Rcpp::export]]
-void pyjamaParty()
-{
-  auto job = [] (int id) { // <4>
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    RcppThread::Rcout << id << " slept for one second" << std::endl;
-    RcppThread::checkUserInterrupt();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    RcppThread::Rcout << id << " slept for another second" << std::endl;
-  };
-  RcppThread::Thread t1(job, 1); // <5>
-  RcppThread::Thread t2(job, 2);
-  t1.join(); // <6>
-  t2.join();
-}
+#| file: src/rcppthread-thread.cpp
 ```
 1. Rcpp attribute to enable C++11 features.
 2. Rcpp attribute to ensure that the package is linked to the
@@ -1108,26 +844,9 @@ checking for user interruptions.
 
 ## Thread pool - Basic usage
 
-```{Rcpp}
+```{Rcpp rcppthread-threadpool}
 #| code-line-numbers: "|11,13,15-16"
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppThread)]]
-#include <RcppThread.h>
-
-// [[Rcpp::export]]
-std::vector<unsigned int> rcpp_thread_example1(unsigned int n, 
-                                               unsigned int ncores)
-{
-  RcppThread::ThreadPool pool(ncores); // <1>
-  std::vector<unsigned int> x(n);
-  auto task = [&x] (unsigned int i) { x[i] = i; }; // <2>
-  for (unsigned int i = 0;i < x.size();++i)
-    pool.push(task, i); // <3>
-  pool.join(); // <4>
-  return x;
-}
+#| file: src/rcppthread-threadpool.cpp
 ```
 1. Create a thread pool with `ncores` threads. Useful when the number of tasks
 is known in advance.
@@ -1147,40 +866,9 @@ rcpp_thread_example1(10, 3)
 
 ## Thread pool which returns a value
 
-```{Rcpp}
+```{Rcpp rcppthread-threadpool-ret}
 #| code-line-numbers: "|13-15|17-19|21-23|25-27|29"
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppThread)]]
-#include <RcppThread.h>
-
-// [[Rcpp::export]]
-std::vector<unsigned int> rcpp_thread_example2(unsigned int n,
-                                               unsigned int ncores)
-{
-  RcppThread::ThreadPool pool(ncores);
-
-  std::vector<unsigned int> x(n); // <1>
-  for (unsigned int i = 0;i < n;++i)
-    x[i] = i + 1;
-
-  auto task = [&x] (unsigned int i) { // <2>
-    return x[i] * x[i];
-  };
-
-  std::vector<std::future<unsigned int>> futures(n); // <3>
-  for (unsigned int i = 0;i < n;++i)
-    futures[i] = pool.pushReturn(task, i);
-
-  std::vector<unsigned int> results(n); // <4>
-  for (unsigned int i = 0;i < n;++i)
-    results[i] = futures[i].get();
-
-  pool.join(); // <5>
-
-  return results;
-}
+#| file: src/rcppthread-threadpool-ret.cpp
 ```
 1. Create a vector `x` of `n` elements and initialize it with the integers from
 1 to `n`.
@@ -1204,28 +892,9 @@ rcpp_thread_example2(10, 3)
 
 ## Parallel for loop
 
-```{Rcpp}
+```{Rcpp rcppthread-parallelfor}
 #| code-line-numbers: "|17"
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppThread)]]
-#include <RcppThread.h>
-
-// [[Rcpp::export]]
-std::vector<unsigned int> parallelfor_example(unsigned int n)
-{
-  // Index-based
-  std::vector<unsigned int> x(n);
-  
-  auto task = [&x] (unsigned int i) {
-    x[i] = i;
-  };
-
-  RcppThread::parallelFor(0, x.size(), task); // <1>
-
-  return x;
-}
+#| file: src/rcppthread-parallelfor.cpp
 ```
 1. Execute the task for each element of `x` in parallel. The `parallelFor()`
 function takes the start index, end index, and the task as arguments.
@@ -1236,30 +905,9 @@ parallelfor_example(10)
 
 ## Parallel for-each loop
 
-```{Rcpp}
+```{Rcpp rcppthread-parallelforeach}
 #| code-line-numbers: "|15-17|19"
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppThread)]]
-#include <RcppThread.h>
-
-// [[Rcpp::export]]
-std::vector<unsigned int> parallelforeach_example(unsigned int n)
-{
-  // Over elements of a vector
-  std::vector<unsigned int> x(n);
-  for (unsigned int i = 0;i < n;++i)
-    x[i] = i;
-
-  auto task = [] (unsigned int &xx) { // <1>
-    xx *= 2;
-  };
-
-  RcppThread::parallelForEach(x, task); // <2>
-
-  return x;
-}
+#| file: src/rcppthread-parallelforeach.cpp
 ```
 1. Define the task to be executed by the threads as a lambda function `task`
 which takes an integer `xx` as argument and multiplies it by 2. The argument is
@@ -1284,23 +932,8 @@ within the `src/` directory.
 
 ## Progress report
 
-```{Rcpp}
-#include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppThread)]]
-#include <RcppThread.h>
-
-// [[Rcpp::export]]
-void pb_example()
-{
-  // 20 iterations in loop, update progress every 1 sec
-  RcppThread::ProgressBar bar(20, 1); // <1>
-  RcppThread::parallelFor(0, 20, [&] (int i) { // <2>
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar;
-  });
-}
+```{Rcpp rcppthread-progress}
+#| file: src/rcppthread-progress.cpp
 ```
 1. Create a progress bar with 20 iterations and update the progress every 1
 second.

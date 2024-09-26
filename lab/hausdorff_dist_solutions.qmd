@@ -360,9 +360,9 @@ bm <- bench::mark(
     out
   },
   openmp1 = dist_cpp_omp(dat, dimension = 3L, ncores = 1L),
-  openmp5 = dist_cpp_omp(dat, dimension = 3L, ncores = 4L),
+  openmp4 = dist_cpp_omp(dat, dimension = 3L, ncores = 4L),
   rcppparallel1 = dist_rcppparallel(dat, dimension = 3L, ncores = 1L),
-  rcppparallel5 = dist_rcppparallel(dat, dimension = 3L, ncores = 4L)
+  rcppparallel4 = dist_rcppparallel(dat, dimension = 3L, ncores = 4L)
 )
 ```
 

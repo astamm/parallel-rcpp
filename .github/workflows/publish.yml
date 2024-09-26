@@ -7,7 +7,7 @@ name: Quarto Publish
 
 jobs:
   build-deploy:
-    runs-on: ubuntu-22.04
+    runs-on: macos-latest
 
     permissions:
       contents: write
@@ -35,6 +35,13 @@ jobs:
            )
            install.packages(c("rmarkdown", "bench", "BH", "futureverse", "gt", "Rcpp", "RcppParallel", "RcppProgress", "RcppThread", "roahd", "sitmo", "tidyverse"))
         shell: Rscript {0}
+
+      - name: Setup OpenMP
+        run: |
+          brew install clang-omp
+          mkdir ~/.R
+          echo "CPPFLAGS += -Xclang -fopenmp\nLDFLAGS += -lomp" > ~/.R/Makevars
+        shell: bash
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2

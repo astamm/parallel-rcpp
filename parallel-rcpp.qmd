@@ -166,7 +166,7 @@ system.time(wait_k_seconds(2))[3]
 #include <unistd.h>
 #include <Rcpp.h>
 
-// [[Rcpp::plugins(openmp)]] // <1>
+// // [[Rcpp::plugins(openmp)]] // <1>
 
 // [[Rcpp::export]]
 bool wait_k_seconds_omp(unsigned int sec, unsigned int ncores)
@@ -235,7 +235,7 @@ all_finite_r_v2 <- function(x) {
 //---------------------------------
 #include <Rcpp.h>
 
-// [[Rcpp::plugins(openmp)]] // Comment on macOS
+// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
 
 // [[Rcpp::export]]
 bool all_finite_cpp(Rcpp::NumericVector x) // <1>
@@ -262,7 +262,7 @@ that checks if `out` is finite.
 //---------------------------------
 #include <Rcpp.h>
 
-// [[Rcpp::plugins(openmp)]] // Comment on macOS
+// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
 
 // [[Rcpp::export]]
 bool all_finite_omp(Rcpp::NumericVector x, unsigned int ncores) // <1>
@@ -494,7 +494,7 @@ would be done in the `DESCRIPTION` file by adding `LinkingTo: sitmo`.
 #include <Rcpp.h>
 #include <sitmo.h>
 
-// [[Rcpp::plugins(openmp)]] // Comment on macOS
+// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
 
 #ifdef _OPENMP
 #include <omp.h> // <1>
@@ -968,7 +968,7 @@ issue](https://github.com/kforner/rcpp_progress/issues/21).
 //---------------------------------
 #include <Rcpp.h>
 
-// [[Rcpp::plugins(openmp)]] // Comment on macOS
+// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
 
 // [[Rcpp::depends(BH)]]
 #include <boost/math/special_functions/erf.hpp>

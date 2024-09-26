@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 
-// [[Rcpp::plugins(openmp)]]
+// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux
+
 // [[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h>
 

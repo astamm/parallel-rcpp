@@ -38,7 +38,7 @@ jobs:
 
       - name: Setup OpenMP
         run: |
-          brew install clang-omp
+          brew install libomp
           mkdir ~/.R
           echo "CPPFLAGS += -Xclang -fopenmp\nLDFLAGS += -lomp" > ~/.R/Makevars
         shell: bash

@@ -2,6 +2,8 @@
 title: "Hausdorff Distance Matrix Computation"
 author: "Aymeric Stamm"
 format: html
+execute:
+  cache: true
 ---
 
 ```{r setup}
@@ -25,7 +27,7 @@ As a result, each element of the `dat` list is a $3 \times 200$ matrix.
 
 The data looks like this:
 
-```{r dat-viz}
+```{r data-viz}
 #| cache: true
 plot(mfdat)
 ```
@@ -38,89 +40,161 @@ the pairwise distance matrix on this functional dataset using the Hausdorff
 distance.
 :::
 
-## Basic R sequential version
-
-### Hausdorff distance
+## Hausdorff distance in R
 
 We can implement the Hausdorff distance between two curves as:
 
-```{r hausdorff-r-base}
-hausdorff_distance <- function(x, y) {
-  dX <- max(purrr::map_dbl(x, \(.x) {
-    min(sqrt(colSums((y - .x)^2)))
-  }))
-  dY <- max(purrr::map_dbl(y, \(.y) {
-    min(sqrt(colSums((x - .y)^2)))
-  }))
-  max(dX, dY)
+```{r hausdorff_distance_vec}
+hausdorff_distance_vec <- function(x, y) {
+  P <- ncol(x)
+  dX <- 1:P |>
+    purrr::map_dbl(\(p) {
+      min(colSums((y - x[, p])^2))
+    }) |>
+    max()
+  dY <- 1:P |>
+    purrr::map_dbl(\(p) {
+      min(colSums((x - y[, p])^2))
+    }) |>
+    max()
+  sqrt(max(dX, dY))
 }
-
-hausdorff_distance(dat[[1]], dat[[2]])
 ```
 
-### A first solution
+This version exploits the vectorized nature of R to compute the Hausdorff
+distance via calls to `colSums()` and `max()`. Another version based on a double
+loop is provided by the following `hausdorff_distance_for()` function:
+
+```{r hausdorff_distance_for}
+hausdorff_distance_for <- function(x, y) {
+  P <- ncol(x)
+  dX <- 0
+  dY <- 0
+  for (i in 1:P) {
+    min_dist_x <- Inf
+    min_dist_y <- Inf
+    for (j in 1:P) {
+      dist_x <- sum((y[, j] - x[, i])^2)
+      if (dist_x < min_dist_x) {
+        min_dist_x <- dist_x
+      }
+      dist_y <- sum((x[, j] - y[, i])^2)
+      if (dist_y < min_dist_y) {
+        min_dist_y <- dist_y
+      }
+    }
+    if (min_dist_x > dX) {
+      dX <- min_dist_x
+    }
+    if (min_dist_y > dY) {
+      dY <- min_dist_y
+    }
+  }
+  sqrt(max(dX, dY))
+}
+```
+
+We can benchmark the two versions:
+
+```{r}
+bm <- bench::mark(
+  hausdorff_distance_vec(dat[[1]], dat[[2]]),
+  hausdorff_distance_for(dat[[1]], dat[[2]])
+)
+bm |> 
+  dplyr::select(expression, median, mem_alloc) |> 
+  dplyr::mutate(
+    expression = purrr::map_chr(expression, deparse),
+    median = as.numeric(median) * 1000,
+    mem_alloc = as.numeric(mem_alloc)
+  ) |>
+  gt::gt() |>
+  gt::cols_label(
+    expression = gt::md("**Expression**"),
+    median = gt::md("**Median computation time**"),
+    mem_alloc = gt::md("**Memory allocation**")
+  ) |>
+  gt::cols_align(align =  "left", columns = expression) |>
+  gt::cols_align(align = "right", columns = median:mem_alloc) |>
+  gt::cols_align_decimal() |>
+  gt::fmt_number(columns = "median", decimals = 2, pattern = "{x} ms") |>
+  gt::fmt_bytes(columns = "mem_alloc")
+```
+
+We conclude that the vectorized version is faster but has a huge memory
+footprint compared to the loop-based version. This means that the vectorized
+version is not suitable for even moderately large data sets.
+
+## Pairwise distance matrix in R
 
 ::: {.callout-tip}
 ## dist objects
 
-Take a look at the documention of the `stats::dist()` function to understand how to make an object of class `dist`.
+Take a look at the documentation of the `stats::dist()` function to understand
+how to make an object of class `dist`.
 :::
 
-```{r haussdorf-dist-r-base}
-#| cache: true
-dist_hausdorff <- function(x) {
+We can exploit the previous functions to compute the pairwise distance matrix
+using the Hausdorff distance:
+
+```{r dist_r_v1}
+dist_r_v1 <- function(x, vectorized = FALSE) {
+  hausdorff_distance <- if (vectorized) 
+    hausdorff_distance_vec
+  else 
+    hausdorff_distance_for
   N <- length(x)
-  out <- unlist(purrr::map(1:(N - 1), \(.i) {
-    purrr::map_dbl((.i + 1):N, \(.j) {
-      hausdorff_distance(x[[.i]], x[[.j]])
-    })
-  }))
+  out <- 1:(N - 1) |>
+    purrr::map(\(i) {
+      purrr::map_dbl((i + 1):N, \(j) {
+        hausdorff_distance(x[[i]], x[[j]])
+      })
+    }) |>
+    purrr::list_c()
+
   attributes(out) <- NULL
   attr(out, "Size") <- N
-  lbls <- rownames(x)
+  lbls <- names(x)
   attr(out, "Labels") <- if (is.null(lbls)) 1:N else lbls
   attr(out, "Diag") <- FALSE
   attr(out, "Upper") <- FALSE
-  attr(out, "call") <- rlang::call_match()
-  attr(out, "method") <- "dist_l2"
+  attr(out, "method") <- "hausdorff"
   class(out) <- "dist"
   out
 }
-
-system.time(D <- dist_hausdorff(dat))
 ```
 
-## Your turn
-
-- Optimize the R code;
-
-::: {.callout-tip}
-## From linear index to matrix index (R)
+We can benchmark the two versions:
 
 ```{r}
-#| eval: false
-m <- nrow(A)
-r <- ((ind - 1) %% m) + 1
-c <- floor((ind - 1) / m) + 1
+bm <- bench::mark(
+  dist_r_v1(dat[1:20], vectorized = TRUE),
+  dist_r_v1(dat[1:20], vectorized = FALSE)
+)
+bm |> 
+  dplyr::select(expression, median, mem_alloc) |> 
+  dplyr::mutate(
+    expression = purrr::map_chr(expression, deparse),
+    median = as.numeric(median),
+    mem_alloc = as.numeric(mem_alloc)
+  ) |>
+  gt::gt() |>
+  gt::cols_label(
+    expression = gt::md("**Expression**"),
+    median = gt::md("**Median computation time**"),
+    mem_alloc = gt::md("**Memory allocation**")
+  ) |>
+  gt::cols_align(align =  "left", columns = expression) |>
+  gt::cols_align(align = "right", columns = median:mem_alloc) |>
+  gt::cols_align_decimal() |>
+  gt::fmt_number(columns = "median", decimals = 2, pattern = "{x} s") |>
+  gt::fmt_bytes(columns = "mem_alloc")
 ```
-:::
-
-- Convert the R code into C++ code;
 
 ::: {.callout-tip}
-## From linear index to matrix index (C++)
+## Memory footprint
 
-```{Rcpp}
-#| eval: false
-// https://stackoverflow.com/questions/27086195/linear-index-upper-triangular-matrix
-unsigned int i = N - 2 - std::floor(std::sqrt(-8 * k + 4 * N * (N - 1) - 7) / 2.0 - 0.5);
-unsigned int j = k + i + 1 - N * (N - 1) / 2 + (N - i) * ((N - i) - 1) / 2;
-```
+We confirm that the vectorized version is not scalable to large datasets. Using
+it on the full dataset actually requires 12GB of memory! We will therefore focus
+on the loop-based version from now on.
 :::
-
-- Parallelize the C++ code using OpenMP;
-- Parallelize the C++ code using RcppParallel;
-- Parallelize the C++ code using RcppThread;
-- Benchmark everything.
-
-Which framework were you most pleased to work with? And compared to the futureverse?

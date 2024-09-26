@@ -15,7 +15,11 @@ website:
       - text: "Slides"
         href: parallel-rcpp.qmd
       - text: "Lab"
-        href: lab/hausdorff_dist.qmd
+        menu:
+          - text: "Lab"
+            href: lab/hausdorff_dist.qmd
+          - text: "Solution"
+            href: lab/hausdorff_dist_solutions.qmd
     right:
       - icon: github
         href: https://github.com/astamm/parallel-rcpp/

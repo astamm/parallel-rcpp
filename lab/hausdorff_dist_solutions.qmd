@@ -1,9 +1,13 @@
 ---
 title: "Hausdorff Distance Matrix Computation"
+subtitle: "Solutions"
 author: "Aymeric Stamm"
+date: today
 format: html
+toc: true
 execute:
   cache: true
+  enabled: false
 ---
 
 ```{r setup}
@@ -30,7 +34,6 @@ As a result, each element of the `dat` list is a $3 \times 200$ matrix.
 The data looks like this:
 
 ```{r data-viz}
-#| cache: true
 plot(mfdat)
 ```
 
@@ -304,7 +307,13 @@ dist_r_v5 <- function(x) {
 }
 ```
 
-### Benchmark
+## C++ implementation
+
+All the code in the
+[`lab/hausdorff.cpp`](https://github.com/astamm/parallel-rcpp/blob/main/lab/hausdorff.cpp)
+on the GitHub repository.
+
+## Benchmark
 
 ```{r}
 library(future)

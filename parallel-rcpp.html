@@ -589,7 +589,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds</span>(<span class="dv">2</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-  2.001 </code></pre>
+  2.114 </code></pre>
 </div>
 </div>
 </section>
@@ -600,7 +600,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="annotated-cell-3-2"><a href="#annotated-cell-3-2"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
 <span id="annotated-cell-3-3"><a href="#annotated-cell-3-3"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="annotated-cell-3-4"><a href="#annotated-cell-3-4"></a></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="1">1</button><span id="annotated-cell-3-5" class="code-annotation-target"><a href="#annotated-cell-3-5"></a><span class="co">// [[Rcpp::plugins(openmp)]]</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="1">1</button><span id="annotated-cell-3-5" class="code-annotation-target"><a href="#annotated-cell-3-5"></a><span class="co">// // [[Rcpp::plugins(openmp)]]</span></span>
 <span id="annotated-cell-3-6"><a href="#annotated-cell-3-6"></a></span>
 <span id="annotated-cell-3-7"><a href="#annotated-cell-3-7"></a><span class="co">// [[Rcpp::export]]</span></span>
 <span id="annotated-cell-3-8"><a href="#annotated-cell-3-8"></a><span class="dt">bool</span> wait_k_seconds_omp<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> sec<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> ncores<span class="op">)</span></span>
@@ -645,7 +645,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds_omp</span>(<span class="dv">4</span>, <span class="dv">1</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-      4 </code></pre>
+  4.257 </code></pre>
 </div>
 </div>
 <ul>
@@ -655,7 +655,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds_omp</span>(<span class="dv">4</span>, <span class="dv">4</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-  1.001 </code></pre>
+  1.148 </code></pre>
 </div>
 </div>
 <ul>
@@ -665,7 +665,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">system.time</span>(<span class="fu">wait_k_seconds_omp</span>(<span class="dv">10</span>, <span class="dv">10</span>))[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-      1 </code></pre>
+  1.046 </code></pre>
 </div>
 </div>
 </section>
@@ -690,18 +690,18 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="annotated-cell-9" data-code-line-numbers="|7|15"><pre class="sourceCode numberSource cpp code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode cpp"><span id="annotated-cell-9-1"><a href="#annotated-cell-9-1"></a><span class="co">//---------------------------------</span></span>
 <span id="annotated-cell-9-2"><a href="#annotated-cell-9-2"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="annotated-cell-9-3"><a href="#annotated-cell-9-3"></a></span>
-<span id="annotated-cell-9-4"><a href="#annotated-cell-9-4"></a><span class="co">// [[Rcpp::plugins(openmp)]] // Comment on macOS</span></span>
+<span id="annotated-cell-9-4"><a href="#annotated-cell-9-4"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
 <span id="annotated-cell-9-5"><a href="#annotated-cell-9-5"></a></span>
 <span id="annotated-cell-9-6"><a href="#annotated-cell-9-6"></a><span class="co">// [[Rcpp::export]]</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="1">1</button><span id="annotated-cell-9-7" class="code-annotation-target"><a href="#annotated-cell-9-7"></a><span class="dt">bool</span> all_finite_cpp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">)</span></span>
 <span id="annotated-cell-9-8"><a href="#annotated-cell-9-8"></a><span class="op">{</span></span>
-<span id="annotated-cell-9-9"><a href="#annotated-cell-9-9"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> nbInputs <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
-<span id="annotated-cell-9-10"><a href="#annotated-cell-9-10"></a>    </span>
-<span id="annotated-cell-9-11"><a href="#annotated-cell-9-11"></a>    <span class="dt">double</span> out <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="annotated-cell-9-12"><a href="#annotated-cell-9-12"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nbInputs<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="annotated-cell-9-13"><a href="#annotated-cell-9-13"></a>        out <span class="op">+=</span> x<span class="op">[</span>i<span class="op">];</span></span>
-<span id="annotated-cell-9-14"><a href="#annotated-cell-9-14"></a>    </span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="2">2</button><span id="annotated-cell-9-15" class="code-annotation-target"><a href="#annotated-cell-9-15"></a>    <span class="cf">return</span> R_FINITE<span class="op">(</span>out<span class="op">);</span></span>
+<span id="annotated-cell-9-9"><a href="#annotated-cell-9-9"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> nbInputs <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
+<span id="annotated-cell-9-10"><a href="#annotated-cell-9-10"></a></span>
+<span id="annotated-cell-9-11"><a href="#annotated-cell-9-11"></a>  <span class="dt">double</span> out <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="annotated-cell-9-12"><a href="#annotated-cell-9-12"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nbInputs<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="annotated-cell-9-13"><a href="#annotated-cell-9-13"></a>    out <span class="op">+=</span> x<span class="op">[</span>i<span class="op">];</span></span>
+<span id="annotated-cell-9-14"><a href="#annotated-cell-9-14"></a></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="2">2</button><span id="annotated-cell-9-15" class="code-annotation-target"><a href="#annotated-cell-9-15"></a>  <span class="cf">return</span> R_FINITE<span class="op">(</span>out<span class="op">);</span></span>
 <span id="annotated-cell-9-16"><a href="#annotated-cell-9-16"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-hidden code-annotation-container-grid">
@@ -723,21 +723,21 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <div class="sourceCode cell-code" id="annotated-cell-10" data-code-line-numbers="|7|12-14"><pre class="sourceCode numberSource cpp code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode cpp"><span id="annotated-cell-10-1"><a href="#annotated-cell-10-1"></a><span class="co">//---------------------------------</span></span>
 <span id="annotated-cell-10-2"><a href="#annotated-cell-10-2"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="annotated-cell-10-3"><a href="#annotated-cell-10-3"></a></span>
-<span id="annotated-cell-10-4"><a href="#annotated-cell-10-4"></a><span class="co">// [[Rcpp::plugins(openmp)]] // Comment on macOS</span></span>
+<span id="annotated-cell-10-4"><a href="#annotated-cell-10-4"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
 <span id="annotated-cell-10-5"><a href="#annotated-cell-10-5"></a></span>
 <span id="annotated-cell-10-6"><a href="#annotated-cell-10-6"></a><span class="co">// [[Rcpp::export]]</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="1">1</button><span id="annotated-cell-10-7" class="code-annotation-target"><a href="#annotated-cell-10-7"></a><span class="dt">bool</span> all_finite_omp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> ncores<span class="op">)</span></span>
 <span id="annotated-cell-10-8"><a href="#annotated-cell-10-8"></a><span class="op">{</span></span>
-<span id="annotated-cell-10-9"><a href="#annotated-cell-10-9"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> nbInputs <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
-<span id="annotated-cell-10-10"><a href="#annotated-cell-10-10"></a>    <span class="dt">double</span> out <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="annotated-cell-10-11"><a href="#annotated-cell-10-11"></a>    </span>
+<span id="annotated-cell-10-9"><a href="#annotated-cell-10-9"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> nbInputs <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
+<span id="annotated-cell-10-10"><a href="#annotated-cell-10-10"></a>  <span class="dt">double</span> out <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="annotated-cell-10-11"><a href="#annotated-cell-10-11"></a></span>
 <span id="annotated-cell-10-12"><a href="#annotated-cell-10-12"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="2">2</button><span id="annotated-cell-10-13" class="code-annotation-target"><a href="#annotated-cell-10-13"></a>    <span class="pp">#pragma omp parallel for reduction(+:out) num_threads(ncores)</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="2">2</button><span id="annotated-cell-10-13" class="code-annotation-target"><a href="#annotated-cell-10-13"></a><span class="pp">#pragma omp parallel for reduction(+:out) num_threads(ncores)</span></span>
 <span id="annotated-cell-10-14"><a href="#annotated-cell-10-14"></a><span class="pp">#endif</span></span>
-<span id="annotated-cell-10-15"><a href="#annotated-cell-10-15"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nbInputs<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="annotated-cell-10-16"><a href="#annotated-cell-10-16"></a>       out <span class="op">+=</span> x<span class="op">[</span>i<span class="op">];</span></span>
-<span id="annotated-cell-10-17"><a href="#annotated-cell-10-17"></a>    </span>
-<span id="annotated-cell-10-18"><a href="#annotated-cell-10-18"></a>    <span class="cf">return</span> R_FINITE<span class="op">(</span>out<span class="op">);</span></span>
+<span id="annotated-cell-10-15"><a href="#annotated-cell-10-15"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nbInputs<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="annotated-cell-10-16"><a href="#annotated-cell-10-16"></a>    out <span class="op">+=</span> x<span class="op">[</span>i<span class="op">];</span></span>
+<span id="annotated-cell-10-17"><a href="#annotated-cell-10-17"></a></span>
+<span id="annotated-cell-10-18"><a href="#annotated-cell-10-18"></a>  <span class="cf">return</span> R_FINITE<span class="op">(</span>out<span class="op">);</span></span>
 <span id="annotated-cell-10-19"><a href="#annotated-cell-10-19"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-hidden code-annotation-container-grid">
@@ -792,23 +792,23 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="cb12-32"><a></a>  gt<span class="sc">::</span><span class="fu">data_color</span>(<span class="at">rows =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">direction =</span> <span class="st">"row"</span>, <span class="at">colors =</span> <span class="fu">c</span>(<span class="st">"grey80"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="qfzgacotke" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qfzgacotke table {
+<div id="ujlzverjcd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ujlzverjcd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qfzgacotke thead, #qfzgacotke tbody, #qfzgacotke tfoot, #qfzgacotke tr, #qfzgacotke td, #qfzgacotke th {
+#ujlzverjcd thead, #ujlzverjcd tbody, #ujlzverjcd tfoot, #ujlzverjcd tr, #ujlzverjcd td, #ujlzverjcd th {
   border-style: none;
 }
 
-#qfzgacotke p {
+#ujlzverjcd p {
   margin: 0;
   padding: 0;
 }
 
-#qfzgacotke .gt_table {
+#ujlzverjcd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -834,12 +834,12 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-left-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_caption {
+#ujlzverjcd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qfzgacotke .gt_title {
+#ujlzverjcd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -851,7 +851,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-width: 0;
 }
 
-#qfzgacotke .gt_subtitle {
+#ujlzverjcd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -863,7 +863,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-width: 0;
 }
 
-#qfzgacotke .gt_heading {
+#ujlzverjcd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -875,13 +875,13 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_bottom_border {
+#ujlzverjcd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_col_headings {
+#ujlzverjcd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -896,7 +896,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_col_heading {
+#ujlzverjcd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -916,7 +916,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#qfzgacotke .gt_column_spanner_outer {
+#ujlzverjcd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -928,15 +928,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 4px;
 }
 
-#qfzgacotke .gt_column_spanner_outer:first-child {
+#ujlzverjcd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qfzgacotke .gt_column_spanner_outer:last-child {
+#ujlzverjcd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qfzgacotke .gt_column_spanner {
+#ujlzverjcd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -948,11 +948,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   width: 100%;
 }
 
-#qfzgacotke .gt_spanner_row {
+#ujlzverjcd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qfzgacotke .gt_group_heading {
+#ujlzverjcd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -978,7 +978,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   text-align: left;
 }
 
-#qfzgacotke .gt_empty_group_heading {
+#ujlzverjcd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -993,15 +993,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: middle;
 }
 
-#qfzgacotke .gt_from_md > :first-child {
+#ujlzverjcd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qfzgacotke .gt_from_md > :last-child {
+#ujlzverjcd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qfzgacotke .gt_row {
+#ujlzverjcd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1020,7 +1020,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#qfzgacotke .gt_stub {
+#ujlzverjcd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1033,7 +1033,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#qfzgacotke .gt_stub_row_group {
+#ujlzverjcd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1047,15 +1047,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: top;
 }
 
-#qfzgacotke .gt_row_group_first td {
+#ujlzverjcd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qfzgacotke .gt_row_group_first th {
+#ujlzverjcd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qfzgacotke .gt_summary_row {
+#ujlzverjcd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1065,16 +1065,16 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#qfzgacotke .gt_first_summary_row {
+#ujlzverjcd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_first_summary_row.thick {
+#ujlzverjcd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qfzgacotke .gt_last_summary_row {
+#ujlzverjcd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1084,7 +1084,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_grand_summary_row {
+#ujlzverjcd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1094,7 +1094,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#qfzgacotke .gt_first_grand_summary_row {
+#ujlzverjcd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1104,7 +1104,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_last_grand_summary_row_top {
+#ujlzverjcd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1114,11 +1114,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_striped {
+#ujlzverjcd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qfzgacotke .gt_table_body {
+#ujlzverjcd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1127,7 +1127,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_footnotes {
+#ujlzverjcd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1141,7 +1141,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_footnote {
+#ujlzverjcd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1150,7 +1150,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#qfzgacotke .gt_sourcenotes {
+#ujlzverjcd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1164,7 +1164,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#qfzgacotke .gt_sourcenote {
+#ujlzverjcd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1172,72 +1172,72 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#qfzgacotke .gt_left {
+#ujlzverjcd .gt_left {
   text-align: left;
 }
 
-#qfzgacotke .gt_center {
+#ujlzverjcd .gt_center {
   text-align: center;
 }
 
-#qfzgacotke .gt_right {
+#ujlzverjcd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qfzgacotke .gt_font_normal {
+#ujlzverjcd .gt_font_normal {
   font-weight: normal;
 }
 
-#qfzgacotke .gt_font_bold {
+#ujlzverjcd .gt_font_bold {
   font-weight: bold;
 }
 
-#qfzgacotke .gt_font_italic {
+#ujlzverjcd .gt_font_italic {
   font-style: italic;
 }
 
-#qfzgacotke .gt_super {
+#ujlzverjcd .gt_super {
   font-size: 65%;
 }
 
-#qfzgacotke .gt_footnote_marks {
+#ujlzverjcd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qfzgacotke .gt_asterisk {
+#ujlzverjcd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qfzgacotke .gt_indent_1 {
+#ujlzverjcd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qfzgacotke .gt_indent_2 {
+#ujlzverjcd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qfzgacotke .gt_indent_3 {
+#ujlzverjcd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qfzgacotke .gt_indent_4 {
+#ujlzverjcd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qfzgacotke .gt_indent_5 {
+#ujlzverjcd .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qfzgacotke .katex-display {
+#ujlzverjcd .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qfzgacotke div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ujlzverjcd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1265,43 +1265,43 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #CCCCCC; color: #000000">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #CCCCCC; color: #000000">all(is.finite(x))</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">193.39 ms</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">239.10 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc" style="background-color: #CCCCCC; color: #000000">400 MB </td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #CCCCCC; color: #000000">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #CCCCCC; color: #000000">is.finite(sum(x))</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">187.22 ms</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #CCCCCC; color: #000000">162.00 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc" style="background-color: #CCCCCC; color: #000000">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">all_finite_cpp(x)</td>
-<td class="gt_row gt_right" headers="median">375.17 ms</td>
+<td class="gt_row gt_right" headers="median"> 98.16 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 1L)</td>
-<td class="gt_row gt_right" headers="median">374.22 ms</td>
+<td class="gt_row gt_right" headers="median">103.73 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 2L)</td>
-<td class="gt_row gt_right" headers="median">188.03 ms</td>
+<td class="gt_row gt_right" headers="median"> 48.93 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">     4.2 kB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 4L)</td>
-<td class="gt_row gt_right" headers="median"> 96.57 ms</td>
+<td class="gt_row gt_right" headers="median"> 40.26 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">all_finite_omp(x, 8L)</td>
-<td class="gt_row gt_right" headers="median">102.12 ms</td>
+<td class="gt_row gt_right" headers="median"> 36.30 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">   0 B  </td>
 </tr>
 </tbody>
@@ -1472,21 +1472,21 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="annotated-cell-14-9"><a href="#annotated-cell-14-9"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> nstep<span class="op">,</span></span>
 <span id="annotated-cell-14-10"><a href="#annotated-cell-14-10"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> seed<span class="op">)</span></span>
 <span id="annotated-cell-14-11"><a href="#annotated-cell-14-11"></a><span class="op">{</span></span>
-<span id="annotated-cell-14-12"><a href="#annotated-cell-14-12"></a>    Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="3">3</button><span id="annotated-cell-14-13" class="code-annotation-target"><a href="#annotated-cell-14-13"></a>    sitmo<span class="op">::</span>prng eng<span class="op">(</span>seed<span class="op">);</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="4">4</button><span id="annotated-cell-14-14" class="code-annotation-target"><a href="#annotated-cell-14-14"></a>    <span class="dt">double</span> mx <span class="op">=</span> sitmo<span class="op">::</span>prng<span class="op">::</span>max<span class="op">();</span></span>
-<span id="annotated-cell-14-15"><a href="#annotated-cell-14-15"></a>    <span class="dt">double</span> tmp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="annotated-cell-14-16"><a href="#annotated-cell-14-16"></a>    </span>
-<span id="annotated-cell-14-17"><a href="#annotated-cell-14-17"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="annotated-cell-14-18"><a href="#annotated-cell-14-18"></a>    <span class="op">{</span></span>
-<span id="annotated-cell-14-19"><a href="#annotated-cell-14-19"></a>        tmp <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="annotated-cell-14-20"><a href="#annotated-cell-14-20"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> nstep<span class="op">;++</span>k<span class="op">)</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="5">5</button><span id="annotated-cell-14-21" class="code-annotation-target"><a href="#annotated-cell-14-21"></a>            tmp <span class="op">+=</span> eng<span class="op">()</span> <span class="op">/</span> mx<span class="op">;</span></span>
-<span id="annotated-cell-14-22"><a href="#annotated-cell-14-22"></a>        </span>
-<span id="annotated-cell-14-23"><a href="#annotated-cell-14-23"></a>        out<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> tmp<span class="op">;</span></span>
-<span id="annotated-cell-14-24"><a href="#annotated-cell-14-24"></a>   <span class="op">}</span></span>
-<span id="annotated-cell-14-25"><a href="#annotated-cell-14-25"></a>   </span>
-<span id="annotated-cell-14-26"><a href="#annotated-cell-14-26"></a>   <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="annotated-cell-14-12"><a href="#annotated-cell-14-12"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="3">3</button><span id="annotated-cell-14-13" class="code-annotation-target"><a href="#annotated-cell-14-13"></a>  sitmo<span class="op">::</span>prng eng<span class="op">(</span>seed<span class="op">);</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="4">4</button><span id="annotated-cell-14-14" class="code-annotation-target"><a href="#annotated-cell-14-14"></a>  <span class="dt">double</span> mx <span class="op">=</span> sitmo<span class="op">::</span>prng<span class="op">::</span>max<span class="op">();</span></span>
+<span id="annotated-cell-14-15"><a href="#annotated-cell-14-15"></a>  <span class="dt">double</span> tmp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="annotated-cell-14-16"><a href="#annotated-cell-14-16"></a></span>
+<span id="annotated-cell-14-17"><a href="#annotated-cell-14-17"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="annotated-cell-14-18"><a href="#annotated-cell-14-18"></a>  <span class="op">{</span></span>
+<span id="annotated-cell-14-19"><a href="#annotated-cell-14-19"></a>    tmp <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="annotated-cell-14-20"><a href="#annotated-cell-14-20"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> nstep<span class="op">;++</span>k<span class="op">)</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="5">5</button><span id="annotated-cell-14-21" class="code-annotation-target"><a href="#annotated-cell-14-21"></a>      tmp <span class="op">+=</span> eng<span class="op">()</span> <span class="op">/</span> mx<span class="op">;</span></span>
+<span id="annotated-cell-14-22"><a href="#annotated-cell-14-22"></a></span>
+<span id="annotated-cell-14-23"><a href="#annotated-cell-14-23"></a>    out<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> tmp<span class="op">;</span></span>
+<span id="annotated-cell-14-24"><a href="#annotated-cell-14-24"></a>  <span class="op">}</span></span>
+<span id="annotated-cell-14-25"><a href="#annotated-cell-14-25"></a></span>
+<span id="annotated-cell-14-26"><a href="#annotated-cell-14-26"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
 <span id="annotated-cell-14-27"><a href="#annotated-cell-14-27"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-hidden code-annotation-container-grid">
@@ -1521,7 +1521,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="annotated-cell-15-2"><a href="#annotated-cell-15-2"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="annotated-cell-15-3"><a href="#annotated-cell-15-3"></a><span class="pp">#include </span><span class="im">&lt;sitmo.h&gt;</span></span>
 <span id="annotated-cell-15-4"><a href="#annotated-cell-15-4"></a></span>
-<span id="annotated-cell-15-5"><a href="#annotated-cell-15-5"></a><span class="co">// [[Rcpp::plugins(openmp)]] // Comment on macOS</span></span>
+<span id="annotated-cell-15-5"><a href="#annotated-cell-15-5"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
 <span id="annotated-cell-15-6"><a href="#annotated-cell-15-6"></a></span>
 <span id="annotated-cell-15-7"><a href="#annotated-cell-15-7"></a><span class="pp">#ifdef _OPENMP</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="1">1</button><span id="annotated-cell-15-8" class="code-annotation-target"><a href="#annotated-cell-15-8"></a><span class="pp">#include </span><span class="im">&lt;omp.h&gt;</span></span>
@@ -1534,41 +1534,41 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="annotated-cell-15-15"><a href="#annotated-cell-15-15"></a>                                      <span class="dt">unsigned</span> <span class="dt">int</span> nstep<span class="op">,</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="2">2</button><span id="annotated-cell-15-16" class="code-annotation-target"><a href="#annotated-cell-15-16"></a>                                      Rcpp<span class="op">::</span>IntegerVector seeds<span class="op">)</span></span>
 <span id="annotated-cell-15-17"><a href="#annotated-cell-15-17"></a><span class="op">{</span></span>
-<span id="annotated-cell-15-18"><a href="#annotated-cell-15-18"></a>    Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
-<span id="annotated-cell-15-19"><a href="#annotated-cell-15-19"></a>    </span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="3">3</button><span id="annotated-cell-15-20" class="code-annotation-target"><a href="#annotated-cell-15-20"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> seeds<span class="op">.</span>size<span class="op">();</span></span>
-<span id="annotated-cell-15-21"><a href="#annotated-cell-15-21"></a>    </span>
+<span id="annotated-cell-15-18"><a href="#annotated-cell-15-18"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
+<span id="annotated-cell-15-19"><a href="#annotated-cell-15-19"></a></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="3">3</button><span id="annotated-cell-15-20" class="code-annotation-target"><a href="#annotated-cell-15-20"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> seeds<span class="op">.</span>size<span class="op">();</span></span>
+<span id="annotated-cell-15-21"><a href="#annotated-cell-15-21"></a></span>
 <span id="annotated-cell-15-22"><a href="#annotated-cell-15-22"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="4">4</button><span id="annotated-cell-15-23" class="code-annotation-target"><a href="#annotated-cell-15-23"></a>    <span class="pp">#pragma omp parallel num_threads(ncores)</span></span>
-<span id="annotated-cell-15-24"><a href="#annotated-cell-15-24"></a>    <span class="op">{</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="4">4</button><span id="annotated-cell-15-23" class="code-annotation-target"><a href="#annotated-cell-15-23"></a><span class="pp">#pragma omp parallel num_threads(ncores)</span></span>
+<span id="annotated-cell-15-24"><a href="#annotated-cell-15-24"></a><span class="op">{</span></span>
 <span id="annotated-cell-15-25"><a href="#annotated-cell-15-25"></a><span class="pp">#endif</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="5">5</button><span id="annotated-cell-15-26" class="code-annotation-target"><a href="#annotated-cell-15-26"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> seed <span class="op">=</span> seeds<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
-<span id="annotated-cell-15-27"><a href="#annotated-cell-15-27"></a>    </span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="5">5</button><span id="annotated-cell-15-26" class="code-annotation-target"><a href="#annotated-cell-15-26"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> seed <span class="op">=</span> seeds<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="annotated-cell-15-27"><a href="#annotated-cell-15-27"></a></span>
 <span id="annotated-cell-15-28"><a href="#annotated-cell-15-28"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="6">6</button><span id="annotated-cell-15-29" class="code-annotation-target"><a href="#annotated-cell-15-29"></a>        seed <span class="op">=</span> seeds<span class="op">[</span>omp_get_thread_num<span class="op">()];</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="6">6</button><span id="annotated-cell-15-29" class="code-annotation-target"><a href="#annotated-cell-15-29"></a>  seed <span class="op">=</span> seeds<span class="op">[</span>omp_get_thread_num<span class="op">()];</span></span>
 <span id="annotated-cell-15-30"><a href="#annotated-cell-15-30"></a><span class="pp">#endif</span></span>
 <span id="annotated-cell-15-31"><a href="#annotated-cell-15-31"></a></span>
-<span id="annotated-cell-15-32"><a href="#annotated-cell-15-32"></a>        sitmo<span class="op">::</span>prng eng<span class="op">(</span>seed<span class="op">);</span></span>
-<span id="annotated-cell-15-33"><a href="#annotated-cell-15-33"></a>        <span class="dt">double</span> mx <span class="op">=</span> sitmo<span class="op">::</span>prng<span class="op">::</span>max<span class="op">();</span></span>
-<span id="annotated-cell-15-34"><a href="#annotated-cell-15-34"></a>        <span class="dt">double</span> tmp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="annotated-cell-15-35"><a href="#annotated-cell-15-35"></a>    </span>
+<span id="annotated-cell-15-32"><a href="#annotated-cell-15-32"></a>  sitmo<span class="op">::</span>prng eng<span class="op">(</span>seed<span class="op">);</span></span>
+<span id="annotated-cell-15-33"><a href="#annotated-cell-15-33"></a>  <span class="dt">double</span> mx <span class="op">=</span> sitmo<span class="op">::</span>prng<span class="op">::</span>max<span class="op">();</span></span>
+<span id="annotated-cell-15-34"><a href="#annotated-cell-15-34"></a>  <span class="dt">double</span> tmp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="annotated-cell-15-35"><a href="#annotated-cell-15-35"></a></span>
 <span id="annotated-cell-15-36"><a href="#annotated-cell-15-36"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="7">7</button><span id="annotated-cell-15-37" class="code-annotation-target"><a href="#annotated-cell-15-37"></a>        <span class="pp">#pragma omp for</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="7">7</button><span id="annotated-cell-15-37" class="code-annotation-target"><a href="#annotated-cell-15-37"></a><span class="pp">#pragma omp for</span></span>
 <span id="annotated-cell-15-38"><a href="#annotated-cell-15-38"></a><span class="pp">#endif</span></span>
-<span id="annotated-cell-15-39"><a href="#annotated-cell-15-39"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="annotated-cell-15-40"><a href="#annotated-cell-15-40"></a>        <span class="op">{</span></span>
-<span id="annotated-cell-15-41"><a href="#annotated-cell-15-41"></a>            tmp <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="annotated-cell-15-42"><a href="#annotated-cell-15-42"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> nstep<span class="op">;++</span>k<span class="op">)</span></span>
-<span id="annotated-cell-15-43"><a href="#annotated-cell-15-43"></a>                tmp <span class="op">+=</span> eng<span class="op">()</span> <span class="op">/</span> mx<span class="op">;</span></span>
-<span id="annotated-cell-15-44"><a href="#annotated-cell-15-44"></a>        </span>
-<span id="annotated-cell-15-45"><a href="#annotated-cell-15-45"></a>            out<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> tmp<span class="op">;</span></span>
-<span id="annotated-cell-15-46"><a href="#annotated-cell-15-46"></a>        <span class="op">}</span></span>
-<span id="annotated-cell-15-47"><a href="#annotated-cell-15-47"></a>        </span>
+<span id="annotated-cell-15-39"><a href="#annotated-cell-15-39"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="annotated-cell-15-40"><a href="#annotated-cell-15-40"></a>  <span class="op">{</span></span>
+<span id="annotated-cell-15-41"><a href="#annotated-cell-15-41"></a>    tmp <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="annotated-cell-15-42"><a href="#annotated-cell-15-42"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> nstep<span class="op">;++</span>k<span class="op">)</span></span>
+<span id="annotated-cell-15-43"><a href="#annotated-cell-15-43"></a>      tmp <span class="op">+=</span> eng<span class="op">()</span> <span class="op">/</span> mx<span class="op">;</span></span>
+<span id="annotated-cell-15-44"><a href="#annotated-cell-15-44"></a></span>
+<span id="annotated-cell-15-45"><a href="#annotated-cell-15-45"></a>    out<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> tmp<span class="op">;</span></span>
+<span id="annotated-cell-15-46"><a href="#annotated-cell-15-46"></a>  <span class="op">}</span></span>
+<span id="annotated-cell-15-47"><a href="#annotated-cell-15-47"></a></span>
 <span id="annotated-cell-15-48"><a href="#annotated-cell-15-48"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="8">8</button><span id="annotated-cell-15-49" class="code-annotation-target"><a href="#annotated-cell-15-49"></a>    <span class="op">}</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="8">8</button><span id="annotated-cell-15-49" class="code-annotation-target"><a href="#annotated-cell-15-49"></a><span class="op">}</span></span>
 <span id="annotated-cell-15-50"><a href="#annotated-cell-15-50"></a><span class="pp">#endif</span></span>
-<span id="annotated-cell-15-51"><a href="#annotated-cell-15-51"></a>    </span>
-<span id="annotated-cell-15-52"><a href="#annotated-cell-15-52"></a>    <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="annotated-cell-15-51"><a href="#annotated-cell-15-51"></a></span>
+<span id="annotated-cell-15-52"><a href="#annotated-cell-15-52"></a><span class="cf">return</span> out<span class="op">;</span></span>
 <span id="annotated-cell-15-53"><a href="#annotated-cell-15-53"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-hidden code-annotation-container-grid">
@@ -1647,23 +1647,23 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <span id="cb15-32"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} s"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="utigucsark" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#utigucsark table {
+<div id="ipyvfhgtlo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ipyvfhgtlo table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#utigucsark thead, #utigucsark tbody, #utigucsark tfoot, #utigucsark tr, #utigucsark td, #utigucsark th {
+#ipyvfhgtlo thead, #ipyvfhgtlo tbody, #ipyvfhgtlo tfoot, #ipyvfhgtlo tr, #ipyvfhgtlo td, #ipyvfhgtlo th {
   border-style: none;
 }
 
-#utigucsark p {
+#ipyvfhgtlo p {
   margin: 0;
   padding: 0;
 }
 
-#utigucsark .gt_table {
+#ipyvfhgtlo .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1689,12 +1689,12 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-left-color: #D3D3D3;
 }
 
-#utigucsark .gt_caption {
+#ipyvfhgtlo .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#utigucsark .gt_title {
+#ipyvfhgtlo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1706,7 +1706,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-width: 0;
 }
 
-#utigucsark .gt_subtitle {
+#ipyvfhgtlo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1718,7 +1718,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-width: 0;
 }
 
-#utigucsark .gt_heading {
+#ipyvfhgtlo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1730,13 +1730,13 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#utigucsark .gt_bottom_border {
+#ipyvfhgtlo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#utigucsark .gt_col_headings {
+#ipyvfhgtlo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1751,7 +1751,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#utigucsark .gt_col_heading {
+#ipyvfhgtlo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1771,7 +1771,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#utigucsark .gt_column_spanner_outer {
+#ipyvfhgtlo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1783,15 +1783,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 4px;
 }
 
-#utigucsark .gt_column_spanner_outer:first-child {
+#ipyvfhgtlo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#utigucsark .gt_column_spanner_outer:last-child {
+#ipyvfhgtlo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#utigucsark .gt_column_spanner {
+#ipyvfhgtlo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1803,11 +1803,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   width: 100%;
 }
 
-#utigucsark .gt_spanner_row {
+#ipyvfhgtlo .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#utigucsark .gt_group_heading {
+#ipyvfhgtlo .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1833,7 +1833,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   text-align: left;
 }
 
-#utigucsark .gt_empty_group_heading {
+#ipyvfhgtlo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1848,15 +1848,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: middle;
 }
 
-#utigucsark .gt_from_md > :first-child {
+#ipyvfhgtlo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#utigucsark .gt_from_md > :last-child {
+#ipyvfhgtlo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#utigucsark .gt_row {
+#ipyvfhgtlo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1875,7 +1875,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   overflow-x: hidden;
 }
 
-#utigucsark .gt_stub {
+#ipyvfhgtlo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1888,7 +1888,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#utigucsark .gt_stub_row_group {
+#ipyvfhgtlo .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1902,15 +1902,15 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   vertical-align: top;
 }
 
-#utigucsark .gt_row_group_first td {
+#ipyvfhgtlo .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#utigucsark .gt_row_group_first th {
+#ipyvfhgtlo .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#utigucsark .gt_summary_row {
+#ipyvfhgtlo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1920,16 +1920,16 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#utigucsark .gt_first_summary_row {
+#ipyvfhgtlo .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#utigucsark .gt_first_summary_row.thick {
+#ipyvfhgtlo .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#utigucsark .gt_last_summary_row {
+#ipyvfhgtlo .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1939,7 +1939,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#utigucsark .gt_grand_summary_row {
+#ipyvfhgtlo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1949,7 +1949,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#utigucsark .gt_first_grand_summary_row {
+#ipyvfhgtlo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1959,7 +1959,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-top-color: #D3D3D3;
 }
 
-#utigucsark .gt_last_grand_summary_row_top {
+#ipyvfhgtlo .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1969,11 +1969,11 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#utigucsark .gt_striped {
+#ipyvfhgtlo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#utigucsark .gt_table_body {
+#ipyvfhgtlo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1982,7 +1982,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-bottom-color: #D3D3D3;
 }
 
-#utigucsark .gt_footnotes {
+#ipyvfhgtlo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1996,7 +1996,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#utigucsark .gt_footnote {
+#ipyvfhgtlo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2005,7 +2005,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#utigucsark .gt_sourcenotes {
+#ipyvfhgtlo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2019,7 +2019,7 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   border-right-color: #D3D3D3;
 }
 
-#utigucsark .gt_sourcenote {
+#ipyvfhgtlo .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2027,72 +2027,72 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
   padding-right: 5px;
 }
 
-#utigucsark .gt_left {
+#ipyvfhgtlo .gt_left {
   text-align: left;
 }
 
-#utigucsark .gt_center {
+#ipyvfhgtlo .gt_center {
   text-align: center;
 }
 
-#utigucsark .gt_right {
+#ipyvfhgtlo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#utigucsark .gt_font_normal {
+#ipyvfhgtlo .gt_font_normal {
   font-weight: normal;
 }
 
-#utigucsark .gt_font_bold {
+#ipyvfhgtlo .gt_font_bold {
   font-weight: bold;
 }
 
-#utigucsark .gt_font_italic {
+#ipyvfhgtlo .gt_font_italic {
   font-style: italic;
 }
 
-#utigucsark .gt_super {
+#ipyvfhgtlo .gt_super {
   font-size: 65%;
 }
 
-#utigucsark .gt_footnote_marks {
+#ipyvfhgtlo .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#utigucsark .gt_asterisk {
+#ipyvfhgtlo .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#utigucsark .gt_indent_1 {
+#ipyvfhgtlo .gt_indent_1 {
   text-indent: 5px;
 }
 
-#utigucsark .gt_indent_2 {
+#ipyvfhgtlo .gt_indent_2 {
   text-indent: 10px;
 }
 
-#utigucsark .gt_indent_3 {
+#ipyvfhgtlo .gt_indent_3 {
   text-indent: 15px;
 }
 
-#utigucsark .gt_indent_4 {
+#ipyvfhgtlo .gt_indent_4 {
   text-indent: 20px;
 }
 
-#utigucsark .gt_indent_5 {
+#ipyvfhgtlo .gt_indent_5 {
   text-indent: 25px;
 }
 
-#utigucsark .katex-display {
+#ipyvfhgtlo .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#utigucsark div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ipyvfhgtlo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2117,32 +2117,32 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">R</td>
 <td class="gt_row gt_left" headers="expression">rowSums(matrix(runif(n * nstep), n, nstep))</td>
-<td class="gt_row gt_right" headers="median">37.69 s</td>
+<td class="gt_row gt_right" headers="median">280.67 s</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo(n, nstep, seeds[1])</td>
-<td class="gt_row gt_right" headers="median"> 5.89 s</td>
+<td class="gt_row gt_right" headers="median">  4.21 s</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:1])</td>
-<td class="gt_row gt_right" headers="median"> 6.08 s</td>
+<td class="gt_row gt_right" headers="median">  2.90 s</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:2])</td>
-<td class="gt_row gt_right" headers="median"> 3.09 s</td>
+<td class="gt_row gt_right" headers="median">  1.61 s</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:4])</td>
-<td class="gt_row gt_right" headers="median"> 1.97 s</td>
+<td class="gt_row gt_right" headers="median">  1.06 s</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">sumunif_sitmo_omp(n, nstep, seeds[1:8])</td>
-<td class="gt_row gt_right" headers="median"> 1.98 s</td>
+<td class="gt_row gt_right" headers="median">  1.00 s</td>
 </tr>
 </tbody>
 </table>
@@ -2192,9 +2192,9 @@ A. Stamm <a href="https://orcid.org/0000-0002-8725-3654" class="quarto-title-aut
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-17" data-target-annotation="3">3</button><span id="annotated-cell-17-9" class="code-annotation-target"><a href="#annotated-cell-17-9"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> input<span class="op">(</span>x<span class="op">);</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-17" data-target-annotation="4">4</button><span id="annotated-cell-17-10" class="code-annotation-target"><a href="#annotated-cell-17-10"></a>  Rcpp<span class="op">::</span>IntegerVector y<span class="op">(</span>x<span class="op">.</span>size<span class="op">());</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-17" data-target-annotation="5">5</button><span id="annotated-cell-17-11" class="code-annotation-target"><a href="#annotated-cell-17-11"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> output<span class="op">(</span>y<span class="op">);</span></span>
-<span id="annotated-cell-17-12"><a href="#annotated-cell-17-12"></a>  </span>
+<span id="annotated-cell-17-12"><a href="#annotated-cell-17-12"></a></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-17" data-target-annotation="6">6</button><span id="annotated-cell-17-13" class="code-annotation-target"><a href="#annotated-cell-17-13"></a></span>
-<span id="annotated-cell-17-14"><a href="#annotated-cell-17-14"></a>  </span>
+<span id="annotated-cell-17-14"><a href="#annotated-cell-17-14"></a></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-17" data-target-annotation="7">7</button><span id="annotated-cell-17-15" class="code-annotation-target"><a href="#annotated-cell-17-15"></a>  <span class="cf">return</span> y<span class="op">;</span></span>
 <span id="annotated-cell-17-16"><a href="#annotated-cell-17-16"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
@@ -2319,11 +2319,11 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="annotated-cell-18-7"><a href="#annotated-cell-18-7"></a><span class="co">// [[Rcpp::export]]</span></span>
 <span id="annotated-cell-18-8"><a href="#annotated-cell-18-8"></a>Rcpp<span class="op">::</span>NumericVector erf_cpp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">)</span> <span class="op">{</span></span>
 <span id="annotated-cell-18-9"><a href="#annotated-cell-18-9"></a>  Rcpp<span class="op">::</span>NumericVector y<span class="op">(</span>x<span class="op">.</span>size<span class="op">());</span></span>
-<span id="annotated-cell-18-10"><a href="#annotated-cell-18-10"></a>  </span>
+<span id="annotated-cell-18-10"><a href="#annotated-cell-18-10"></a></span>
 <span id="annotated-cell-18-11"><a href="#annotated-cell-18-11"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> x<span class="op">.</span>size<span class="op">();</span> i<span class="op">++)</span> <span class="op">{</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-18" data-target-annotation="3">3</button><span id="annotated-cell-18-12" class="code-annotation-target"><a href="#annotated-cell-18-12"></a>    y<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="ex">boost::</span>math::erf<span class="op">(</span>x<span class="op">[</span>i<span class="op">]);</span></span>
 <span id="annotated-cell-18-13"><a href="#annotated-cell-18-13"></a>  <span class="op">}</span></span>
-<span id="annotated-cell-18-14"><a href="#annotated-cell-18-14"></a>  </span>
+<span id="annotated-cell-18-14"><a href="#annotated-cell-18-14"></a></span>
 <span id="annotated-cell-18-15"><a href="#annotated-cell-18-15"></a>  <span class="cf">return</span> y<span class="op">;</span></span>
 <span id="annotated-cell-18-16"><a href="#annotated-cell-18-16"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
@@ -2379,19 +2379,19 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="annotated-cell-21-12"><a href="#annotated-cell-21-12"></a><span class="co">// [[Rcpp::export]]</span></span>
 <span id="annotated-cell-21-13"><a href="#annotated-cell-21-13"></a>Rcpp<span class="op">::</span>NumericVector erf_omp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> ncores<span class="op">)</span></span>
 <span id="annotated-cell-21-14"><a href="#annotated-cell-21-14"></a><span class="op">{</span></span>
-<span id="annotated-cell-21-15"><a href="#annotated-cell-21-15"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> n <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
-<span id="annotated-cell-21-16"><a href="#annotated-cell-21-16"></a>    Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
-<span id="annotated-cell-21-17"><a href="#annotated-cell-21-17"></a>    </span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="1">1</button><span id="annotated-cell-21-18" class="code-annotation-target"><a href="#annotated-cell-21-18"></a>    RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> wo<span class="op">(</span>out<span class="op">);</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="2">2</button><span id="annotated-cell-21-19" class="code-annotation-target"><a href="#annotated-cell-21-19"></a>    RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> wx<span class="op">(</span>x<span class="op">);</span></span>
-<span id="annotated-cell-21-20"><a href="#annotated-cell-21-20"></a> </span>
+<span id="annotated-cell-21-15"><a href="#annotated-cell-21-15"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> n <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
+<span id="annotated-cell-21-16"><a href="#annotated-cell-21-16"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>n<span class="op">);</span></span>
+<span id="annotated-cell-21-17"><a href="#annotated-cell-21-17"></a></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="1">1</button><span id="annotated-cell-21-18" class="code-annotation-target"><a href="#annotated-cell-21-18"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> wo<span class="op">(</span>out<span class="op">);</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="2">2</button><span id="annotated-cell-21-19" class="code-annotation-target"><a href="#annotated-cell-21-19"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> wx<span class="op">(</span>x<span class="op">);</span></span>
+<span id="annotated-cell-21-20"><a href="#annotated-cell-21-20"></a></span>
 <span id="annotated-cell-21-21"><a href="#annotated-cell-21-21"></a><span class="pp">#ifdef _OPENMP</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="3">3</button><span id="annotated-cell-21-22" class="code-annotation-target"><a href="#annotated-cell-21-22"></a>    <span class="pp">#pragma omp parallel for num_threads(ncores)</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="3">3</button><span id="annotated-cell-21-22" class="code-annotation-target"><a href="#annotated-cell-21-22"></a><span class="pp">#pragma omp parallel for num_threads(ncores)</span></span>
 <span id="annotated-cell-21-23"><a href="#annotated-cell-21-23"></a><span class="pp">#endif</span></span>
-<span id="annotated-cell-21-24"><a href="#annotated-cell-21-24"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="4">4</button><span id="annotated-cell-21-25" class="code-annotation-target"><a href="#annotated-cell-21-25"></a>        wo<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="ex">boost::</span>math::erf<span class="op">(</span>wx<span class="op">[</span>i<span class="op">]);</span></span>
-<span id="annotated-cell-21-26"><a href="#annotated-cell-21-26"></a> </span>
-<span id="annotated-cell-21-27"><a href="#annotated-cell-21-27"></a>    <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="annotated-cell-21-24"><a href="#annotated-cell-21-24"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> n<span class="op">;++</span>i<span class="op">)</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="4">4</button><span id="annotated-cell-21-25" class="code-annotation-target"><a href="#annotated-cell-21-25"></a>    wo<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="ex">boost::</span>math::erf<span class="op">(</span>wx<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="annotated-cell-21-26"><a href="#annotated-cell-21-26"></a></span>
+<span id="annotated-cell-21-27"><a href="#annotated-cell-21-27"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
 <span id="annotated-cell-21-28"><a href="#annotated-cell-21-28"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-hidden code-annotation-container-grid">
@@ -2430,14 +2430,14 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="1">1</button><span id="annotated-cell-22-10" class="code-annotation-target"><a href="#annotated-cell-22-10"></a><span class="kw">struct</span> ErfFunctor <span class="op">:</span> <span class="kw">public</span> RcppParallel<span class="op">::</span>Worker <span class="op">{</span></span>
 <span id="annotated-cell-22-11"><a href="#annotated-cell-22-11"></a>  <span class="co">// Threadsafe wrapper around input vector</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="2">2</button><span id="annotated-cell-22-12" class="code-annotation-target"><a href="#annotated-cell-22-12"></a>  <span class="at">const</span> RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_InputVector</span><span class="op">;</span></span>
-<span id="annotated-cell-22-13"><a href="#annotated-cell-22-13"></a>  </span>
+<span id="annotated-cell-22-13"><a href="#annotated-cell-22-13"></a></span>
 <span id="annotated-cell-22-14"><a href="#annotated-cell-22-14"></a>  <span class="co">// Threadsafe wrapper around output vector</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="3">3</button><span id="annotated-cell-22-15" class="code-annotation-target"><a href="#annotated-cell-22-15"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_OutputVector</span><span class="op">;</span></span>
-<span id="annotated-cell-22-16"><a href="#annotated-cell-22-16"></a>  </span>
+<span id="annotated-cell-22-16"><a href="#annotated-cell-22-16"></a></span>
 <span id="annotated-cell-22-17"><a href="#annotated-cell-22-17"></a>  <span class="co">// initialize with input and output vectors</span></span>
 <span id="annotated-cell-22-18"><a href="#annotated-cell-22-18"></a>  ErfFunctor<span class="op">(</span><span class="at">const</span> Rcpp<span class="op">::</span>NumericVector input<span class="op">,</span> Rcpp<span class="op">::</span>NumericVector output<span class="op">)</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="4">4</button><span id="annotated-cell-22-19" class="code-annotation-target"><a href="#annotated-cell-22-19"></a>    <span class="op">:</span> <span class="va">m_InputVector</span><span class="op">(</span>input<span class="op">),</span> <span class="va">m_OutputVector</span><span class="op">(</span>output<span class="op">)</span> <span class="op">{}</span></span>
-<span id="annotated-cell-22-20"><a href="#annotated-cell-22-20"></a>  </span>
+<span id="annotated-cell-22-20"><a href="#annotated-cell-22-20"></a></span>
 <span id="annotated-cell-22-21"><a href="#annotated-cell-22-21"></a>  <span class="co">// function call operator that work for the specified range (begin/end)</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="5">5</button><span id="annotated-cell-22-22" class="code-annotation-target"><a href="#annotated-cell-22-22"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span><span class="bu">std::</span>size_t begin<span class="op">,</span> <span class="bu">std::</span>size_t end<span class="op">)</span> <span class="op">{</span></span>
 <span id="annotated-cell-22-23"><a href="#annotated-cell-22-23"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> begin<span class="op">;</span>i <span class="op">&lt;</span> end<span class="op">;++</span>i<span class="op">)</span> <span class="op">{</span></span>
@@ -2449,10 +2449,10 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="annotated-cell-22-29"><a href="#annotated-cell-22-29"></a><span class="co">// [[Rcpp::export]]</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-22" data-target-annotation="6">6</button><span id="annotated-cell-22-30" class="code-annotation-target"><a href="#annotated-cell-22-30"></a>Rcpp<span class="op">::</span>NumericVector erf_parallel_impl<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">)</span> <span class="op">{</span></span>
 <span id="annotated-cell-22-31"><a href="#annotated-cell-22-31"></a>  Rcpp<span class="op">::</span>NumericVector y<span class="op">(</span>x<span class="op">.</span>size<span class="op">());</span></span>
-<span id="annotated-cell-22-32"><a href="#annotated-cell-22-32"></a>  </span>
+<span id="annotated-cell-22-32"><a href="#annotated-cell-22-32"></a></span>
 <span id="annotated-cell-22-33"><a href="#annotated-cell-22-33"></a>  ErfFunctor erfFunctor<span class="op">(</span>x<span class="op">,</span> y<span class="op">);</span></span>
 <span id="annotated-cell-22-34"><a href="#annotated-cell-22-34"></a>  RcppParallel<span class="op">::</span>parallelFor<span class="op">(</span><span class="dv">0</span><span class="op">,</span> x<span class="op">.</span>size<span class="op">(),</span> erfFunctor<span class="op">);</span></span>
-<span id="annotated-cell-22-35"><a href="#annotated-cell-22-35"></a>  </span>
+<span id="annotated-cell-22-35"><a href="#annotated-cell-22-35"></a></span>
 <span id="annotated-cell-22-36"><a href="#annotated-cell-22-36"></a>  <span class="cf">return</span> y<span class="op">;</span></span>
 <span id="annotated-cell-22-37"><a href="#annotated-cell-22-37"></a><span class="op">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
@@ -2541,23 +2541,23 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="cb26-38"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="lnqeyxazdf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lnqeyxazdf table {
+<div id="nlvqvlacgl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nlvqvlacgl table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lnqeyxazdf thead, #lnqeyxazdf tbody, #lnqeyxazdf tfoot, #lnqeyxazdf tr, #lnqeyxazdf td, #lnqeyxazdf th {
+#nlvqvlacgl thead, #nlvqvlacgl tbody, #nlvqvlacgl tfoot, #nlvqvlacgl tr, #nlvqvlacgl td, #nlvqvlacgl th {
   border-style: none;
 }
 
-#lnqeyxazdf p {
+#nlvqvlacgl p {
   margin: 0;
   padding: 0;
 }
 
-#lnqeyxazdf .gt_table {
+#nlvqvlacgl .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2583,12 +2583,12 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-left-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_caption {
+#nlvqvlacgl .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lnqeyxazdf .gt_title {
+#nlvqvlacgl .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2600,7 +2600,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-width: 0;
 }
 
-#lnqeyxazdf .gt_subtitle {
+#nlvqvlacgl .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2612,7 +2612,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-top-width: 0;
 }
 
-#lnqeyxazdf .gt_heading {
+#nlvqvlacgl .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2624,13 +2624,13 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_bottom_border {
+#nlvqvlacgl .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_col_headings {
+#nlvqvlacgl .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2645,7 +2645,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_col_heading {
+#nlvqvlacgl .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2665,7 +2665,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   overflow-x: hidden;
 }
 
-#lnqeyxazdf .gt_column_spanner_outer {
+#nlvqvlacgl .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2677,15 +2677,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 4px;
 }
 
-#lnqeyxazdf .gt_column_spanner_outer:first-child {
+#nlvqvlacgl .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lnqeyxazdf .gt_column_spanner_outer:last-child {
+#nlvqvlacgl .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lnqeyxazdf .gt_column_spanner {
+#nlvqvlacgl .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2697,11 +2697,11 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   width: 100%;
 }
 
-#lnqeyxazdf .gt_spanner_row {
+#nlvqvlacgl .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lnqeyxazdf .gt_group_heading {
+#nlvqvlacgl .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2727,7 +2727,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   text-align: left;
 }
 
-#lnqeyxazdf .gt_empty_group_heading {
+#nlvqvlacgl .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2742,15 +2742,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   vertical-align: middle;
 }
 
-#lnqeyxazdf .gt_from_md > :first-child {
+#nlvqvlacgl .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lnqeyxazdf .gt_from_md > :last-child {
+#nlvqvlacgl .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lnqeyxazdf .gt_row {
+#nlvqvlacgl .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2769,7 +2769,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   overflow-x: hidden;
 }
 
-#lnqeyxazdf .gt_stub {
+#nlvqvlacgl .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2782,7 +2782,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#lnqeyxazdf .gt_stub_row_group {
+#nlvqvlacgl .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2796,15 +2796,15 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   vertical-align: top;
 }
 
-#lnqeyxazdf .gt_row_group_first td {
+#nlvqvlacgl .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lnqeyxazdf .gt_row_group_first th {
+#nlvqvlacgl .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lnqeyxazdf .gt_summary_row {
+#nlvqvlacgl .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2814,16 +2814,16 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#lnqeyxazdf .gt_first_summary_row {
+#nlvqvlacgl .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_first_summary_row.thick {
+#nlvqvlacgl .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lnqeyxazdf .gt_last_summary_row {
+#nlvqvlacgl .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2833,7 +2833,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_grand_summary_row {
+#nlvqvlacgl .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2843,7 +2843,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#lnqeyxazdf .gt_first_grand_summary_row {
+#nlvqvlacgl .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2853,7 +2853,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-top-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_last_grand_summary_row_top {
+#nlvqvlacgl .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2863,11 +2863,11 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_striped {
+#nlvqvlacgl .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lnqeyxazdf .gt_table_body {
+#nlvqvlacgl .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2876,7 +2876,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-bottom-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_footnotes {
+#nlvqvlacgl .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2890,7 +2890,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_footnote {
+#nlvqvlacgl .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2899,7 +2899,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#lnqeyxazdf .gt_sourcenotes {
+#nlvqvlacgl .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2913,7 +2913,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   border-right-color: #D3D3D3;
 }
 
-#lnqeyxazdf .gt_sourcenote {
+#nlvqvlacgl .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2921,72 +2921,72 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
   padding-right: 5px;
 }
 
-#lnqeyxazdf .gt_left {
+#nlvqvlacgl .gt_left {
   text-align: left;
 }
 
-#lnqeyxazdf .gt_center {
+#nlvqvlacgl .gt_center {
   text-align: center;
 }
 
-#lnqeyxazdf .gt_right {
+#nlvqvlacgl .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lnqeyxazdf .gt_font_normal {
+#nlvqvlacgl .gt_font_normal {
   font-weight: normal;
 }
 
-#lnqeyxazdf .gt_font_bold {
+#nlvqvlacgl .gt_font_bold {
   font-weight: bold;
 }
 
-#lnqeyxazdf .gt_font_italic {
+#nlvqvlacgl .gt_font_italic {
   font-style: italic;
 }
 
-#lnqeyxazdf .gt_super {
+#nlvqvlacgl .gt_super {
   font-size: 65%;
 }
 
-#lnqeyxazdf .gt_footnote_marks {
+#nlvqvlacgl .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lnqeyxazdf .gt_asterisk {
+#nlvqvlacgl .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lnqeyxazdf .gt_indent_1 {
+#nlvqvlacgl .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lnqeyxazdf .gt_indent_2 {
+#nlvqvlacgl .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lnqeyxazdf .gt_indent_3 {
+#nlvqvlacgl .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lnqeyxazdf .gt_indent_4 {
+#nlvqvlacgl .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lnqeyxazdf .gt_indent_5 {
+#nlvqvlacgl .gt_indent_5 {
   text-indent: 25px;
 }
 
-#lnqeyxazdf .katex-display {
+#nlvqvlacgl .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#lnqeyxazdf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#nlvqvlacgl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3014,61 +3014,61 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">R</td>
 <td class="gt_row gt_left" headers="expression">erf_r(x)</td>
-<td class="gt_row gt_right" headers="median">50.30 ms</td>
+<td class="gt_row gt_right" headers="median">37.71 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc">16 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++</td>
 <td class="gt_row gt_left" headers="expression">erf_cpp(x)</td>
-<td class="gt_row gt_right" headers="median">94.48 ms</td>
+<td class="gt_row gt_right" headers="median">26.11 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 1)</td>
-<td class="gt_row gt_right" headers="median">90.08 ms</td>
+<td class="gt_row gt_right" headers="median">22.70 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 2)</td>
-<td class="gt_row gt_right" headers="median">90.76 ms</td>
+<td class="gt_row gt_right" headers="median">15.79 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 4)</td>
-<td class="gt_row gt_right" headers="median">90.13 ms</td>
+<td class="gt_row gt_right" headers="median">14.39 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (OpenMP)</td>
 <td class="gt_row gt_left" headers="expression">erf_omp(x, 8)</td>
-<td class="gt_row gt_right" headers="median">90.09 ms</td>
+<td class="gt_row gt_right" headers="median">11.70 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 1)</td>
-<td class="gt_row gt_right" headers="median">90.55 ms</td>
+<td class="gt_row gt_right" headers="median">24.86 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 2)</td>
-<td class="gt_row gt_right" headers="median">47.05 ms</td>
+<td class="gt_row gt_right" headers="median">14.52 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 4)</td>
-<td class="gt_row gt_right" headers="median">32.38 ms</td>
+<td class="gt_row gt_right" headers="median">11.30 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang">C++ (RcppParallel)</td>
 <td class="gt_row gt_left" headers="expression">erf_parallel(x, 8)</td>
-<td class="gt_row gt_right" headers="median">32.78 ms</td>
+<td class="gt_row gt_right" headers="median">14.54 ms</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 8 MB&nbsp;</td>
 </tr>
 </tbody>
@@ -3118,7 +3118,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <div class="sourceCode cell-code" id="annotated-cell-25" data-code-line-numbers="|12-14|19|23|33,35"><pre class="sourceCode numberSource cpp code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode cpp"><span id="annotated-cell-25-1"><a href="#annotated-cell-25-1"></a><span class="co">//---------------------------------</span></span>
 <span id="annotated-cell-25-2"><a href="#annotated-cell-25-2"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="annotated-cell-25-3"><a href="#annotated-cell-25-3"></a></span>
-<span id="annotated-cell-25-4"><a href="#annotated-cell-25-4"></a><span class="co">// [[Rcpp::plugins(openmp)]] // Comment on macOS</span></span>
+<span id="annotated-cell-25-4"><a href="#annotated-cell-25-4"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
 <span id="annotated-cell-25-5"><a href="#annotated-cell-25-5"></a></span>
 <span id="annotated-cell-25-6"><a href="#annotated-cell-25-6"></a><span class="co">// [[Rcpp::depends(BH)]]</span></span>
 <span id="annotated-cell-25-7"><a href="#annotated-cell-25-7"></a><span class="pp">#include </span><span class="im">&lt;boost/math/special_functions/erf.hpp&gt;</span></span>
@@ -3306,7 +3306,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="annotated-cell-28-5"><a href="#annotated-cell-28-5"></a><span class="pp">#include </span><span class="im">&lt;RcppThread.h&gt;</span></span>
 <span id="annotated-cell-28-6"><a href="#annotated-cell-28-6"></a></span>
 <span id="annotated-cell-28-7"><a href="#annotated-cell-28-7"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="annotated-cell-28-8"><a href="#annotated-cell-28-8"></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">unsigned</span> <span class="dt">int</span><span class="op">&gt;</span> rcpp_thread_example1<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> n<span class="op">,</span> </span>
+<span id="annotated-cell-28-8"><a href="#annotated-cell-28-8"></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">unsigned</span> <span class="dt">int</span><span class="op">&gt;</span> rcpp_thread_example1<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> n<span class="op">,</span></span>
 <span id="annotated-cell-28-9"><a href="#annotated-cell-28-9"></a>                                               <span class="dt">unsigned</span> <span class="dt">int</span> ncores<span class="op">)</span></span>
 <span id="annotated-cell-28-10"><a href="#annotated-cell-28-10"></a><span class="op">{</span></span>
 <button class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="1">1</button><span id="annotated-cell-28-11" class="code-annotation-target"><a href="#annotated-cell-28-11"></a>  RcppThread<span class="op">::</span>ThreadPool pool<span class="op">(</span>ncores<span class="op">);</span></span>
@@ -3426,7 +3426,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <span id="annotated-cell-32-9"><a href="#annotated-cell-32-9"></a><span class="op">{</span></span>
 <span id="annotated-cell-32-10"><a href="#annotated-cell-32-10"></a>  <span class="co">// Index-based</span></span>
 <span id="annotated-cell-32-11"><a href="#annotated-cell-32-11"></a>  <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">unsigned</span> <span class="dt">int</span><span class="op">&gt;</span> x<span class="op">(</span>n<span class="op">);</span></span>
-<span id="annotated-cell-32-12"><a href="#annotated-cell-32-12"></a>  </span>
+<span id="annotated-cell-32-12"><a href="#annotated-cell-32-12"></a></span>
 <span id="annotated-cell-32-13"><a href="#annotated-cell-32-13"></a>  <span class="kw">auto</span> task <span class="op">=</span> <span class="op">[&amp;</span>x<span class="op">]</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
 <span id="annotated-cell-32-14"><a href="#annotated-cell-32-14"></a>    x<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> i<span class="op">;</span></span>
 <span id="annotated-cell-32-15"><a href="#annotated-cell-32-15"></a>  <span class="op">};</span></span>
@@ -3541,7 +3541,7 @@ PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="fu">pb_example</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Computing: [==================================      ] 90%  (~0s remaining)       
+Computing: [==================                      ] 45%  (~1s remaining)       
 Computing: [========================================] 100% (done)                         </code></pre>
 </div>
 </div>

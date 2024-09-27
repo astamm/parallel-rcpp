@@ -7,7 +7,7 @@
 // [[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h>
 
-// [[Rcpp::plugin(openmp)]] // Remove `//` on Windows and Linux
+// // [[Rcpp::plugins(openmp)]] // Remove `//` on Windows and Linux
 
 // [[Rcpp::export]]
 Rcpp::NumericVector erf_omp(Rcpp::NumericVector x, unsigned int ncores)

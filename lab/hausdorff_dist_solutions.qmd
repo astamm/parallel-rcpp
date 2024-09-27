@@ -9,8 +9,8 @@ toc: true
 
 ```{r setup}
 #| include: false
-mfdat <- readRDS("mfdat.rds")
-dat <- readRDS("dat.rds")
+mfdat <- readRDS("data/mfdat.rds")
+dat <- readRDS("data/dat.rds")
 dat <- dat[1:21]
 library(purrr)
 library(rlang)
@@ -28,7 +28,6 @@ curves observed on a common grid of size $200$ of the interval $[0, 1]$.
 As a result, each element of the `dat` list is a $3 \times 200$ matrix.
 
 Here we focus on a subset of the data, the first $21$ curves, which looks like:
-
 ```{r data-viz}
 plot(mfdat)
 ```
@@ -98,6 +97,12 @@ hausdorff_distance_for <- function(x, y) {
 We can benchmark the two versions:
 
 ```{r}
+#| echo: false
+bm <- readRDS("data/hdist_r_bch.rds")
+```
+
+```{r}
+#| eval: false
 bm <- bench::mark(
   hausdorff_distance_vec(dat[[1]], dat[[2]]),
   hausdorff_distance_for(dat[[1]], dat[[2]])
@@ -172,6 +177,12 @@ dist_r_v1 <- function(x, vectorized = FALSE) {
 We can benchmark the two versions:
 
 ```{r}
+#| echo: false
+bm <- readRDS("data/dist_r_v1_bch.rds")
+```
+
+```{r}
+#| eval: false
 bm <- bench::mark(
   dist_r_v1(dat, vectorized = TRUE),
   dist_r_v1(dat, vectorized = FALSE)
@@ -322,12 +333,18 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
 $$
 
 ```{Rcpp}
-#| file: hausdorff.cpp
+#| file: src/hausdorff.cpp
 ```
 
 ## Benchmark
 
 ```{r}
+#| echo: false
+bm <- readRDS("data/dist_all_bch.rds")
+```
+
+```{r}
+#| eval: false
 library(future)
 
 bm <- bench::mark(

@@ -2,14 +2,12 @@
 title: "Hausdorff Distance Matrix Computation"
 author: "Aymeric Stamm"
 format: html
-execute:
-  cache: true
 ---
 
 ```{r setup}
 #| include: false
-mfdat <- readRDS("mfdat.rds")
-dat <- readRDS("dat.rds")
+mfdat <- readRDS("data/mfdat.rds")
+dat <- readRDS("data/dat.rds")
 dat <- dat[1:21]
 library(purrr)
 library(rlang)
@@ -26,8 +24,7 @@ curves observed on a common grid of size $200$ of the interval $[0, 1]$.
 
 As a result, each element of the `dat` list is a $3 \times 200$ matrix.
 
-The data looks like this:
-
+Here we focus on a subset of the data, the first $21$ curves, which looks like:
 ```{r data-viz}
 #| cache: true
 plot(mfdat)
@@ -98,10 +95,21 @@ hausdorff_distance_for <- function(x, y) {
 We can benchmark the two versions:
 
 ```{r}
+#| echo: false
+bm <- readRDS("data/hdist_r_bch.rds")
+```
+
+
+```{r}
+#| eval: false
 bm <- bench::mark(
   hausdorff_distance_vec(dat[[1]], dat[[2]]),
   hausdorff_distance_for(dat[[1]], dat[[2]])
 )
+```
+
+```{r}
+#| echo: false
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
@@ -168,10 +176,20 @@ dist_r_v1 <- function(x, vectorized = FALSE) {
 We can benchmark the two versions:
 
 ```{r}
+#| echo: false
+bm <- readRDS("data/dist_r_v1_bch.rds")
+```
+
+```{r}
+#| eval: false
 bm <- bench::mark(
   dist_r_v1(dat, vectorized = TRUE),
   dist_r_v1(dat, vectorized = FALSE)
 )
+```
+
+```{r}
+#| echo: false
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(

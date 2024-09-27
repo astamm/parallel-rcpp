@@ -232,7 +232,7 @@ window.Quarto = {
 <p>We have simulated 3D functional data for this lab that is provided in the Quarto document in the <code>dat</code> object.</p>
 <p>The <code>dat</code> object is a list of size <span class="math inline">\(100\)</span> containing <span class="math inline">\(100\)</span> three-dimensional curves observed on a common grid of size <span class="math inline">\(200\)</span> of the interval <span class="math inline">\([0, 1]\)</span>.</p>
 <p>As a result, each element of the <code>dat</code> list is a <span class="math inline">\(3 \times 200\)</span> matrix.</p>
-<p>The data looks like this:</p>
+<p>Here we focus on a subset of the data, the first <span class="math inline">\(21\)</span> curves, which looks like:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mfdat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -311,46 +311,26 @@ Objective
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hausdorff_distance_vec</span>(dat[[<span class="dv">1</span>]], dat[[<span class="dv">2</span>]]),</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hausdorff_distance_for</span>(dat[[<span class="dv">1</span>]], dat[[<span class="dv">2</span>]])</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is
-disabled.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>bm <span class="sc">|&gt;</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(expression, median, mem_alloc) <span class="sc">|&gt;</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(expression, deparse),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">as.numeric</span>(median) <span class="sc">*</span> <span class="dv">1000</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> <span class="fu">as.numeric</span>(mem_alloc)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Expression**"</span>),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Median computation time**"</span>),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Memory allocation**"</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span>  <span class="st">"left"</span>, <span class="at">columns =</span> expression) <span class="sc">|&gt;</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span> <span class="st">"right"</span>, <span class="at">columns =</span> median<span class="sc">:</span>mem_alloc) <span class="sc">|&gt;</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align_decimal</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} ms"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
 <div class="cell-output-display">
-<div id="fnmdynkbsh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#fnmdynkbsh table {
+<div id="aevhaaeook" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aevhaaeook table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#fnmdynkbsh thead, #fnmdynkbsh tbody, #fnmdynkbsh tfoot, #fnmdynkbsh tr, #fnmdynkbsh td, #fnmdynkbsh th {
+#aevhaaeook thead, #aevhaaeook tbody, #aevhaaeook tfoot, #aevhaaeook tr, #aevhaaeook td, #aevhaaeook th {
   border-style: none;
 }
 
-#fnmdynkbsh p {
+#aevhaaeook p {
   margin: 0;
   padding: 0;
 }
 
-#fnmdynkbsh .gt_table {
+#aevhaaeook .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -376,12 +356,12 @@ disabled.</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_caption {
+#aevhaaeook .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#fnmdynkbsh .gt_title {
+#aevhaaeook .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -393,7 +373,7 @@ disabled.</code></pre>
   border-bottom-width: 0;
 }
 
-#fnmdynkbsh .gt_subtitle {
+#aevhaaeook .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -405,7 +385,7 @@ disabled.</code></pre>
   border-top-width: 0;
 }
 
-#fnmdynkbsh .gt_heading {
+#aevhaaeook .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -417,13 +397,13 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_bottom_border {
+#aevhaaeook .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_col_headings {
+#aevhaaeook .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -438,7 +418,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_col_heading {
+#aevhaaeook .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -458,7 +438,7 @@ disabled.</code></pre>
   overflow-x: hidden;
 }
 
-#fnmdynkbsh .gt_column_spanner_outer {
+#aevhaaeook .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -470,15 +450,15 @@ disabled.</code></pre>
   padding-right: 4px;
 }
 
-#fnmdynkbsh .gt_column_spanner_outer:first-child {
+#aevhaaeook .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#fnmdynkbsh .gt_column_spanner_outer:last-child {
+#aevhaaeook .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#fnmdynkbsh .gt_column_spanner {
+#aevhaaeook .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -490,11 +470,11 @@ disabled.</code></pre>
   width: 100%;
 }
 
-#fnmdynkbsh .gt_spanner_row {
+#aevhaaeook .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#fnmdynkbsh .gt_group_heading {
+#aevhaaeook .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -520,7 +500,7 @@ disabled.</code></pre>
   text-align: left;
 }
 
-#fnmdynkbsh .gt_empty_group_heading {
+#aevhaaeook .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -535,15 +515,15 @@ disabled.</code></pre>
   vertical-align: middle;
 }
 
-#fnmdynkbsh .gt_from_md > :first-child {
+#aevhaaeook .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#fnmdynkbsh .gt_from_md > :last-child {
+#aevhaaeook .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#fnmdynkbsh .gt_row {
+#aevhaaeook .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -562,7 +542,7 @@ disabled.</code></pre>
   overflow-x: hidden;
 }
 
-#fnmdynkbsh .gt_stub {
+#aevhaaeook .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -575,7 +555,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#fnmdynkbsh .gt_stub_row_group {
+#aevhaaeook .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -589,15 +569,15 @@ disabled.</code></pre>
   vertical-align: top;
 }
 
-#fnmdynkbsh .gt_row_group_first td {
+#aevhaaeook .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#fnmdynkbsh .gt_row_group_first th {
+#aevhaaeook .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#fnmdynkbsh .gt_summary_row {
+#aevhaaeook .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -607,16 +587,16 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#fnmdynkbsh .gt_first_summary_row {
+#aevhaaeook .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_first_summary_row.thick {
+#aevhaaeook .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#fnmdynkbsh .gt_last_summary_row {
+#aevhaaeook .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -626,7 +606,7 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_grand_summary_row {
+#aevhaaeook .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -636,7 +616,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#fnmdynkbsh .gt_first_grand_summary_row {
+#aevhaaeook .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -646,7 +626,7 @@ disabled.</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_last_grand_summary_row_top {
+#aevhaaeook .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -656,11 +636,11 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_striped {
+#aevhaaeook .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#fnmdynkbsh .gt_table_body {
+#aevhaaeook .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -669,7 +649,7 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_footnotes {
+#aevhaaeook .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -683,7 +663,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_footnote {
+#aevhaaeook .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -692,7 +672,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#fnmdynkbsh .gt_sourcenotes {
+#aevhaaeook .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -706,7 +686,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#fnmdynkbsh .gt_sourcenote {
+#aevhaaeook .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -714,72 +694,72 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#fnmdynkbsh .gt_left {
+#aevhaaeook .gt_left {
   text-align: left;
 }
 
-#fnmdynkbsh .gt_center {
+#aevhaaeook .gt_center {
   text-align: center;
 }
 
-#fnmdynkbsh .gt_right {
+#aevhaaeook .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#fnmdynkbsh .gt_font_normal {
+#aevhaaeook .gt_font_normal {
   font-weight: normal;
 }
 
-#fnmdynkbsh .gt_font_bold {
+#aevhaaeook .gt_font_bold {
   font-weight: bold;
 }
 
-#fnmdynkbsh .gt_font_italic {
+#aevhaaeook .gt_font_italic {
   font-style: italic;
 }
 
-#fnmdynkbsh .gt_super {
+#aevhaaeook .gt_super {
   font-size: 65%;
 }
 
-#fnmdynkbsh .gt_footnote_marks {
+#aevhaaeook .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#fnmdynkbsh .gt_asterisk {
+#aevhaaeook .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#fnmdynkbsh .gt_indent_1 {
+#aevhaaeook .gt_indent_1 {
   text-indent: 5px;
 }
 
-#fnmdynkbsh .gt_indent_2 {
+#aevhaaeook .gt_indent_2 {
   text-indent: 10px;
 }
 
-#fnmdynkbsh .gt_indent_3 {
+#aevhaaeook .gt_indent_3 {
   text-indent: 15px;
 }
 
-#fnmdynkbsh .gt_indent_4 {
+#aevhaaeook .gt_indent_4 {
   text-indent: 20px;
 }
 
-#fnmdynkbsh .gt_indent_5 {
+#aevhaaeook .gt_indent_5 {
   text-indent: 25px;
 }
 
-#fnmdynkbsh .katex-display {
+#aevhaaeook .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#fnmdynkbsh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#aevhaaeook div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -803,13 +783,13 @@ disabled.</code></pre>
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="expression">hausdorff_distance_vec(dat[[1]], dat[[2]])</td>
-<td class="gt_row gt_right" headers="median"> 2.36 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc">  2.8 MB</td>
+<td class="gt_row gt_right" headers="median"> 2.02 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc">  2.7 MB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="expression">hausdorff_distance_for(dat[[1]], dat[[2]])</td>
-<td class="gt_row gt_right" headers="median">64.43 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc">118.3 kB</td>
+<td class="gt_row gt_right" headers="median">50.08 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc">124.6 kB</td>
 </tr>
 </tbody>
 </table>
@@ -836,77 +816,57 @@ dist objects
 </div>
 <p>We can exploit the previous functions to compute the pairwise distance matrix using the Hausdorff distance:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dist_r_v1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">vectorized =</span> <span class="cn">FALSE</span>) {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  hausdorff_distance <span class="ot">&lt;-</span> <span class="cf">if</span> (vectorized) </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_vec</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_for</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>(N <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(i) {</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>((i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>N, \(j) {</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">hausdorff_distance</span>(x[[i]], x[[j]])</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>      })</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">list_c</span>()</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attributes</span>(out) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Size"</span>) <span class="ot">&lt;-</span> N</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  lbls <span class="ot">&lt;-</span> <span class="fu">names</span>(x)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Labels"</span>) <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(lbls)) <span class="dv">1</span><span class="sc">:</span>N <span class="cf">else</span> lbls</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Diag"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Upper"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"method"</span>) <span class="ot">&lt;-</span> <span class="st">"hausdorff"</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="st">"dist"</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  out</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dist_r_v1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">vectorized =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  hausdorff_distance <span class="ot">&lt;-</span> <span class="cf">if</span> (vectorized) </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_vec</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    hausdorff_distance_for</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>(N <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(i) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>((i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>N, \(j) {</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">hausdorff_distance</span>(x[[i]], x[[j]])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">list_c</span>()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attributes</span>(out) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Size"</span>) <span class="ot">&lt;-</span> N</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  lbls <span class="ot">&lt;-</span> <span class="fu">names</span>(x)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Labels"</span>) <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(lbls)) <span class="dv">1</span><span class="sc">:</span>N <span class="cf">else</span> lbls</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Diag"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"Upper"</span>) <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">attr</span>(out, <span class="st">"method"</span>) <span class="ot">&lt;-</span> <span class="st">"hausdorff"</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="st">"dist"</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  out</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can benchmark the two versions:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is
-disabled.</code></pre>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bm <span class="sc">|&gt;</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(expression, median, mem_alloc) <span class="sc">|&gt;</span> </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(expression, deparse),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">as.numeric</span>(median),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> <span class="fu">as.numeric</span>(mem_alloc)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">expression =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Expression**"</span>),</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Median computation time**"</span>),</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mem_alloc =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"**Memory allocation**"</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span>  <span class="st">"left"</span>, <span class="at">columns =</span> expression) <span class="sc">|&gt;</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align</span>(<span class="at">align =</span> <span class="st">"right"</span>, <span class="at">columns =</span> median<span class="sc">:</span>mem_alloc) <span class="sc">|&gt;</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_align_decimal</span>() <span class="sc">|&gt;</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="st">"median"</span>, <span class="at">decimals =</span> <span class="dv">2</span>, <span class="at">pattern =</span> <span class="st">"{x} s"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_bytes</span>(<span class="at">columns =</span> <span class="st">"mem_alloc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
 <div class="cell-output-display">
-<div id="bfvialbkvc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#bfvialbkvc table {
+<div id="iajnxqxsek" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#iajnxqxsek table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#bfvialbkvc thead, #bfvialbkvc tbody, #bfvialbkvc tfoot, #bfvialbkvc tr, #bfvialbkvc td, #bfvialbkvc th {
+#iajnxqxsek thead, #iajnxqxsek tbody, #iajnxqxsek tfoot, #iajnxqxsek tr, #iajnxqxsek td, #iajnxqxsek th {
   border-style: none;
 }
 
-#bfvialbkvc p {
+#iajnxqxsek p {
   margin: 0;
   padding: 0;
 }
 
-#bfvialbkvc .gt_table {
+#iajnxqxsek .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -932,12 +892,12 @@ disabled.</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_caption {
+#iajnxqxsek .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#bfvialbkvc .gt_title {
+#iajnxqxsek .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -949,7 +909,7 @@ disabled.</code></pre>
   border-bottom-width: 0;
 }
 
-#bfvialbkvc .gt_subtitle {
+#iajnxqxsek .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -961,7 +921,7 @@ disabled.</code></pre>
   border-top-width: 0;
 }
 
-#bfvialbkvc .gt_heading {
+#iajnxqxsek .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -973,13 +933,13 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_bottom_border {
+#iajnxqxsek .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_col_headings {
+#iajnxqxsek .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -994,7 +954,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_col_heading {
+#iajnxqxsek .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1014,7 +974,7 @@ disabled.</code></pre>
   overflow-x: hidden;
 }
 
-#bfvialbkvc .gt_column_spanner_outer {
+#iajnxqxsek .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1026,15 +986,15 @@ disabled.</code></pre>
   padding-right: 4px;
 }
 
-#bfvialbkvc .gt_column_spanner_outer:first-child {
+#iajnxqxsek .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#bfvialbkvc .gt_column_spanner_outer:last-child {
+#iajnxqxsek .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#bfvialbkvc .gt_column_spanner {
+#iajnxqxsek .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1046,11 +1006,11 @@ disabled.</code></pre>
   width: 100%;
 }
 
-#bfvialbkvc .gt_spanner_row {
+#iajnxqxsek .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#bfvialbkvc .gt_group_heading {
+#iajnxqxsek .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1076,7 +1036,7 @@ disabled.</code></pre>
   text-align: left;
 }
 
-#bfvialbkvc .gt_empty_group_heading {
+#iajnxqxsek .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1091,15 +1051,15 @@ disabled.</code></pre>
   vertical-align: middle;
 }
 
-#bfvialbkvc .gt_from_md > :first-child {
+#iajnxqxsek .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#bfvialbkvc .gt_from_md > :last-child {
+#iajnxqxsek .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#bfvialbkvc .gt_row {
+#iajnxqxsek .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1118,7 +1078,7 @@ disabled.</code></pre>
   overflow-x: hidden;
 }
 
-#bfvialbkvc .gt_stub {
+#iajnxqxsek .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1131,7 +1091,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#bfvialbkvc .gt_stub_row_group {
+#iajnxqxsek .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1145,15 +1105,15 @@ disabled.</code></pre>
   vertical-align: top;
 }
 
-#bfvialbkvc .gt_row_group_first td {
+#iajnxqxsek .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#bfvialbkvc .gt_row_group_first th {
+#iajnxqxsek .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#bfvialbkvc .gt_summary_row {
+#iajnxqxsek .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1163,16 +1123,16 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#bfvialbkvc .gt_first_summary_row {
+#iajnxqxsek .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_first_summary_row.thick {
+#iajnxqxsek .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#bfvialbkvc .gt_last_summary_row {
+#iajnxqxsek .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1182,7 +1142,7 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_grand_summary_row {
+#iajnxqxsek .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1192,7 +1152,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#bfvialbkvc .gt_first_grand_summary_row {
+#iajnxqxsek .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1202,7 +1162,7 @@ disabled.</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_last_grand_summary_row_top {
+#iajnxqxsek .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1212,11 +1172,11 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_striped {
+#iajnxqxsek .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#bfvialbkvc .gt_table_body {
+#iajnxqxsek .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1225,7 +1185,7 @@ disabled.</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_footnotes {
+#iajnxqxsek .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1239,7 +1199,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_footnote {
+#iajnxqxsek .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1248,7 +1208,7 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#bfvialbkvc .gt_sourcenotes {
+#iajnxqxsek .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1262,7 +1222,7 @@ disabled.</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#bfvialbkvc .gt_sourcenote {
+#iajnxqxsek .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1270,72 +1230,72 @@ disabled.</code></pre>
   padding-right: 5px;
 }
 
-#bfvialbkvc .gt_left {
+#iajnxqxsek .gt_left {
   text-align: left;
 }
 
-#bfvialbkvc .gt_center {
+#iajnxqxsek .gt_center {
   text-align: center;
 }
 
-#bfvialbkvc .gt_right {
+#iajnxqxsek .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#bfvialbkvc .gt_font_normal {
+#iajnxqxsek .gt_font_normal {
   font-weight: normal;
 }
 
-#bfvialbkvc .gt_font_bold {
+#iajnxqxsek .gt_font_bold {
   font-weight: bold;
 }
 
-#bfvialbkvc .gt_font_italic {
+#iajnxqxsek .gt_font_italic {
   font-style: italic;
 }
 
-#bfvialbkvc .gt_super {
+#iajnxqxsek .gt_super {
   font-size: 65%;
 }
 
-#bfvialbkvc .gt_footnote_marks {
+#iajnxqxsek .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#bfvialbkvc .gt_asterisk {
+#iajnxqxsek .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#bfvialbkvc .gt_indent_1 {
+#iajnxqxsek .gt_indent_1 {
   text-indent: 5px;
 }
 
-#bfvialbkvc .gt_indent_2 {
+#iajnxqxsek .gt_indent_2 {
   text-indent: 10px;
 }
 
-#bfvialbkvc .gt_indent_3 {
+#iajnxqxsek .gt_indent_3 {
   text-indent: 15px;
 }
 
-#bfvialbkvc .gt_indent_4 {
+#iajnxqxsek .gt_indent_4 {
   text-indent: 20px;
 }
 
-#bfvialbkvc .gt_indent_5 {
+#iajnxqxsek .gt_indent_5 {
   text-indent: 25px;
 }
 
-#bfvialbkvc .katex-display {
+#iajnxqxsek .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#bfvialbkvc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#iajnxqxsek div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1359,12 +1319,12 @@ disabled.</code></pre>
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="expression">dist_r_v1(dat, vectorized = TRUE)</td>
-<td class="gt_row gt_right" headers="median"> 0.69 s</td>
+<td class="gt_row gt_right" headers="median"> 0.48 s</td>
 <td class="gt_row gt_right" headers="mem_alloc"> 546.5 MB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="expression">dist_r_v1(dat, vectorized = FALSE)</td>
-<td class="gt_row gt_right" headers="median">11.74 s</td>
+<td class="gt_row gt_right" headers="median">11.18 s</td>
 <td class="gt_row gt_right" headers="mem_alloc">3 kB </td>
 </tr>
 </tbody>

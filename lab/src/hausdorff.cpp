@@ -43,10 +43,6 @@ double hausdorff_distance_cpp(Rcpp::NumericVector x, Rcpp::NumericVector y,
   return std::sqrt(std::max(dX, dY));
 }
 
-// Assume that a `numDimensions`-dimensional curve observed on a
-// `numPoints`-dimensional grid is stored as a vector of length `numDimensions x
-// numPoints`. The first `numPoints` elements correspond to the first dimension,
-// the next `numPoints` elements correspond to the second dimension, and so on.
 double hausdorff_distance_cpp(RcppParallel::RMatrix<double>::Row x,
                               RcppParallel::RMatrix<double>::Row y,
                               unsigned int dimension = 1)

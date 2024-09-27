@@ -324,9 +324,15 @@ dist_r_v5 <- function(x) {
 
 ## C++ implementation
 
-The fact that the `dist` function takes a list of matrices as input can be handled by [{Rcpp}](https://rcpp.org/). However, there is no threadsage wrapper for lists due to the fact that they can store objects of different types and thus cannot be serialized.
+The fact that the `dist` function takes a list of matrices as input can be
+handled by [{Rcpp}](https://rcpp.org/). However, there is no threadsafe wrapper
+for lists due to the fact that they can store objects of different types and
+thus cannot be serialized.
 
-We therefore use a vector representation for an $L$-dimensional curve observed on a grid of $P$ points. The vector is of length $L \times N$. This allows the entire data set to be passed as a single matrix $X$ to the C++ function where the $i$-*th* row reads:
+We therefore use a vector representation for an $L$-dimensional curve observed
+on a grid of $P$ points. The vector is of length $L \times N$. This allows the
+entire data set to be passed as a single matrix $X$ to the C++ function where
+the $i$-*th* row reads:
 
 $$
 x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \dots, x_i^{(L)}(t_1), \dots, x_i^{(L)}(t_P).

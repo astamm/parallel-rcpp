@@ -1,0 +1,979 @@
+---
+title: "Parallel computing with C++ from R"
+author:
+  - name: A. Stamm
+    affiliation: Department of Mathematics Jean Leray, UMR CNRS 6629, Nantes University, Ecole Centrale de Nantes, France
+    corresponding: true
+    orcid: 0000-0002-8725-3654
+date: today
+format:
+  revealjs:
+    footer: "High-Performance Computing with R - Fréjus - <aymeric.stamm@cnrs.fr> - <https://astamm.github.io/parallel-rcpp/>"
+    slide-number: true
+    logo: images/logo-lmjl.png
+    theme: simple
+    code-annotations: select
+    chalkboard: true
+    drop:
+      engine: webr
+      webr:
+        packages:
+          - bench
+          - BH
+          - gt
+          - Rcpp
+          - RcppParallel
+          - RcppProgress
+          - RcppThread
+          - sitmo
+          - tidyverse
+revealjs-plugins:
+  - drop
+bibliography: references.bib
+---
+
+```{r setup}
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+bch_runs <- 1L
+```
+
+## Information about the session
+
+::: {.callout-note}
+## Code copy-pasting
+
+All pieces of code can be copy-pasted into an R session: to do that, just hover
+over the code and click on the "Copy" button that appears on the top right
+corner of the code block.
+
+**R code.** Copy-paste into an R script and run.
+
+**C++ code.** Copy-paste:
+
+- either into a `XXX.cpp` file and compiled with `Rcpp::sourceCpp(file = 'XXX.cpp')`;
+- or into the `code = ''` argument of `Rcpp::sourceCpp()` function.
+:::
+
+## Benchmarkings
+
+::: {.callout-note}
+## Benchmarking
+
+All time benchmarks are done using the
+[{**tictoc**}](https://cran.r-project.org/package=tictoc) package and on a
+MacBook Pro 2021 with an Apple M1 Pro chip including 10 cores and 32 GB of RAM
+under Sonoma 14.5 macOS.
+:::
+
+## Running multi-threaded code in C++
+
+- [OpenMP](https://www.openmp.org/) [@dagum1998openmp]
+- Intel Thread Building Blocks ([TBB](https://www.threadingbuildingblocks.org/)) [@reinders2007intel]
+- [Boost.Thread](https://www.boost.org/doc/libs/1_86_0/doc/html/thread.html) [@schaling2014boost]
+- [TinyThread++](https://tinythreadpp.bitsnbites.eu/)
+- [`std::thread`](https://en.cppreference.com/w/cpp/thread/thread) (C++11)
+- [`std::jthread`](https://en.cppreference.com/w/cpp/thread/jthread) (C++20)
+
+## Calling multi-threaded C++ code from R(cpp)
+
+- [OpenMP](https://www.openmp.org/) [@dagum1998openmp]
+- [RcppParallel](https://rcppcore.github.io/RcppParallel/)
+- [RcppThread](https://tnagler.github.io/RcppThread/) [@nagler2021r] and the API 
+documentation at <https://tnagler.github.io/RcppThread/namespaceRcppThread.html>.
+
+# [OpenMP](https://www.openmp.org/)
+
+## Overview
+
+::: {.callout-note}
+## Preliminary remarks
+
+- This section is built from [Matteo Fasiolo's online course](https://mfasiolo.github.io/sc2-2019/rcpp_advanced_iii/1_openmp/).
+- We assume basic familiarity with [OpenMP](https://www.openmp.org/) [@woodsBeginning;@openmpReference;@openmpCheatsheet for a refresher].
+:::
+
+::: {.callout-tip}
+## The magic of OpenMP
+
+- OpenMP is a set of compiler directives, library routines, and environment variables that influence the behavior of parallelized code.
+- It is supported by most compilers, including `g++`, `clang`, and `icc`.
+- It is a simple and effective way to parallelize code: you start by adding a few directives to your existing sequential code, and the compiler does the rest.
+:::
+
+## Enabling OpenMP
+
+::: {.callout-note}
+## OpenMP support on Windows and Linux
+
+- On Windows and Linux, OpenMP is supported by default in `g++` and `clang`.
+- To enable OpenMP in `g++`, use the `-fopenmp` flag.
+- To enable OpenMP in `clang`, use the `-Xclang -fopenmp` flags.
+- Use `Rcpp::plugins(openmp)` in your C++ code to take care of the flags 
+automagically.
+- **Summary: you should have nothing to do on Windows and Linux.**
+:::
+
+## Enabling OpenMP
+
+::: {.callout-important}
+## OpenMP support on macOS
+
+Apple has explicitly disabled OpenMP support in compilers that they ship in
+Xcode:
+
+```
+  $ clang -c omp.c -fopenmp
+  clang: error: unsupported option '-fopenmp'
+```
+
+even though `clang` had OpenMP support for quite a long time now. In fact, the
+`clang` compiler in Xcode can generate all the necessary code for OpenMP. It can
+be tricked into performing its designed function by using `-Xclang -fopenmp`
+flags.
+
+The unfortunate part about this is that Apple is not shipping the necessary
+`libomp.dylib` run-time library needed for OpenMP support. Fortunately, some
+clever folks made them available for us: see
+<<https://mac.r-project.org/openmp/>.
+:::
+
+## A toy function to play with
+
+```{Rcpp sleep-function}
+#| code-line-numbers: "|2,9|5"
+//---------------------------------
+#include <unistd.h> // <1>
+#include <Rcpp.h>
+
+// [[Rcpp::export]] // <2>
+bool wait_k_seconds(unsigned int sec)
+{
+    for (unsigned int i = 0;i < sec;++i)
+        sleep(1);
+    
+    return EXIT_SUCCESS;
+}
+```
+1. The `unistd.h` header file is needed for the `sleep()` function.
+2. The `[[Rcpp::export]]` attribute tells Rcpp that it should generate the
+necessary R bindings for the function so that it can be called from R.
+
+::: {style="font-size: 0.8em;"}
+The previous code defines a simple function that waits for `sec` seconds and
+makes it available to R when compiled using `Rcpp::sourceCpp()`. We can test
+that it does what it is supposed to do by calling it from R:
+:::
+
+```{r sleep-function-exec}
+system.time(wait_k_seconds(2))[3]
+```
+
+## A parallelized version via OpenMP
+
+```{Rcpp sleep-function-omp}
+#| code-line-numbers: "|5|9-13|1-3,7-9,14-18"
+//---------------------------------
+#include <unistd.h>
+#include <Rcpp.h>
+
+// // [[Rcpp::plugins(openmp)]] // <1>
+
+// [[Rcpp::export]]
+bool wait_k_seconds_omp(unsigned int sec, unsigned int ncores)
+{
+#if defined(_OPENMP) // <2>
+    #pragma omp parallel num_threads(ncores) // <3>
+    #pragma omp for // <4>
+#endif
+    for (unsigned int i = 0;i < sec;++i)
+        sleep(1);
+    
+    return EXIT_SUCCESS;
+}
+```
+1. Includes the correct OpenMP flags during compilation. **Must not be included
+on macOS as OpenMP flags are handled in `~/.R/Makevars`**.
+2. Checks if OpenMP is available and inserts the following code only if it is.
+3. Indicates the beginning of a parallel section, to be executed on `ncores` 
+parallel threads.
+4. Tells the compiler that the `for` loop should be run in parallel.
+
+## Benchmarking
+
+- Run a 3 sec task on 1 thread:
+
+```{r}
+system.time(wait_k_seconds_omp(3, 1))[3]
+```
+
+- Run a 3 sec task on 3 threads:
+
+```{r}
+system.time(wait_k_seconds_omp(3, 3))[3]
+```
+
+## A more realistic example (R)
+
+Say we want to check if all elements of a numeric vector are finite. We can 
+write a first naive function in R:
+
+```{r all-finite-r-v1}
+all_finite_r_v1 <- function(x) {
+  all(is.finite(x))
+}
+```
+
+We can improve upon this version by summing all elements of the vector and
+checking if the result is finite:
+
+```{r all-finite-r-v2}
+all_finite_r_v2 <- function(x) {
+  is.finite(sum(x))
+}
+```
+
+## A C++ version
+
+```{Rcpp all-finite-cpp}
+#| code-line-numbers: "|7|15"
+#| file: src/all-finite-cpp.cpp
+```
+1. The function takes a `Rcpp::NumericVector` as input. This is used because
+Rcpp automatically converts between R vectors and C++ vectors which is why we
+can pass an R vector directly to the function that `sourceCpp` generates.
+2. The function returns `R_FINITE(out)` which is a macro from the C API of R
+that checks if `out` is finite.
+
+## Parallelizing via OpenMP
+
+```{Rcpp all-finite-omp}
+#| code-line-numbers: "|7|12-14"
+#| file: src/all-finite-omp.cpp
+```
+1. The function takes a `Rcpp::NumericVector` as input and an additional
+argument `ncores` which specifies the number of threads to use.
+2. The `reduction(+:out)` clause tells the compiler that the `out` variable 
+should be private to each thread and then combined at the end of the loop. This 
+is necessary because `out` is shared between threads and would otherwise be 
+overwritten by each thread.
+
+## Benchmarking
+
+```{r}
+#| echo: false
+bm <- readRDS("data/all_finite_bch.rds")
+```
+
+```{r}
+#| code-fold: true
+#| eval: false
+x <- rnorm(1e8)
+bm <- bench::mark(
+  all(is.finite(x)),
+  is.finite(sum(x)),
+  all_finite_cpp(x),
+  all_finite_omp(x,  1L), 
+  all_finite_omp(x,  2L),
+  all_finite_omp(x,  4L), 
+  all_finite_omp(x,  8L),
+  iterations = bch_runs, 
+  time_unit = "ms"
+)
+```
+
+```{r}
+#| echo: false
+bm |> 
+  dplyr::mutate(lang = c("R", "R", "C++", rep("C++ (OpenMP)", 4))) |>
+  dplyr::select(lang, expression, median, mem_alloc) |> 
+  dplyr::mutate(
+    expression = purrr::map_chr(expression, deparse),
+    mem_alloc = as.numeric(mem_alloc)
+  ) |> 
+  gt::gt() |> 
+  gt::cols_label(
+    lang = gt::md("**Programming language**"),
+    expression = gt::md("**Expression**"),
+    median = gt::md("**Median computation time**"),
+    mem_alloc = gt::md("**Memory allocation**")
+  ) |>
+  gt::cols_align(align =  "left", columns = lang:expression) |> 
+  gt::cols_align(align = "right", columns = median:mem_alloc) |> 
+  gt::cols_align_decimal() |> 
+  gt::fmt_number(columns = "median", decimals = 2, pattern = "{x} ms") |>
+  gt::fmt_bytes(columns = "mem_alloc") |> 
+  gt::data_color(rows = 1:2, direction = "row", colors = c("grey80"))
+```
+
+## Cheatsheet for OpenMP
+
+```{r}
+#| echo: false
+#| fig.align: "center"
+knitr::include_graphics("images/OpenMP_reference_1.png")
+```
+
+## Cheatsheet for OpenMP
+
+```{r}
+#| echo: false
+#| fig.align: "center"
+knitr::include_graphics("images/OpenMP_reference_2.png")
+```
+
+## OpenMP in an R package
+
+- Setup your package to use [{Rcpp}](https://www.rcpp.org/) ([`usethis::use_rcpp()`](https://usethis.r-lib.org/reference/use_rcpp.html)).
+- Edit `src/Makevars` file and add the following lines:
+
+```{r}
+#| eval: false
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS)
+```
+
+- Create a C++ file `src/omp_get_max_threads.cpp` and start coding in it 
+with OpenMP as we have seen (omitting the `Rcpp::plugins()` attributes).
+
+## Thread safety
+
+::: {.callout-note}
+## Definition
+
+A piece of code is thread-safe if it functions correctly during simultaneous
+execution by multiple threads. This is typically achieved by ensuring that
+shared data is accessed in a manner that avoids conflicts.
+:::
+
+::: {.callout-important}
+## R & Rcpp API's are not thread-safe
+The code that you write *within* parallel workers should not call the R or Rcpp
+API in any fashion. This is because R is single-threaded and concurrent
+interaction with its data structures can cause crashes and other undefined
+behavior.
+
+::: {style="font-size: 50%;"}
+> Calling any of the R API from threaded code is ‘for experts only’: they will
+need to read the source code to determine if it is thread-safe. In particular,
+code which makes use of the stack-checking mechanism must not be called from
+threaded code. *Writing R Extensions* (R Core Team, 2021).
+:::
+
+:::
+
+## Two consequences for R users
+
+::: {.callout-important}
+## Problem 1: Random number generation
+
+R's C API provides access to the `r*()` functions for random number
+generation:
+
+```{Rcpp}
+#| eval: false
+#include <Rcpp.h>
+
+// [[Rcpp::export]]
+double rnorm_cpp()
+{
+    return R::rnorm(0, 1);
+}
+```
+
+They are **not thread-safe** and should not be called from
+within parallel workers.
+:::
+
+::: {.callout-tip}
+## Solution to Problem 1
+
+Use a thread-safe generator such as the one provided by the
+[{**sitmo**}](https://thecoatlessprofessor.com/projects/sitmo/) package.
+:::
+
+## Two big consequences for R users
+
+::: {.callout-note}
+## Problem 2: Reading from and writing to R vectors and matrices
+
+Not being able to call the R or Rcpp API creates an obvious challenge: how to
+read and write to R vectors and matrices.
+:::
+
+::: {.callout-tip}
+## Solution to Problem 2
+
+R vectors and matrices are just contiguous arrays of `int`, `double`,
+etc. Hence, they can be accessed using traditional array and pointer offsets.
+The [{**RcppParallel**}](https://rcppcore.github.io/RcppParallel/) package
+provides a convenient way to do this.
+:::
+
+# Threadsafe random number generation via [{**sitmo**}](https://thecoatlessprofessor.com/projects/sitmo/)
+
+## Sum of uniform samples (R)
+
+```{r sumunif-r}
+#| code-line-numbers: "|2"
+sumunif <- function(n, nstep, seed) {
+  withr::with_seed(seed, { # <1>
+    rowSums(matrix(runif(n*nstep), n, nstep))   
+  })
+}
+```
+1. Set the seed for reproducibility. Using the
+[{**withr**}](https://withr.r-lib.org) package ensures that the seed is reset to
+its original value after the function call.
+
+## Sum of uniform samples (C++)
+
+```{Rcpp sumunif-cpp}
+#| code-line-numbers: "|3|5|13|14,21"
+#| file: src/sumunif-cpp.cpp
+```
+1. Include the [{**sitmo**}](https://thecoatlessprofessor.com/projects/sitmo/)
+package header to access the `prng` class.
+2. Declare the dependency on the
+[{**sitmo**}](https://thecoatlessprofessor.com/projects/sitmo/) package so that
+the proper include and link flags are set at compile time. In a package, this
+would be done in the `DESCRIPTION` file by adding `LinkingTo: sitmo`.
+3. Create a `prng` object with the specified seed.
+4. Get the maximum value that the generator can produce.
+5. Generate a uniform random number between 0 and 1.
+
+## Sum of uniform samples (OpenMP)
+
+```{Rcpp sumunif-omp}
+#| code-line-numbers: "|7-9|16,20|22-25|26|28-30|36-38|48-50"
+#| file: src/sumunif-omp.cpp
+```
+1. Include the OpenMP header file to access the `omp_get_thread_num()` function.
+2. Pass a vector of seeds to the function: this allows each thread to have its
+own seed.
+3. Get the number of cores from the length of the `seeds` vector.
+4. Define the code section that will be parallelized and specify the number of
+threads.
+5. Set the seed for the first thread to handle the case where OpenMP is not
+enabled.
+6. Set the seed for each thread using each thead's ID obtained from
+`omp_get_thread_num()`.
+7. Parallelize the outer loop using the `#pragma omp for` directive.
+8. Close the parallel region.
+
+## Benchmarking
+
+```{r}
+#| echo: false
+bm <- readRDS("data/sumunif_bch.rds")
+```
+
+```{r}
+#| code-fold: true
+#| eval: false
+n <- 1e6
+nstep <- 1e3
+seeds <- sample.int(1e6, 8)
+
+bm <- bench::mark(
+  rowSums(matrix(runif(n*nstep), n, nstep)),
+  sumunif_sitmo(n, nstep, seeds[1]),
+  sumunif_sitmo_omp(n, nstep, seeds[1:1]),
+  sumunif_sitmo_omp(n, nstep, seeds[1:2]),
+  sumunif_sitmo_omp(n, nstep, seeds[1:4]),
+  sumunif_sitmo_omp(n, nstep, seeds[1:8]),
+  iterations = bch_runs, 
+  time_unit = "s", 
+  check = FALSE
+)
+```
+
+```{r}
+#| echo: false
+bm |> 
+  dplyr::mutate(lang = c("R", "C++", rep("C++ (OpenMP)", 4))) |>
+  dplyr::select(lang, expression, median) |> 
+  dplyr::mutate(
+    expression = purrr::map_chr(expression, deparse)
+  ) |> 
+  gt::gt() |> 
+  gt::cols_label(
+    lang = gt::md("**Programming language**"),
+    expression = gt::md("**Expression**"),
+    median = gt::md("**Median computation time**")
+  ) |> 
+  gt::cols_align(align =  "left", columns = lang:expression) |> 
+  gt::cols_align(align = "right", columns = median) |> 
+  gt::cols_align_decimal() |> 
+  gt::fmt_number(columns = "median", decimals = 2, pattern = "{x} s")
+```
+
+# [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)
+
+## Overview
+
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) provides a complete
+toolkit for creating portable, high-performance parallel algorithms without
+requiring direct manipulation of operating system threads.
+
+::: {.callout-note}
+## Features
+
+- [Intel TBB](https://www.threadingbuildingblocks.org/), a C++ library for task
+parallelism with a wide variety of parallel algorithms and data structures
+(Windows, OS X, Linux, and Solaris x86 only).
+- [TinyThread](http://tinythreadpp.bitsnbites.eu/), a C++ library for portable
+use of operating system threads.
+- `RVector` and `RMatrix` wrapper classes for safe and convenient access to R
+data structures in a multi-threaded environment.
+- High level parallel functions (`parallelFor()` and `parallelReduce()`) that
+use Intel TBB as a back-end if supported and TinyThread otherwise.
+:::
+
+## Vector and matrix accessor classes
+
+```{Rcpp transform-vector}
+#| code-line-numbers: "|4-5|9-11|13|15"
+#| file: src/transform-vector.cpp
+```
+1. The Rcpp attribute `[[Rcpp::depends(RcppParallel)]]` is used to indicate that
+the code depends on the RcppParallel package. It will ensure that the
+compilation flags are set correctly to compile the code.
+2. Include the `RcppParallel.h` header file to use the `RVector` and `RMatrix`
+classes.
+3. Create a threadsafe wrapper to the input Rcpp vector.
+4. Allocate memory for the output vector.
+5. Create a threadsafe wrapper to the output vector.
+6. Perform the desired transformation, possibly in parallel, using inputs stored
+in the input wrapper `input` and writing the results to the output wrapper
+`output`.
+7. Return the output Rcpp vector.
+
+## [{RcppParallel}](https://rcppcore.github.io/RcppParallel/) in an R package
+
+::: {.columns}
+
+:::: {.column}
+
+::: {.callout-note icon=false}
+## DESCRIPTION
+
+```
+Imports: RcppParallel
+LinkingTo: Rcpp, RcppParallel
+SystemRequirements: GNU make
+```
+:::
+
+::: {.callout-note icon=false}
+## NAMESPACE
+
+```
+importFrom(RcppParallel, RcppParallelLibs)
+```
+
+::: {style="font-size: 0.8em;"}
+If you are using [{roxygen2}](https://roxygen2.r-lib.org/) to generate the
+`NAMESPACE` file, you can add the following line to the `packagename-package.R` 
+file:
+:::
+
+```{r}
+#' @importFrom RcppParallel RcppParallelLibs
+```
+
+::: {style="font-size: 0.8em;"}
+which will automatically populate the `NAMESPACE` upon `devtools::document()`.
+:::
+:::
+
+::::
+
+:::: {.column}
+
+::: {.callout-note icon=false}
+## src/Makevars
+
+```
+PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")
+```
+:::
+
+::: {.callout-note icon=false}
+## src/Makevars.win
+
+```
+PKG_CXXFLAGS += -DRCPP_PARALLEL_USE_TBB=1
+PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
+          -e "RcppParallel::RcppParallelLibs()")
+```
+:::
+
+::: {.callout-tip icon=false style="font-size: 0.8em;"}
+## Workflow
+
+Now simply include the main `RcppParallel.h` header file in source files that need to use it:
+
+```{Rcpp}
+#| eval: false
+#include <RcppParallel.h>
+```
+:::
+
+::::
+
+:::
+
+## Error function (C++)
+
+We will illustrate the use of
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) by implementing the
+error function in C++.
+
+```{Rcpp erf-cpp}
+#| code-line-numbers: "|4-5|12"
+#| file: src/erf-cpp.cpp
+```
+1. The Rcpp attribute `[[Rcpp::depends(BH)]]` is used to indicate that the code
+depends on the Boost C++ libraries. It will ensure that the compilation flags
+are set correctly to compile the code.
+2. Include the `boost/math/special_functions/erf.hpp` header file to use the
+`boost::math::erf()` function.
+3. Compute the error function for each element of the input vector `x` and store
+the results in the output vector `y`.
+
+## Error function (R)
+
+Now, let us define the error function in R for comparison:
+
+```{r erf-r}
+erf_r <- function(x) {
+  2 * pnorm(x * sqrt(2)) - 1
+}
+```
+
+Let us check that both R and C++ versions of `erf()` provide the same results:
+
+```{r erf-test}
+x <- rnorm(1e6)
+max(abs(erf_r(x) - erf_cpp(x)))
+```
+
+The numerical difference is of the order of the machine precision.
+
+## Error function (RcppParallel + OpenMP)
+
+```{Rcpp erf-omp}
+#| code-line-numbers: "|18-19|21-23|25"
+#| file: src/erf-omp.cpp
+```
+1. Use the threadsafe wrapper class `RVector` of
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) to manipulate the
+output vector.
+2. Use the threadsafe wrapper class `RVector` of
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) to manipulate the
+input vector.
+3. Insert the appropriate OpenMP clauses and directives.
+4. Use the wrapped objects to perform the computation *within* the workers.
+
+## Error function (RcppParallel)
+
+```{Rcpp erf-parallel}
+#| code-line-numbers: "|10|11-15|17-19|21-26|30-37"
+#| file: src/erf-parallel.cpp
+```
+1. Define a functor class `ErfFunctor` that inherits from `RcppParallel::Worker`
+for later use with `RcppParallel::parallelFor()`.
+2. Define a first attribute `m_InputVector` for the functor class that is a
+threadsafe wrapper around an input vector.
+3. Define a second attribute `m_OutputVector` for the functor class that is a
+threadsafe wrapper around an output vector.
+4. Define a constructor for the functor class that takes an input and output
+vectors and initializes the two corresponding class attributes.
+5. Define the function call operator `operator()` that will be called by
+`RcppParallel::parallelFor()` for the specific range that the worker will have
+to process.
+6. Define the main function `erf_parallel_impl()` that will be exported to R and
+will be used to call the parallel computation. This function will create an
+instance of the functor class and call `RcppParallel::parallelFor()` to perform
+the parallel computation.
+
+## Error function - Control `ncores`
+
+The previously defined function `erf_parallel_impl()` has no way to control the
+number of cores used for the computation. We can define a wrapper function that
+will set the number of cores before calling `erf_parallel_impl()` and reset it
+afterwards:
+
+```{r}
+erf_parallel <- function(x, ncores) {
+  on.exit(RcppParallel::setThreadOptions())
+  RcppParallel::setThreadOptions(numThreads = ncores)
+  erf_parallel_impl(x)
+}
+```
+
+## Benchmarking
+
+```{r}
+#| echo: false
+bm <- readRDS("data/erf_bch.rds")
+```
+
+```{r erf-benchmark}
+#| code-fold: true
+#| eval: false
+bm <- bench::mark(
+  erf_r(x),
+  erf_cpp(x),
+  erf_omp(x, 1),
+  erf_omp(x, 2),
+  erf_omp(x, 4),
+  erf_omp(x, 8),
+  erf_parallel(x, 1),
+  erf_parallel(x, 2),
+  erf_parallel(x, 4),
+  erf_parallel(x, 8),
+  iterations = bch_runs, 
+  time_unit = "ms"
+)
+```
+
+```{r}
+#| echo: false
+bm |> 
+  dplyr::mutate(lang = c(
+    "R", "C++", 
+    rep("C++ (OpenMP)", 4), 
+    rep("C++ (RcppParallel)", 4)
+  )) |>
+  dplyr::select(lang, expression, median, mem_alloc) |> 
+  dplyr::mutate(
+    expression = purrr::map_chr(expression, deparse),
+    mem_alloc = as.numeric(mem_alloc)
+  ) |>
+  gt::gt() |>
+  gt::cols_label(
+    lang = gt::md("**Programming language**"),
+    expression = gt::md("**Expression**"),
+    median = gt::md("**Median computation time**"),
+    mem_alloc = gt::md("**Memory allocation**")
+  ) |>
+  gt::cols_align(align =  "left", columns = lang:expression) |>
+  gt::cols_align(align = "right", columns = median:mem_alloc) |>
+  gt::cols_align_decimal() |>
+  gt::fmt_number(columns = "median", decimals = 2, pattern = "{x} ms") |>
+  gt::fmt_bytes(columns = "mem_alloc")
+```
+
+# Progress report
+
+## Progress bars via [{RcppProgress}](https://cran.r-project.org/package=RcppProgress)
+
+::: {.callout-tip}
+## [{RcppProgress}](https://cran.r-project.org/package=RcppProgress)
+
+The [{RcppProgress}](https://cran.r-project.org/package=RcppProgress) package
+provides a way to display progress bars in Rcpp code. This is useful when you
+have long-running C++ code and want to provide feedback to the user. It is also
+compatible with OpenMP parallel code.
+:::
+
+::: {.callout-important}
+## Compatibility with [{RcppParallel}](https://rcppcore.github.io/RcppParallel/)
+
+Progress bars generated by the
+[{RcppProgress}](https://cran.r-project.org/package=RcppProgress) package are
+not readily compatible with the
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) framework. See [this
+issue](https://github.com/kforner/rcpp_progress/issues/21).
+:::
+
+## Progress bars with OpenMP
+
+```{Rcpp openmp-progress}
+#| code-line-numbers: "|12-14|19|23|33,35"
+#| file: src/omp-progress.cpp
+```
+1. The Rcpp attribute `Rcpp::depends(RcppProgress)` ensures that compilation
+flags to link to the
+[{RcppProgress}](https://cran.r-project.org/package=RcppProgress) headers are
+properly set.
+2. Include the necessary headers to provide access to the `Progress` class.
+3. Add a flag to turn on progress bar display as optional argument to your
+function which defaults to `false`.
+4. Instantiate a progress bar via the `Progress` class which takes as arguments
+the number of total number of increments the bar should achieve and whether the
+progress bar should be displayed.
+5. Within workers, check that user did not abort the calculation.
+6. Within workers, increment the progress bar.
+
+```{r}
+x <- rnorm(1e7)
+y <- erf_omp_progress(x, 4, display_progress = TRUE)
+```
+
+# [{RcppThread}](https://tnagler.github.io/RcppThread/)
+
+## Thread safe communication with R {.smaller}
+
+::: {.callout-note}
+## Printing messages to the console
+
+**Problem.** You might want to print out messages to the R console sometimes. [{Rcpp}](https://www.rcpp.org/) provides the `Rcpp::Rcout` replacement of `std::cout` which correctly places the messages in the R console. It is however not threadsafe.
+
+**Solution.** [{RcppThread}](https://tnagler.github.io/RcppThread/) provides `RcppThread::Rcout` and `RcppThread::Rcerr` which are treadsafe.
+:::
+
+::: {.callout-note}
+## Interrupting computations
+
+**Problem.** It is good practice in long-running computations to allow the user to interrupt manually the computation. This needs to be handled on the developer side. [{Rcpp}](https://www.rcpp.org/) provides the `Rcpp::checkUserInterrupt()` function for this purpose but, as the rest of the API, it is not threadsafe.
+
+**Solution.** [{RcppThread}](https://tnagler.github.io/RcppThread/) provides `RcppThread::checkUserInterrupt` which is treadsafe.
+:::
+
+## Multithreading with `std::thread`
+
+::: {.callout-tip}
+## The `RcppThread::Thread` class
+
+[{RcppThread}](https://tnagler.github.io/RcppThread/)’s `Thread` class is an
+R-friendly wrapper to `std::thread`. Instances of class `Thread` behave almost
+like instances of `std::thread`. There is one important difference: **Whenever
+child threads are running, the main thread periodically synchronizes with R.**
+In particular, it checks for user interruptions and releases all messages passed
+to `RcppThread::Rcout` and `RcppThread::Rcerr`. When the user interrupts a
+threaded computation, any thread will stop as soon it encounters
+`RcppThread::checkUserInterrupt()`.
+:::
+
+## Multithreading with `std::thread`
+
+```{Rcpp rcppthread-thread}
+#| code-line-numbers: "|3-5|10-16|17-18|19-20"
+#| file: src/rcppthread-thread.cpp
+```
+1. Rcpp attribute to enable C++11 features.
+2. Rcpp attribute to ensure that the package is linked to the
+[{RcppThread}](https://tnagler.github.io/RcppThread/) headers with the proper
+compilation flags.
+3. Include the necessary header to provide access to the `Thread` class,
+`RcppThread::Rcout`, and `RcppThread::checkUserInterrupt()`. It also includes
+the standard library headers required for `std::thread` and `std::chrono`.
+4. Define the task to be executed by the threads as a lambda function `job`
+which takes an integer `id` as argument and does the following: Sleep for one
+second, send a message, check for a user interruption, go back to sleep, and
+send another message.
+5. Spawn two new `Thread`’s with this job and different `id`’s. Notice that the
+argument of the job function is passed to the ‘Thread’ constructor. More
+generally, if a job function takes arguments, they must be passed to the
+constructor as a comma-separated list.
+6. Threads should always be joined before they are destructed. The `.join()`
+statements signal the main thread to wait until the jobs have finished. But
+instead of just waiting, the main thread starts synchronizing with R and
+checking for user interruptions.
+
+## Thread pool - Basic usage
+
+```{Rcpp rcppthread-threadpool}
+#| code-line-numbers: "|11,13,15-16"
+#| file: src/rcppthread-threadpool.cpp
+```
+1. Create a thread pool with `ncores` threads. Useful when the number of tasks
+is known in advance.
+2. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `i` as argument and assigns `i` to the `i`-th element of
+`x`. The lambda function captures `x` by reference. This is necessary because
+the lambda function is executed in a different context than the main thread.
+3. Push the task to the thread pool for each element of `x`. The `push` method
+takes the task and its arguments as arguments.
+4. Wait for all threads to finish. This is necessary because the main thread
+should not finish before the threads have finished. It also starts synchronizing
+with R and checking for user interruptions.
+
+```{r}
+rcpp_thread_example1(10, 3)
+```
+
+## Thread pool which returns a value
+
+```{Rcpp rcppthread-threadpool-ret}
+#| code-line-numbers: "|13-15|17-19|21-23|25-27|29"
+#| file: src/rcppthread-threadpool-ret.cpp
+```
+1. Create a vector `x` of `n` elements and initialize it with the integers from
+1 to `n`.
+2. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `i` as argument and returns the square of the `i`-th
+element of `x`. The lambda function captures `x` by reference. This is necessary
+because the lambda function is executed in a different context than the main
+thread.
+3. Create a vector of `std::future` objects to store the results of the tasks
+because the `pushReturn()` method returns a `std::future` object which can be
+used to later retrieve the result of the task.
+4. Retrieve the results of the tasks from the `std::future` objects and store
+them in a vector `results`.
+5. Wait for all threads to finish. This is necessary because the main thread
+should not finish before the threads have finished. It also starts synchronizing
+with R and checking for user interruptions.
+
+```{r}
+rcpp_thread_example2(10, 3)
+```
+
+## Parallel for loop
+
+```{Rcpp rcppthread-parallelfor}
+#| code-line-numbers: "|17"
+#| file: src/rcppthread-parallelfor.cpp
+```
+1. Execute the task for each element of `x` in parallel. The `parallelFor()`
+function takes the start index, end index, and the task as arguments.
+
+```{r}
+parallelfor_example(10)
+```
+
+## Parallel for-each loop
+
+```{Rcpp rcppthread-parallelforeach}
+#| code-line-numbers: "|15-17|19"
+#| file: src/rcppthread-parallelforeach.cpp
+```
+1. Define the task to be executed by the threads as a lambda function `task`
+which takes an integer `xx` as argument and multiplies it by 2. The argument is
+passed by reference because the task modifies the argument.
+2. Execute the task for each element of `x` in parallel. The `parallelForEach()`
+function takes the vector and the task as arguments and applies the task to each
+element of the vector.
+
+```{r}
+parallelforeach_example(10)
+```
+
+## [{RcppThread}](https://tnagler.github.io/RcppThread/) in an R package
+
+Using [{RcppThread}](https://tnagler.github.io/RcppThread/) in an R package is
+easy:
+
+1. Add `CXX_STD = CXX11` to the `src/Makevars(.win)` files of your package.
+2. Add `RcppThread` to the `LinkingTo` field in the `DESCRIPTION` file.
+3. Include the headers with `#include "RcppThread.h"` in your C++ source files
+within the `src/` directory.
+
+## Progress report
+
+```{Rcpp rcppthread-progress}
+#| file: src/rcppthread-progress.cpp
+```
+1. Create a progress bar with 20 iterations and update the progress every 1
+second.
+2. Execute the task for each iteration in parallel. The task instructs the
+thread to sleep for 200 milliseconds and then increment the progress bar.
+
+```{r}
+pb_example()
+```
+
+## References

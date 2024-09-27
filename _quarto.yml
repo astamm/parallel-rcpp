@@ -13,12 +13,12 @@ website:
   navbar:
     left:
       - text: "Slides"
-        href: parallel-rcpp.qmd
+        href: slides/slides.qmd
       - text: "Lab"
         menu:
-          - text: "Lab"
+          - text: "Instructions"
             href: lab/hausdorff_dist.qmd
-          - text: "Solution"
+          - text: "Solutions"
             href: lab/hausdorff_dist_solutions.qmd
     right:
       - icon: github

@@ -368,8 +368,8 @@ a matrix.
 The `dist_rcppparallel()` function parallelizes the computations via the
 `RcppParallel::parallelFor()` function, which requires a `RcppParallel::Worker`
 object. The `HausdorffDistanceComputer` class inherits from the
-`RcppParallel::Worker` and is used to implement exactly what a single worker
-should do.
+`RcppParallel::Worker` class and is used to implement exactly what a single
+worker should do.
 
 ## Benchmark
 

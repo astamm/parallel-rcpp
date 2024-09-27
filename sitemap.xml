@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://astamm.github.io/parallel-rcpp/index.html</loc>
-    <lastmod>2024-09-27T08:02:21.631Z</lastmod>
-  </url>
-  <url>
-    <loc>https://astamm.github.io/parallel-rcpp/lab/hausdorff_dist.html</loc>
-    <lastmod>2024-09-27T08:02:21.635Z</lastmod>
-  </url>
-  <url>
-    <loc>https://astamm.github.io/parallel-rcpp/tools.html</loc>
-    <lastmod>2024-09-27T08:02:21.637Z</lastmod>
-  </url>
-  <url>
-    <loc>https://astamm.github.io/parallel-rcpp/parallel-rcpp.html</loc>
-    <lastmod>2024-09-27T08:02:21.635Z</lastmod>
+    <loc>https://astamm.github.io/parallel-rcpp/slides/slides.html</loc>
+    <lastmod>2024-09-27T08:21:05.737Z</lastmod>
   </url>
   <url>
     <loc>https://astamm.github.io/parallel-rcpp/lab/hausdorff_dist_solutions.html</loc>
-    <lastmod>2024-09-27T08:02:21.635Z</lastmod>
+    <lastmod>2024-09-27T08:21:05.723Z</lastmod>
+  </url>
+  <url>
+    <loc>https://astamm.github.io/parallel-rcpp/lab/hausdorff_dist.html</loc>
+    <lastmod>2024-09-27T08:21:05.723Z</lastmod>
+  </url>
+  <url>
+    <loc>https://astamm.github.io/parallel-rcpp/index.html</loc>
+    <lastmod>2024-09-27T08:21:05.719Z</lastmod>
   </url>
 </urlset>

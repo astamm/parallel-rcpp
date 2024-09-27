@@ -53,7 +53,7 @@
     "href": "slides/slides.html#a-toy-function-to-play-with",
     "title": "Parallel computing with C++ from R",
     "section": "A toy function to play with",
-    "text": "A toy function to play with\n\n//---------------------------------\n1#include &lt;unistd.h&gt;\n#include &lt;Rcpp.h&gt;\n\n2// [[Rcpp::export]]\nbool wait_k_seconds(unsigned int sec)\n{\n    for (unsigned int i = 0;i &lt; sec;++i)\n        sleep(1);\n    \n    return EXIT_SUCCESS;\n}\n\n\n1\n\nThe unistd.h header file is needed for the sleep() function.\n\n2\n\nThe [[Rcpp::export]] attribute tells Rcpp that it should generate the necessary R bindings for the function so that it can be called from R.\n\n\n\n\n\nThe previous code defines a simple function that waits for sec seconds and makes it available to R when compiled using Rcpp::sourceCpp(). We can test that it does what it is supposed to do by calling it from R:\n\n\nsystem.time(wait_k_seconds(2))[3]\n\nelapsed \n  2.227"
+    "text": "A toy function to play with\n\n//---------------------------------\n1#include &lt;unistd.h&gt;\n#include &lt;Rcpp.h&gt;\n\n2// [[Rcpp::export]]\nbool wait_k_seconds(unsigned int sec)\n{\n    for (unsigned int i = 0;i &lt; sec;++i)\n        sleep(1);\n    \n    return EXIT_SUCCESS;\n}\n\n\n1\n\nThe unistd.h header file is needed for the sleep() function.\n\n2\n\nThe [[Rcpp::export]] attribute tells Rcpp that it should generate the necessary R bindings for the function so that it can be called from R.\n\n\n\n\n\nThe previous code defines a simple function that waits for sec seconds and makes it available to R when compiled using Rcpp::sourceCpp(). We can test that it does what it is supposed to do by calling it from R:\n\n\nsystem.time(wait_k_seconds(2))[3]\n\nelapsed \n  2.146"
   },
   {
     "objectID": "slides/slides.html#a-parallelized-version-via-openmp",
@@ -67,7 +67,7 @@
     "href": "slides/slides.html#benchmarking-1",
     "title": "Parallel computing with C++ from R",
     "section": "Benchmarking",
-    "text": "Benchmarking\n\nRun a 3 sec task on 1 thread:\n\n\nsystem.time(wait_k_seconds_omp(3, 1))[3]\n\nelapsed \n  3.221 \n\n\n\nRun a 3 sec task on 3 threads:\n\n\nsystem.time(wait_k_seconds_omp(3, 3))[3]\n\nelapsed \n  1.101"
+    "text": "Benchmarking\n\nRun a 3 sec task on 1 thread:\n\n\nsystem.time(wait_k_seconds_omp(3, 1))[3]\n\nelapsed \n  3.333 \n\n\n\nRun a 3 sec task on 3 threads:\n\n\nsystem.time(wait_k_seconds_omp(3, 3))[3]\n\nelapsed \n   1.12"
   },
   {
     "objectID": "slides/slides.html#a-more-realistic-example-r",
@@ -305,7 +305,7 @@
     "href": "slides/slides.html#progress-report-1",
     "title": "Parallel computing with C++ from R",
     "section": "Progress report",
-    "text": "Progress report\n\n#include &lt;Rcpp.h&gt;\n\n// [[Rcpp::plugins(cpp11)]]\n// [[Rcpp::depends(RcppThread)]]\n#include &lt;RcppThread.h&gt;\n\n// [[Rcpp::export]]\nvoid pb_example()\n{\n  // 20 iterations in loop, update progress every 1 sec\n1  RcppThread::ProgressBar bar(20, 1);\n2  RcppThread::parallelFor(0, 20, [&] (int i) {\n    std::this_thread::sleep_for(std::chrono::milliseconds(200));\n    ++bar;\n  });\n}\n\n\n1\n\nCreate a progress bar with 20 iterations and update the progress every 1 second.\n\n2\n\nExecute the task for each iteration in parallel. The task instructs the thread to sleep for 200 milliseconds and then increment the progress bar.\n\n\n\n\n\npb_example()\n\n\nComputing: [====================                    ] 50%  (~1s remaining)       \nComputing: [========================================] 100% (done)"
+    "text": "Progress report\n\n#include &lt;Rcpp.h&gt;\n\n// [[Rcpp::plugins(cpp11)]]\n// [[Rcpp::depends(RcppThread)]]\n#include &lt;RcppThread.h&gt;\n\n// [[Rcpp::export]]\nvoid pb_example()\n{\n  // 20 iterations in loop, update progress every 1 sec\n1  RcppThread::ProgressBar bar(20, 1);\n2  RcppThread::parallelFor(0, 20, [&] (int i) {\n    std::this_thread::sleep_for(std::chrono::milliseconds(200));\n    ++bar;\n  });\n}\n\n\n1\n\nCreate a progress bar with 20 iterations and update the progress every 1 second.\n\n2\n\nExecute the task for each iteration in parallel. The task instructs the thread to sleep for 200 milliseconds and then increment the progress bar.\n\n\n\n\n\npb_example()\n\n\nComputing: [======================                  ] 55%  (~0s remaining)       \nComputing: [======================                  ] 55%  (~0s remaining)       \nComputing: [========================================] 100% (done)"
   },
   {
     "objectID": "slides/slides.html#references",

@@ -339,7 +339,17 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
 $$
 
 ```{Rcpp}
+#| echo: false
 #| file: src/hausdorff.cpp
+```
+
+### Utility functions
+
+We start by defining some utility functions that are used in the main `dist()` implementations.
+
+```{Rcpp}
+#| eval: false
+#| file: src/hausdorff_utils.cpp
 ```
 
 The `hausdorff_distance_cpp()` function implements the Hausdorff distance
@@ -353,23 +363,67 @@ exported to R.
 
 The `listToMatrix()` function is used to convert a list of matrices to a single
 matrix that stores the sample of curves in a format that can be passed to the
-`dist_cpp_omp()` and `dist_rcppparallel()` functions in a thread-safe manner.
+`dist_omp()`, `dist_parallel()` and `dist_thread()` functions in a thread-safe
+manner.
 
-The `dist_cpp_omp()` and `dist_rcppparallel()` functions compute the Hausdorff
-distance between all pairs of curves in the sample. The former uses
-[OpenMP](https://www.openmp.org) to parallelize the computation, while the
-latter uses [{RcppParallel}](https://rcppcore.github.io/RcppParallel/). Both
-functions have two implementations with different input types
+### OpenMP implementation
+
+```{Rcpp}
+#| eval: false
+#| file: src/hausdorff_omp.cpp
+```
+
+The `dist_omp()` function computes the Hausdorff distance between all pairs of
+curves in the sample. It uses [OpenMP](https://www.openmp.org) to parallelize
+the computation. The function has two implementations with different input types
 (`Rcpp::NumericMatrix` and `Rcpp::List`). The former can be wrapped with the
-tread-safe accessor to matrices, while the latter is the one that is exported to
-R and internally uses the `listToMatrix()` function to convert the input list to
-a matrix.
+thread-safe accessor to matrices, while the latter is the one that is exported
+to R and internally uses the `listToMatrix()` function to convert the input list
+into a matrix and calls the `dist_omp()` function with the matrix as input.
 
-The `dist_rcppparallel()` function parallelizes the computations via the
+### [{RcppParallel}](https://rcppcore.github.io/RcppParallel/) implementation
+
+```{Rcpp}
+#| eval: false
+#| file: src/hausdorff_parallel.cpp
+```
+
+The `dist_parallel()` function computes the Hausdorff distance between all pairs
+of curves in the sample. It uses
+[{RcppParallel}](https://rcppcore.github.io/RcppParallel/) to parallelize the
+computation. The function has two implementations with different input types
+(`Rcpp::NumericMatrix` and `Rcpp::List`). The former can be wrapped with the
+thread-safe accessor to matrices, while the latter is the one that is exported
+to R and internally uses the `listToMatrix()` function to convert the input list
+to a matrix.
+
+The `dist_parallel()` function parallelizes the computations via the
 `RcppParallel::parallelFor()` function, which requires a `RcppParallel::Worker`
 object. The `HausdorffDistanceComputer` class inherits from the
 `RcppParallel::Worker` class and is used to implement exactly what a single
 worker should do.
+
+### [{RcppThread}](https://rcppcore.github.io/RcppThread/) implementation
+
+```{Rcpp}
+#| eval: false
+#| file: src/hausdorff_thread.cpp
+```
+
+The `dist_thread()` function computes the Hausdorff distance between all pairs
+of curves in the sample. It uses
+[{RcppThread}](https://rcppcore.github.io/RcppThread/) to parallelize the
+computation. The function has two implementations with different input types
+(`Rcpp::NumericMatrix` and `Rcpp::List`). The former can be wrapped with the
+thread-safe accessor to matrices, while the latter is the one that is exported
+to R and internally uses the `listToMatrix()` function to convert the input list
+to a matrix.
+
+The `dist_thread()` function parallelizes the computations via the
+`RcppThread::parallelFor()` function, which requires a task to be defined to
+tell each worker exactly what to do. This is achieved using a [lambda
+function](https://en.cppreference.com/w/cpp/language/lambda) which is a C++
+feature available since the C++11 standard.
 
 ## Benchmark
 
@@ -411,10 +465,12 @@ bm <- bench::mark(
     plan(sequential)
     out
   },
-  openmp1 = dist_cpp_omp(dat, dimension = 3L, ncores = 1L),
-  openmp4 = dist_cpp_omp(dat, dimension = 3L, ncores = 4L),
-  rcppparallel1 = dist_rcppparallel(dat, dimension = 3L, ncores = 1L),
-  rcppparallel4 = dist_rcppparallel(dat, dimension = 3L, ncores = 4L)
+  omp1 = dist_omp(dat, dimension = 3L, ncores = 1L),
+  omp4 = dist_omp(dat, dimension = 3L, ncores = 4L),
+  parallel1 = dist_parallel(dat, dimension = 3L, ncores = 1L),
+  parallel4 = dist_parallel(dat, dimension = 3L, ncores = 4L),
+  thread1 = dist_thread(dat, dimension = 3L, ncores = 1L),
+  thread4 = dist_thread(dat, dimension = 3L, ncores = 4L)
 )
 ```
 
@@ -423,7 +479,7 @@ bm <- bench::mark(
 bm |> 
   dplyr::select(expression, median, mem_alloc) |> 
   dplyr::mutate(
-    lang = c(rep("R", 5), rep("C++", 4)),
+    lang = c(rep("R", 5), rep("C++", 6)),
     expression = names(expression),
     median = as.numeric(median) * 1000,
     mem_alloc = as.numeric(mem_alloc)
@@ -465,7 +521,8 @@ bm |>
 
 **General observation.** Using C++ is much faster than using R. This is in
 particular due to never copying the data. It also provides linear speed-up as
-expected.
+expected. There are no notable differences between the different C++
+implementations.
 
 **R implementation.** The original Hausdorff distance implementation has a
 double loop.

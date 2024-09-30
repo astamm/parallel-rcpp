@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Aymeric Stamm">
-<meta name="dcterms.date" content="2024-09-27">
+<meta name="dcterms.date" content="2024-09-30">
 
 <title>Hausdorff Distance Matrix Computation – Parallel Rcpp</title>
 <style>
@@ -204,7 +204,13 @@ window.Quarto = {
   <li><a href="#nested-plan" id="toc-nested-plan" class="nav-link" data-scroll-target="#nested-plan">Nested plan</a></li>
   <li><a href="#convert-to-single-loop" id="toc-convert-to-single-loop" class="nav-link" data-scroll-target="#convert-to-single-loop">Convert to single loop</a></li>
   </ul></li>
-  <li><a href="#c-implementation" id="toc-c-implementation" class="nav-link" data-scroll-target="#c-implementation">C++ implementation</a></li>
+  <li><a href="#c-implementation" id="toc-c-implementation" class="nav-link" data-scroll-target="#c-implementation">C++ implementation</a>
+  <ul class="collapse">
+  <li><a href="#utility-functions" id="toc-utility-functions" class="nav-link" data-scroll-target="#utility-functions">Utility functions</a></li>
+  <li><a href="#openmp-implementation" id="toc-openmp-implementation" class="nav-link" data-scroll-target="#openmp-implementation">OpenMP implementation</a></li>
+  <li><a href="#rcppparallel-implementation" id="toc-rcppparallel-implementation" class="nav-link" data-scroll-target="#rcppparallel-implementation">{RcppParallel} implementation</a></li>
+  <li><a href="#rcppthread-implementation" id="toc-rcppthread-implementation" class="nav-link" data-scroll-target="#rcppthread-implementation">{RcppThread} implementation</a></li>
+  </ul></li>
   <li><a href="#benchmark" id="toc-benchmark" class="nav-link" data-scroll-target="#benchmark">Benchmark</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   </ul>
@@ -233,7 +239,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 27, 2024</p>
+      <p class="date">September 30, 2024</p>
     </div>
   </div>
   
@@ -332,23 +338,23 @@ Objective
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="zaifhgdygn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zaifhgdygn table {
+<div id="zvqahctxct" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zvqahctxct table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zaifhgdygn thead, #zaifhgdygn tbody, #zaifhgdygn tfoot, #zaifhgdygn tr, #zaifhgdygn td, #zaifhgdygn th {
+#zvqahctxct thead, #zvqahctxct tbody, #zvqahctxct tfoot, #zvqahctxct tr, #zvqahctxct td, #zvqahctxct th {
   border-style: none;
 }
 
-#zaifhgdygn p {
+#zvqahctxct p {
   margin: 0;
   padding: 0;
 }
 
-#zaifhgdygn .gt_table {
+#zvqahctxct .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -374,12 +380,12 @@ Objective
   border-left-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_caption {
+#zvqahctxct .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zaifhgdygn .gt_title {
+#zvqahctxct .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -391,7 +397,7 @@ Objective
   border-bottom-width: 0;
 }
 
-#zaifhgdygn .gt_subtitle {
+#zvqahctxct .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -403,7 +409,7 @@ Objective
   border-top-width: 0;
 }
 
-#zaifhgdygn .gt_heading {
+#zvqahctxct .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -415,13 +421,13 @@ Objective
   border-right-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_bottom_border {
+#zvqahctxct .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_col_headings {
+#zvqahctxct .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -436,7 +442,7 @@ Objective
   border-right-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_col_heading {
+#zvqahctxct .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -456,7 +462,7 @@ Objective
   overflow-x: hidden;
 }
 
-#zaifhgdygn .gt_column_spanner_outer {
+#zvqahctxct .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -468,15 +474,15 @@ Objective
   padding-right: 4px;
 }
 
-#zaifhgdygn .gt_column_spanner_outer:first-child {
+#zvqahctxct .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zaifhgdygn .gt_column_spanner_outer:last-child {
+#zvqahctxct .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zaifhgdygn .gt_column_spanner {
+#zvqahctxct .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -488,11 +494,11 @@ Objective
   width: 100%;
 }
 
-#zaifhgdygn .gt_spanner_row {
+#zvqahctxct .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zaifhgdygn .gt_group_heading {
+#zvqahctxct .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -518,7 +524,7 @@ Objective
   text-align: left;
 }
 
-#zaifhgdygn .gt_empty_group_heading {
+#zvqahctxct .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -533,15 +539,15 @@ Objective
   vertical-align: middle;
 }
 
-#zaifhgdygn .gt_from_md > :first-child {
+#zvqahctxct .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zaifhgdygn .gt_from_md > :last-child {
+#zvqahctxct .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zaifhgdygn .gt_row {
+#zvqahctxct .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -560,7 +566,7 @@ Objective
   overflow-x: hidden;
 }
 
-#zaifhgdygn .gt_stub {
+#zvqahctxct .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -573,7 +579,7 @@ Objective
   padding-right: 5px;
 }
 
-#zaifhgdygn .gt_stub_row_group {
+#zvqahctxct .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -587,15 +593,15 @@ Objective
   vertical-align: top;
 }
 
-#zaifhgdygn .gt_row_group_first td {
+#zvqahctxct .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zaifhgdygn .gt_row_group_first th {
+#zvqahctxct .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zaifhgdygn .gt_summary_row {
+#zvqahctxct .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -605,16 +611,16 @@ Objective
   padding-right: 5px;
 }
 
-#zaifhgdygn .gt_first_summary_row {
+#zvqahctxct .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_first_summary_row.thick {
+#zvqahctxct .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zaifhgdygn .gt_last_summary_row {
+#zvqahctxct .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -624,7 +630,7 @@ Objective
   border-bottom-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_grand_summary_row {
+#zvqahctxct .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -634,7 +640,7 @@ Objective
   padding-right: 5px;
 }
 
-#zaifhgdygn .gt_first_grand_summary_row {
+#zvqahctxct .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -644,7 +650,7 @@ Objective
   border-top-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_last_grand_summary_row_top {
+#zvqahctxct .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -654,11 +660,11 @@ Objective
   border-bottom-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_striped {
+#zvqahctxct .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zaifhgdygn .gt_table_body {
+#zvqahctxct .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -667,7 +673,7 @@ Objective
   border-bottom-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_footnotes {
+#zvqahctxct .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -681,7 +687,7 @@ Objective
   border-right-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_footnote {
+#zvqahctxct .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -690,7 +696,7 @@ Objective
   padding-right: 5px;
 }
 
-#zaifhgdygn .gt_sourcenotes {
+#zvqahctxct .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -704,7 +710,7 @@ Objective
   border-right-color: #D3D3D3;
 }
 
-#zaifhgdygn .gt_sourcenote {
+#zvqahctxct .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -712,72 +718,72 @@ Objective
   padding-right: 5px;
 }
 
-#zaifhgdygn .gt_left {
+#zvqahctxct .gt_left {
   text-align: left;
 }
 
-#zaifhgdygn .gt_center {
+#zvqahctxct .gt_center {
   text-align: center;
 }
 
-#zaifhgdygn .gt_right {
+#zvqahctxct .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zaifhgdygn .gt_font_normal {
+#zvqahctxct .gt_font_normal {
   font-weight: normal;
 }
 
-#zaifhgdygn .gt_font_bold {
+#zvqahctxct .gt_font_bold {
   font-weight: bold;
 }
 
-#zaifhgdygn .gt_font_italic {
+#zvqahctxct .gt_font_italic {
   font-style: italic;
 }
 
-#zaifhgdygn .gt_super {
+#zvqahctxct .gt_super {
   font-size: 65%;
 }
 
-#zaifhgdygn .gt_footnote_marks {
+#zvqahctxct .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zaifhgdygn .gt_asterisk {
+#zvqahctxct .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zaifhgdygn .gt_indent_1 {
+#zvqahctxct .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zaifhgdygn .gt_indent_2 {
+#zvqahctxct .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zaifhgdygn .gt_indent_3 {
+#zvqahctxct .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zaifhgdygn .gt_indent_4 {
+#zvqahctxct .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zaifhgdygn .gt_indent_5 {
+#zvqahctxct .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zaifhgdygn .katex-display {
+#zvqahctxct .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zaifhgdygn div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#zvqahctxct div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -868,23 +874,23 @@ dist objects
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="xoxdvgxeud" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xoxdvgxeud table {
+<div id="mbooiaegec" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mbooiaegec table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xoxdvgxeud thead, #xoxdvgxeud tbody, #xoxdvgxeud tfoot, #xoxdvgxeud tr, #xoxdvgxeud td, #xoxdvgxeud th {
+#mbooiaegec thead, #mbooiaegec tbody, #mbooiaegec tfoot, #mbooiaegec tr, #mbooiaegec td, #mbooiaegec th {
   border-style: none;
 }
 
-#xoxdvgxeud p {
+#mbooiaegec p {
   margin: 0;
   padding: 0;
 }
 
-#xoxdvgxeud .gt_table {
+#mbooiaegec .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -910,12 +916,12 @@ dist objects
   border-left-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_caption {
+#mbooiaegec .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xoxdvgxeud .gt_title {
+#mbooiaegec .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -927,7 +933,7 @@ dist objects
   border-bottom-width: 0;
 }
 
-#xoxdvgxeud .gt_subtitle {
+#mbooiaegec .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -939,7 +945,7 @@ dist objects
   border-top-width: 0;
 }
 
-#xoxdvgxeud .gt_heading {
+#mbooiaegec .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -951,13 +957,13 @@ dist objects
   border-right-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_bottom_border {
+#mbooiaegec .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_col_headings {
+#mbooiaegec .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -972,7 +978,7 @@ dist objects
   border-right-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_col_heading {
+#mbooiaegec .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -992,7 +998,7 @@ dist objects
   overflow-x: hidden;
 }
 
-#xoxdvgxeud .gt_column_spanner_outer {
+#mbooiaegec .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1004,15 +1010,15 @@ dist objects
   padding-right: 4px;
 }
 
-#xoxdvgxeud .gt_column_spanner_outer:first-child {
+#mbooiaegec .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xoxdvgxeud .gt_column_spanner_outer:last-child {
+#mbooiaegec .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xoxdvgxeud .gt_column_spanner {
+#mbooiaegec .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1024,11 +1030,11 @@ dist objects
   width: 100%;
 }
 
-#xoxdvgxeud .gt_spanner_row {
+#mbooiaegec .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xoxdvgxeud .gt_group_heading {
+#mbooiaegec .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1054,7 +1060,7 @@ dist objects
   text-align: left;
 }
 
-#xoxdvgxeud .gt_empty_group_heading {
+#mbooiaegec .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1069,15 +1075,15 @@ dist objects
   vertical-align: middle;
 }
 
-#xoxdvgxeud .gt_from_md > :first-child {
+#mbooiaegec .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xoxdvgxeud .gt_from_md > :last-child {
+#mbooiaegec .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xoxdvgxeud .gt_row {
+#mbooiaegec .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1096,7 +1102,7 @@ dist objects
   overflow-x: hidden;
 }
 
-#xoxdvgxeud .gt_stub {
+#mbooiaegec .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1109,7 +1115,7 @@ dist objects
   padding-right: 5px;
 }
 
-#xoxdvgxeud .gt_stub_row_group {
+#mbooiaegec .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1123,15 +1129,15 @@ dist objects
   vertical-align: top;
 }
 
-#xoxdvgxeud .gt_row_group_first td {
+#mbooiaegec .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xoxdvgxeud .gt_row_group_first th {
+#mbooiaegec .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xoxdvgxeud .gt_summary_row {
+#mbooiaegec .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1141,16 +1147,16 @@ dist objects
   padding-right: 5px;
 }
 
-#xoxdvgxeud .gt_first_summary_row {
+#mbooiaegec .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_first_summary_row.thick {
+#mbooiaegec .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xoxdvgxeud .gt_last_summary_row {
+#mbooiaegec .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1160,7 +1166,7 @@ dist objects
   border-bottom-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_grand_summary_row {
+#mbooiaegec .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1170,7 +1176,7 @@ dist objects
   padding-right: 5px;
 }
 
-#xoxdvgxeud .gt_first_grand_summary_row {
+#mbooiaegec .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1180,7 +1186,7 @@ dist objects
   border-top-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_last_grand_summary_row_top {
+#mbooiaegec .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1190,11 +1196,11 @@ dist objects
   border-bottom-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_striped {
+#mbooiaegec .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xoxdvgxeud .gt_table_body {
+#mbooiaegec .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1203,7 +1209,7 @@ dist objects
   border-bottom-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_footnotes {
+#mbooiaegec .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1217,7 +1223,7 @@ dist objects
   border-right-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_footnote {
+#mbooiaegec .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1226,7 +1232,7 @@ dist objects
   padding-right: 5px;
 }
 
-#xoxdvgxeud .gt_sourcenotes {
+#mbooiaegec .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1240,7 +1246,7 @@ dist objects
   border-right-color: #D3D3D3;
 }
 
-#xoxdvgxeud .gt_sourcenote {
+#mbooiaegec .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1248,72 +1254,72 @@ dist objects
   padding-right: 5px;
 }
 
-#xoxdvgxeud .gt_left {
+#mbooiaegec .gt_left {
   text-align: left;
 }
 
-#xoxdvgxeud .gt_center {
+#mbooiaegec .gt_center {
   text-align: center;
 }
 
-#xoxdvgxeud .gt_right {
+#mbooiaegec .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xoxdvgxeud .gt_font_normal {
+#mbooiaegec .gt_font_normal {
   font-weight: normal;
 }
 
-#xoxdvgxeud .gt_font_bold {
+#mbooiaegec .gt_font_bold {
   font-weight: bold;
 }
 
-#xoxdvgxeud .gt_font_italic {
+#mbooiaegec .gt_font_italic {
   font-style: italic;
 }
 
-#xoxdvgxeud .gt_super {
+#mbooiaegec .gt_super {
   font-size: 65%;
 }
 
-#xoxdvgxeud .gt_footnote_marks {
+#mbooiaegec .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xoxdvgxeud .gt_asterisk {
+#mbooiaegec .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xoxdvgxeud .gt_indent_1 {
+#mbooiaegec .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xoxdvgxeud .gt_indent_2 {
+#mbooiaegec .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xoxdvgxeud .gt_indent_3 {
+#mbooiaegec .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xoxdvgxeud .gt_indent_4 {
+#mbooiaegec .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xoxdvgxeud .gt_indent_5 {
+#mbooiaegec .gt_indent_5 {
   text-indent: 25px;
 }
 
-#xoxdvgxeud .katex-display {
+#mbooiaegec .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#xoxdvgxeud div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#mbooiaegec div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1476,262 +1482,329 @@ Memory footprint
 <p><span class="math display">\[
 x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \dots, x_i^{(L)}(t_1), \dots, x_i^{(L)}(t_P).
 \]</span></p>
+<section id="utility-functions" class="level3">
+<h3 class="anchored" data-anchor-id="utility-functions">Utility functions</h3>
+<p>We start by defining some utility functions that are used in the main <code>dist()</code> implementations.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"hausdorff_utils.h"</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::depends(RcppParallel)]]</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;RcppParallel.h&gt;</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> hausdorff_distance_cpp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">,</span> Rcpp<span class="op">::</span>NumericVector y<span class="op">,</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                              <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numDimensions <span class="op">=</span> dimension<span class="op">;</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numPoints <span class="op">=</span> x<span class="op">.</span>size<span class="op">()</span> <span class="op">/</span> numDimensions<span class="op">;</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dX <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dY <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> hausdorff_distance_cpp<span class="op">(</span>Rcpp<span class="op">::</span>NumericVector x<span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                              Rcpp<span class="op">::</span>NumericVector y<span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                              <span class="dt">unsigned</span> <span class="dt">int</span> dimension<span class="op">)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numDimensions <span class="op">=</span> dimension<span class="op">;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numPoints <span class="op">=</span> x<span class="op">.</span>size<span class="op">()</span> <span class="op">/</span> numDimensions<span class="op">;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dX <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dY <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> numPoints<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_x <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_y <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> numPoints<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_x <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_y <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>j <span class="op">&lt;</span> numPoints<span class="op">;++</span>j<span class="op">)</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>j <span class="op">&lt;</span> numPoints<span class="op">;++</span>j<span class="op">)</span></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> numDimensions<span class="op">;++</span>k<span class="op">)</span></span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> index_i <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> i<span class="op">;</span></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> index_j <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> j<span class="op">;</span></span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        dist_x <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>x<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> y<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        dist_y <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>y<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> x<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>      min_dist_x <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_x<span class="op">,</span> dist_x<span class="op">);</span></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>      min_dist_y <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_y<span class="op">,</span> dist_y<span class="op">);</span></span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    dX <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> min_dist_x<span class="op">);</span></span>
-<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    dY <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dY<span class="op">,</span> min_dist_y<span class="op">);</span></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">std::</span>sqrt<span class="op">(</span><span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> dY<span class="op">));</span></span>
-<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> hausdorff_distance_cpp<span class="op">(</span>RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>Row x<span class="op">,</span></span>
-<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>                              RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>Row y<span class="op">,</span></span>
-<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>                              <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numDimensions <span class="op">=</span> dimension<span class="op">;</span></span>
-<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numPoints <span class="op">=</span> x<span class="op">.</span>size<span class="op">()</span> <span class="op">/</span> numDimensions<span class="op">;</span></span>
-<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dX <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dY <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> numDimensions<span class="op">;++</span>k<span class="op">)</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> index_i <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> i<span class="op">;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> index_j <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> j<span class="op">;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        dist_x <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>x<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> y<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        dist_y <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>y<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> x<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>      min_dist_x <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_x<span class="op">,</span> dist_x<span class="op">);</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>      min_dist_y <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_y<span class="op">,</span> dist_y<span class="op">);</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    dX <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> min_dist_x<span class="op">);</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    dY <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dY<span class="op">,</span> min_dist_y<span class="op">);</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">std::</span>sqrt<span class="op">(</span><span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> dY<span class="op">));</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> hausdorff_distance_cpp<span class="op">(</span>RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>Row x<span class="op">,</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>                              RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>Row y<span class="op">,</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>                              <span class="dt">unsigned</span> <span class="dt">int</span> dimension<span class="op">)</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numDimensions <span class="op">=</span> dimension<span class="op">;</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> numPoints <span class="op">=</span> x<span class="op">.</span>size<span class="op">()</span> <span class="op">/</span> numDimensions<span class="op">;</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dX <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> dY <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> numPoints<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_x <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_y <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
 <span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> numPoints<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
-<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_x <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
-<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> min_dist_y <span class="op">=</span> <span class="bu">std::</span>numeric_limits<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;::</span>infinity<span class="op">();</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>j <span class="op">&lt;</span> numPoints<span class="op">;++</span>j<span class="op">)</span></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>j <span class="op">&lt;</span> numPoints<span class="op">;++</span>j<span class="op">)</span></span>
-<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
-<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>      <span class="dt">double</span> dist_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> numDimensions<span class="op">;++</span>k<span class="op">)</span></span>
-<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
-<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> index_i <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> i<span class="op">;</span></span>
-<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> index_j <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> j<span class="op">;</span></span>
-<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>        dist_x <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>x<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> y<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
-<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>        dist_y <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>y<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> x<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
-<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>      min_dist_x <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_x<span class="op">,</span> dist_x<span class="op">);</span></span>
-<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>      min_dist_y <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_y<span class="op">,</span> dist_y<span class="op">);</span></span>
-<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>    dX <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> min_dist_x<span class="op">);</span></span>
-<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>    dY <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dY<span class="op">,</span> min_dist_y<span class="op">);</span></span>
-<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">std::</span>sqrt<span class="op">(</span><span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> dY<span class="op">));</span></span>
-<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericMatrix listToMatrix<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">)</span></span>
-<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> nrows <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
-<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> ncols <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;(</span>x<span class="op">[</span><span class="dv">0</span><span class="op">]).</span>size<span class="op">();</span></span>
-<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix out<span class="op">(</span>nrows<span class="op">,</span> ncols<span class="op">);</span></span>
-<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix workMatrix<span class="op">;</span></span>
-<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector row<span class="op">;</span></span>
-<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nrows<span class="op">;++</span>i<span class="op">)</span></span>
-<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
-<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>    workMatrix <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericMatrix<span class="op">&gt;(</span>x<span class="op">[</span>i<span class="op">]);</span></span>
-<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>    workMatrix <span class="op">=</span> Rcpp<span class="op">::</span>transpose<span class="op">(</span>workMatrix<span class="op">);</span></span>
-<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>    row <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;(</span>workMatrix<span class="op">);</span></span>
-<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>copy<span class="op">(</span>row<span class="op">.</span>begin<span class="op">(),</span> row<span class="op">.</span>end<span class="op">(),</span> out<span class="op">.</span>row<span class="op">(</span>i<span class="op">).</span>begin<span class="op">());</span></span>
-<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
-<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_cpp_omp<span class="op">(</span>Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
-<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
-<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> K <span class="op">=</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>K<span class="op">);</span></span>
-<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> xSafe<span class="op">(</span>x<span class="op">);</span></span>
-<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> outSafe<span class="op">(</span>out<span class="op">);</span></span>
-<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef _OPENMP</span></span>
-<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp parallel for num_threads(ncores)</span></span>
-<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> K<span class="op">;++</span>k<span class="op">)</span></span>
-<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
-<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>    outSafe<span class="op">[</span>k<span class="op">]</span> <span class="op">=</span> hausdorff_distance_cpp<span class="op">(</span>xSafe<span class="op">.</span>row<span class="op">(</span>i<span class="op">),</span> xSafe<span class="op">.</span>row<span class="op">(</span>j<span class="op">),</span> dimension<span class="op">);</span></span>
-<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Size"</span><span class="op">)</span> <span class="op">=</span> N<span class="op">;</span></span>
-<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Labels"</span><span class="op">)</span> <span class="op">=</span> Rcpp<span class="op">::</span>seq<span class="op">(</span><span class="dv">1</span><span class="op">,</span> N<span class="op">);</span></span>
-<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Diag"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Upper"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"method"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"hausdorff"</span><span class="op">;</span></span>
-<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"class"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"dist"</span><span class="op">;</span></span>
-<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
-<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_cpp_omp<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">,</span></span>
-<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix xMatrix <span class="op">=</span> listToMatrix<span class="op">(</span>x<span class="op">);</span></span>
-<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dist_cpp_omp<span class="op">(</span>xMatrix<span class="op">,</span> dimension<span class="op">,</span> ncores<span class="op">);</span></span>
-<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> HausdorffDistanceComputer <span class="op">:</span> <span class="kw">public</span> RcppParallel<span class="op">::</span>Worker</span>
-<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_SafeInput</span><span class="op">;</span></span>
-<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_SafeOutput</span><span class="op">;</span></span>
-<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> <span class="va">m_Dimension</span><span class="op">;</span></span>
-<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>  HausdorffDistanceComputer<span class="op">(</span><span class="at">const</span> Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
-<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>                    Rcpp<span class="op">::</span>NumericVector out<span class="op">,</span></span>
-<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">unsigned</span> <span class="dt">int</span> dimension<span class="op">)</span></span>
-<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span> <span class="va">m_SafeInput</span><span class="op">(</span>x<span class="op">),</span> <span class="va">m_SafeOutput</span><span class="op">(</span>out<span class="op">),</span> <span class="va">m_Dimension</span><span class="op">(</span>dimension<span class="op">)</span> <span class="op">{}</span></span>
-<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span><span class="bu">std::</span>size_t begin<span class="op">,</span> <span class="bu">std::</span>size_t end<span class="op">)</span></span>
-<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
-<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> <span class="va">m_SafeInput</span><span class="op">.</span>nrow<span class="op">();</span></span>
-<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">std::</span>size_t k <span class="op">=</span> begin<span class="op">;</span>k <span class="op">&lt;</span> end<span class="op">;++</span>k<span class="op">)</span></span>
-<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
-<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>      <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>      <span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>      <span class="va">m_SafeOutput</span><span class="op">[</span>k<span class="op">]</span> <span class="op">=</span> hausdorff_distance_cpp<span class="op">(</span><span class="va">m_SafeInput</span><span class="op">.</span>row<span class="op">(</span>i<span class="op">),</span> <span class="va">m_SafeInput</span><span class="op">.</span>row<span class="op">(</span>j<span class="op">),</span> <span class="va">m_Dimension</span><span class="op">);</span></span>
-<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_rcppparallel<span class="op">(</span>Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
-<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>                                      <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>                                      <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
-<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> K <span class="op">=</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>K<span class="op">);</span></span>
-<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>  HausdorffDistanceComputer hausdorffDistance<span class="op">(</span>x<span class="op">,</span> out<span class="op">,</span> dimension<span class="op">);</span></span>
-<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>parallelFor<span class="op">(</span><span class="dv">0</span><span class="op">,</span> K<span class="op">,</span> hausdorffDistance<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> ncores<span class="op">);</span></span>
-<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Size"</span><span class="op">)</span> <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
-<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Labels"</span><span class="op">)</span> <span class="op">=</span> Rcpp<span class="op">::</span>seq<span class="op">(</span><span class="dv">1</span><span class="op">,</span> x<span class="op">.</span>nrow<span class="op">());</span></span>
-<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Diag"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Upper"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"method"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"hausdorff"</span><span class="op">;</span></span>
-<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"class"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"dist"</span><span class="op">;</span></span>
-<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
-<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_rcppparallel<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">,</span></span>
-<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>                                      <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>                                      <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix xMatrix <span class="op">=</span> listToMatrix<span class="op">(</span>x<span class="op">);</span></span>
-<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dist_rcppparallel<span class="op">(</span>xMatrix<span class="op">,</span> dimension<span class="op">,</span> ncores<span class="op">);</span></span>
-<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> numDimensions<span class="op">;++</span>k<span class="op">)</span></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> index_i <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> i<span class="op">;</span></span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> index_j <span class="op">=</span> k <span class="op">*</span> numPoints <span class="op">+</span> j<span class="op">;</span></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>        dist_x <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>x<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> y<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>        dist_y <span class="op">+=</span> <span class="bu">std::</span>pow<span class="op">(</span>y<span class="op">[</span>index_i<span class="op">]</span> <span class="op">-</span> x<span class="op">[</span>index_j<span class="op">],</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>      min_dist_x <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_x<span class="op">,</span> dist_x<span class="op">);</span></span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>      min_dist_y <span class="op">=</span> <span class="bu">std::</span>min<span class="op">(</span>min_dist_y<span class="op">,</span> dist_y<span class="op">);</span></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>    dX <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> min_dist_x<span class="op">);</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>    dY <span class="op">=</span> <span class="bu">std::</span>max<span class="op">(</span>dY<span class="op">,</span> min_dist_y<span class="op">);</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">std::</span>sqrt<span class="op">(</span><span class="bu">std::</span>max<span class="op">(</span>dX<span class="op">,</span> dY<span class="op">));</span></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericMatrix listToMatrix<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">)</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> nrows <span class="op">=</span> x<span class="op">.</span>size<span class="op">();</span></span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> ncols <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;(</span>x<span class="op">[</span><span class="dv">0</span><span class="op">]).</span>size<span class="op">();</span></span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix out<span class="op">(</span>nrows<span class="op">,</span> ncols<span class="op">);</span></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix workMatrix<span class="op">;</span></span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector workRow<span class="op">;</span></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>i <span class="op">&lt;</span> nrows<span class="op">;++</span>i<span class="op">)</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>    workMatrix <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericMatrix<span class="op">&gt;(</span>x<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>    workMatrix <span class="op">=</span> Rcpp<span class="op">::</span>transpose<span class="op">(</span>workMatrix<span class="op">);</span></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>    workRow <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;(</span>workMatrix<span class="op">);</span></span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>copy<span class="op">(</span>workRow<span class="op">.</span>begin<span class="op">(),</span> workRow<span class="op">.</span>end<span class="op">(),</span> out<span class="op">.</span>row<span class="op">(</span>i<span class="op">).</span>begin<span class="op">());</span></span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>hausdorff_distance_cpp()</code> function implements the Hausdorff distance between two curves, where a curve is stored as a vector as described in the beginning of the section. The function therefore takes an additional optional argument to specify the dimension of the curve. The function has two implementations with different input types (<code>Rcpp::NumericVector</code> and <code>RcppParallel::RMatrix&lt;double&gt;::Row</code>). The latter is used to parallelize the computation using the thread-safe accessor to vectors. Only the former is exported to R.</p>
-<p>The <code>listToMatrix()</code> function is used to convert a list of matrices to a single matrix that stores the sample of curves in a format that can be passed to the <code>dist_cpp_omp()</code> and <code>dist_rcppparallel()</code> functions in a thread-safe manner.</p>
-<p>The <code>dist_cpp_omp()</code> and <code>dist_rcppparallel()</code> functions compute the Hausdorff distance between all pairs of curves in the sample. The former uses <a href="https://www.openmp.org">OpenMP</a> to parallelize the computation, while the latter uses <a href="https://rcppcore.github.io/RcppParallel/">{RcppParallel}</a>. Both functions have two implementations with different input types (<code>Rcpp::NumericMatrix</code> and <code>Rcpp::List</code>). The former can be wrapped with the tread-safe accessor to matrices, while the latter is the one that is exported to R and internally uses the <code>listToMatrix()</code> function to convert the input list to a matrix.</p>
-<p>The <code>dist_rcppparallel()</code> function parallelizes the computations via the <code>RcppParallel::parallelFor()</code> function, which requires a <code>RcppParallel::Worker</code> object. The <code>HausdorffDistanceComputer</code> class inherits from the <code>RcppParallel::Worker</code> class and is used to implement exactly what a single worker should do.</p>
+<p>The <code>listToMatrix()</code> function is used to convert a list of matrices to a single matrix that stores the sample of curves in a format that can be passed to the <code>dist_omp()</code>, <code>dist_parallel()</code> and <code>dist_thread()</code> functions in a thread-safe manner.</p>
+</section>
+<section id="openmp-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="openmp-implementation">OpenMP implementation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"hausdorff_utils.h"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">// // [[Rcpp::plugins(openmp)]] // Uncomment on Windows and Linux</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_omp<span class="op">(</span>Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> K <span class="op">=</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>K<span class="op">);</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> xSafe<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> outSafe<span class="op">(</span>out<span class="op">);</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef _OPENMP</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="pp">#pragma omp parallel for num_threads(ncores)</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>k <span class="op">&lt;</span> K<span class="op">;++</span>k<span class="op">)</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    outSafe<span class="op">[</span>k<span class="op">]</span> <span class="op">=</span> hausdorff_distance_cpp<span class="op">(</span>xSafe<span class="op">.</span>row<span class="op">(</span>i<span class="op">),</span> xSafe<span class="op">.</span>row<span class="op">(</span>j<span class="op">),</span> dimension<span class="op">);</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Size"</span><span class="op">)</span> <span class="op">=</span> N<span class="op">;</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Labels"</span><span class="op">)</span> <span class="op">=</span> Rcpp<span class="op">::</span>seq<span class="op">(</span><span class="dv">1</span><span class="op">,</span> N<span class="op">);</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Diag"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Upper"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"method"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"hausdorff"</span><span class="op">;</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"class"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"dist"</span><span class="op">;</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_omp<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">,</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix xMatrix <span class="op">=</span> listToMatrix<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dist_omp<span class="op">(</span>xMatrix<span class="op">,</span> dimension<span class="op">,</span> ncores<span class="op">);</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>dist_omp()</code> function computes the Hausdorff distance between all pairs of curves in the sample. It uses <a href="https://www.openmp.org">OpenMP</a> to parallelize the computation. The function has two implementations with different input types (<code>Rcpp::NumericMatrix</code> and <code>Rcpp::List</code>). The former can be wrapped with the thread-safe accessor to matrices, while the latter is the one that is exported to R and internally uses the <code>listToMatrix()</code> function to convert the input list into a matrix and calls the <code>dist_omp()</code> function with the matrix as input.</p>
+</section>
+<section id="rcppparallel-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="rcppparallel-implementation"><a href="https://rcppcore.github.io/RcppParallel/">{RcppParallel}</a> implementation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"hausdorff_utils.h"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> HausdorffDistanceComputer <span class="op">:</span> <span class="kw">public</span> RcppParallel<span class="op">::</span>Worker</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_SafeInput</span><span class="op">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> <span class="va">m_SafeOutput</span><span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> <span class="va">m_Dimension</span><span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  HausdorffDistanceComputer<span class="op">(</span><span class="at">const</span> Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                            Rcpp<span class="op">::</span>NumericVector out<span class="op">,</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                            <span class="dt">unsigned</span> <span class="dt">int</span> dimension<span class="op">)</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span> <span class="va">m_SafeInput</span><span class="op">(</span>x<span class="op">),</span> <span class="va">m_SafeOutput</span><span class="op">(</span>out<span class="op">),</span> <span class="va">m_Dimension</span><span class="op">(</span>dimension<span class="op">)</span> <span class="op">{}</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span><span class="bu">std::</span>size_t begin<span class="op">,</span> <span class="bu">std::</span>size_t end<span class="op">)</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> <span class="va">m_SafeInput</span><span class="op">.</span>nrow<span class="op">();</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">std::</span>size_t k <span class="op">=</span> begin<span class="op">;</span>k <span class="op">&lt;</span> end<span class="op">;++</span>k<span class="op">)</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>      <span class="va">m_SafeOutput</span><span class="op">[</span>k<span class="op">]</span> <span class="op">=</span> hausdorff_distance_cpp<span class="op">(</span><span class="va">m_SafeInput</span><span class="op">.</span>row<span class="op">(</span>i<span class="op">),</span> <span class="va">m_SafeInput</span><span class="op">.</span>row<span class="op">(</span>j<span class="op">),</span> <span class="va">m_Dimension</span><span class="op">);</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_parallel<span class="op">(</span>Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> K <span class="op">=</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>K<span class="op">);</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  HausdorffDistanceComputer hausdorffDistance<span class="op">(</span>x<span class="op">,</span> out<span class="op">,</span> dimension<span class="op">);</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>parallelFor<span class="op">(</span><span class="dv">0</span><span class="op">,</span> K<span class="op">,</span> hausdorffDistance<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> ncores<span class="op">);</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Size"</span><span class="op">)</span> <span class="op">=</span> N<span class="op">;</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Labels"</span><span class="op">)</span> <span class="op">=</span> Rcpp<span class="op">::</span>seq<span class="op">(</span><span class="dv">1</span><span class="op">,</span> N<span class="op">);</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Diag"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Upper"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"method"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"hausdorff"</span><span class="op">;</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"class"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"dist"</span><span class="op">;</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_parallel<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">,</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix xMatrix <span class="op">=</span> listToMatrix<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dist_parallel<span class="op">(</span>xMatrix<span class="op">,</span> dimension<span class="op">,</span> ncores<span class="op">);</span></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>dist_parallel()</code> function computes the Hausdorff distance between all pairs of curves in the sample. It uses <a href="https://rcppcore.github.io/RcppParallel/">{RcppParallel}</a> to parallelize the computation. The function has two implementations with different input types (<code>Rcpp::NumericMatrix</code> and <code>Rcpp::List</code>). The former can be wrapped with the thread-safe accessor to matrices, while the latter is the one that is exported to R and internally uses the <code>listToMatrix()</code> function to convert the input list to a matrix.</p>
+<p>The <code>dist_parallel()</code> function parallelizes the computations via the <code>RcppParallel::parallelFor()</code> function, which requires a <code>RcppParallel::Worker</code> object. The <code>HausdorffDistanceComputer</code> class inherits from the <code>RcppParallel::Worker</code> class and is used to implement exactly what a single worker should do.</p>
+</section>
+<section id="rcppthread-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="rcppthread-implementation"><a href="https://rcppcore.github.io/RcppThread/">{RcppThread}</a> implementation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"hausdorff_utils.h"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::plugins(cpp11)]]</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::depends(RcppThread)]]</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;RcppThread.h&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_thread<span class="op">(</span>Rcpp<span class="op">::</span>NumericMatrix x<span class="op">,</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> x<span class="op">.</span>nrow<span class="op">();</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> K <span class="op">=</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericVector out<span class="op">(</span>K<span class="op">);</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RMatrix<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> xSafe<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  RcppParallel<span class="op">::</span>RVector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> outSafe<span class="op">(</span>out<span class="op">);</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">auto</span> task <span class="op">=</span> <span class="op">[&amp;</span>xSafe<span class="op">,</span> <span class="op">&amp;</span>outSafe<span class="op">,</span> <span class="op">&amp;</span>dimension<span class="op">]</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> k<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> N <span class="op">=</span> xSafe<span class="op">.</span>nrow<span class="op">();</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> N <span class="op">-</span> <span class="dv">2</span> <span class="op">-</span> <span class="bu">std::</span>floor<span class="op">(</span><span class="bu">std::</span>sqrt<span class="op">(-</span><span class="dv">8</span> <span class="op">*</span> k <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="dv">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> j <span class="op">=</span> k <span class="op">+</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">-</span> N <span class="op">*</span> <span class="op">(</span>N <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="op">(</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">*</span> <span class="op">((</span>N <span class="op">-</span> i<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    outSafe<span class="op">[</span>k<span class="op">]</span> <span class="op">=</span> hausdorff_distance_cpp<span class="op">(</span>xSafe<span class="op">.</span>row<span class="op">(</span>i<span class="op">),</span> xSafe<span class="op">.</span>row<span class="op">(</span>j<span class="op">),</span> dimension<span class="op">);</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  RcppThread<span class="op">::</span>parallelFor<span class="op">(</span><span class="dv">0</span><span class="op">,</span> K<span class="op">,</span> task<span class="op">,</span> ncores<span class="op">);</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Size"</span><span class="op">)</span> <span class="op">=</span> N<span class="op">;</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Labels"</span><span class="op">)</span> <span class="op">=</span> Rcpp<span class="op">::</span>seq<span class="op">(</span><span class="dv">1</span><span class="op">,</span> N<span class="op">);</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Diag"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"Upper"</span><span class="op">)</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"method"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"hausdorff"</span><span class="op">;</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span>attr<span class="op">(</span><span class="st">"class"</span><span class="op">)</span> <span class="op">=</span> <span class="st">"dist"</span><span class="op">;</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> out<span class="op">;</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dist_thread<span class="op">(</span>Rcpp<span class="op">::</span>List x<span class="op">,</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">unsigned</span> <span class="dt">int</span> dimension <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">unsigned</span> <span class="dt">int</span> ncores <span class="op">=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  Rcpp<span class="op">::</span>NumericMatrix xMatrix <span class="op">=</span> listToMatrix<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dist_thread<span class="op">(</span>xMatrix<span class="op">,</span> dimension<span class="op">,</span> ncores<span class="op">);</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>dist_thread()</code> function computes the Hausdorff distance between all pairs of curves in the sample. It uses <a href="https://rcppcore.github.io/RcppThread/">{RcppThread}</a> to parallelize the computation. The function has two implementations with different input types (<code>Rcpp::NumericMatrix</code> and <code>Rcpp::List</code>). The former can be wrapped with the thread-safe accessor to matrices, while the latter is the one that is exported to R and internally uses the <code>listToMatrix()</code> function to convert the input list to a matrix.</p>
+<p>The <code>dist_thread()</code> function parallelizes the computations via the <code>RcppThread::parallelFor()</code> function, which requires a task to be defined to tell each worker exactly what to do. This is achieved using a <a href="https://en.cppreference.com/w/cpp/language/lambda">lambda function</a> which is a C++ feature available since the C++11 standard.</p>
+</section>
 </section>
 <section id="benchmark" class="level2">
 <h2 class="anchored" data-anchor-id="benchmark">Benchmark</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sequential =</span> <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">outer =</span> {</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v2</span>(dat)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    out</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">chunksize =</span> {</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v3</span>(dat)</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    out</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">nested =</span> {</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(<span class="fu">list</span>(</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tweak</span>(multisession, <span class="at">workers =</span> <span class="dv">2</span>L),</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tweak</span>(multisession, <span class="at">workers =</span> <span class="fu">I</span>(<span class="dv">2</span>L))</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v4</span>(dat)</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    out</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">singleloop =</span> {</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v5</span>(dat)</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    out</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">openmp1 =</span> <span class="fu">dist_cpp_omp</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">1</span>L),</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">openmp4 =</span> <span class="fu">dist_cpp_omp</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">4</span>L),</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">rcppparallel1 =</span> <span class="fu">dist_rcppparallel</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">1</span>L),</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">rcppparallel4 =</span> <span class="fu">dist_rcppparallel</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">4</span>L)</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>bm <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sequential =</span> <span class="fu">dist_r_v1</span>(dat, <span class="at">vectorized =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">outer =</span> {</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v2</span>(dat)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    out</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">chunksize =</span> {</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v3</span>(dat)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    out</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">nested =</span> {</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(<span class="fu">list</span>(</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tweak</span>(multisession, <span class="at">workers =</span> <span class="dv">2</span>L),</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tweak</span>(multisession, <span class="at">workers =</span> <span class="fu">I</span>(<span class="dv">2</span>L))</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v4</span>(dat)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    out</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">singleloop =</span> {</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>L)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">dist_r_v5</span>(dat)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plan</span>(sequential)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    out</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">omp1 =</span> <span class="fu">dist_omp</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">1</span>L),</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">omp4 =</span> <span class="fu">dist_omp</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">4</span>L),</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel1 =</span> <span class="fu">dist_parallel</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">1</span>L),</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel4 =</span> <span class="fu">dist_parallel</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">4</span>L),</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">thread1 =</span> <span class="fu">dist_thread</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">1</span>L),</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">thread4 =</span> <span class="fu">dist_thread</span>(dat, <span class="at">dimension =</span> <span class="dv">3</span>L, <span class="at">ncores =</span> <span class="dv">4</span>L)</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="qsqgnyattp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qsqgnyattp table {
+<div id="qxygbdqvlp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qxygbdqvlp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qsqgnyattp thead, #qsqgnyattp tbody, #qsqgnyattp tfoot, #qsqgnyattp tr, #qsqgnyattp td, #qsqgnyattp th {
+#qxygbdqvlp thead, #qxygbdqvlp tbody, #qxygbdqvlp tfoot, #qxygbdqvlp tr, #qxygbdqvlp td, #qxygbdqvlp th {
   border-style: none;
 }
 
-#qsqgnyattp p {
+#qxygbdqvlp p {
   margin: 0;
   padding: 0;
 }
 
-#qsqgnyattp .gt_table {
+#qxygbdqvlp .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1757,12 +1830,12 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-left-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_caption {
+#qxygbdqvlp .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qsqgnyattp .gt_title {
+#qxygbdqvlp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1774,7 +1847,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-bottom-width: 0;
 }
 
-#qsqgnyattp .gt_subtitle {
+#qxygbdqvlp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1786,7 +1859,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-top-width: 0;
 }
 
-#qsqgnyattp .gt_heading {
+#qxygbdqvlp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1798,13 +1871,13 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-right-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_bottom_border {
+#qxygbdqvlp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_col_headings {
+#qxygbdqvlp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1819,7 +1892,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-right-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_col_heading {
+#qxygbdqvlp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1839,7 +1912,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   overflow-x: hidden;
 }
 
-#qsqgnyattp .gt_column_spanner_outer {
+#qxygbdqvlp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1851,15 +1924,15 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 4px;
 }
 
-#qsqgnyattp .gt_column_spanner_outer:first-child {
+#qxygbdqvlp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qsqgnyattp .gt_column_spanner_outer:last-child {
+#qxygbdqvlp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qsqgnyattp .gt_column_spanner {
+#qxygbdqvlp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1871,11 +1944,11 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   width: 100%;
 }
 
-#qsqgnyattp .gt_spanner_row {
+#qxygbdqvlp .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qsqgnyattp .gt_group_heading {
+#qxygbdqvlp .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1901,7 +1974,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   text-align: left;
 }
 
-#qsqgnyattp .gt_empty_group_heading {
+#qxygbdqvlp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1916,15 +1989,15 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   vertical-align: middle;
 }
 
-#qsqgnyattp .gt_from_md > :first-child {
+#qxygbdqvlp .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qsqgnyattp .gt_from_md > :last-child {
+#qxygbdqvlp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qsqgnyattp .gt_row {
+#qxygbdqvlp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1943,7 +2016,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   overflow-x: hidden;
 }
 
-#qsqgnyattp .gt_stub {
+#qxygbdqvlp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1956,7 +2029,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 5px;
 }
 
-#qsqgnyattp .gt_stub_row_group {
+#qxygbdqvlp .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1970,15 +2043,15 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   vertical-align: top;
 }
 
-#qsqgnyattp .gt_row_group_first td {
+#qxygbdqvlp .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qsqgnyattp .gt_row_group_first th {
+#qxygbdqvlp .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qsqgnyattp .gt_summary_row {
+#qxygbdqvlp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1988,16 +2061,16 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 5px;
 }
 
-#qsqgnyattp .gt_first_summary_row {
+#qxygbdqvlp .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_first_summary_row.thick {
+#qxygbdqvlp .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qsqgnyattp .gt_last_summary_row {
+#qxygbdqvlp .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2007,7 +2080,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-bottom-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_grand_summary_row {
+#qxygbdqvlp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2017,7 +2090,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 5px;
 }
 
-#qsqgnyattp .gt_first_grand_summary_row {
+#qxygbdqvlp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2027,7 +2100,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-top-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_last_grand_summary_row_top {
+#qxygbdqvlp .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2037,11 +2110,11 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-bottom-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_striped {
+#qxygbdqvlp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qsqgnyattp .gt_table_body {
+#qxygbdqvlp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2050,7 +2123,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-bottom-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_footnotes {
+#qxygbdqvlp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2064,7 +2137,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-right-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_footnote {
+#qxygbdqvlp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2073,7 +2146,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 5px;
 }
 
-#qsqgnyattp .gt_sourcenotes {
+#qxygbdqvlp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2087,7 +2160,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   border-right-color: #D3D3D3;
 }
 
-#qsqgnyattp .gt_sourcenote {
+#qxygbdqvlp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2095,72 +2168,72 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
   padding-right: 5px;
 }
 
-#qsqgnyattp .gt_left {
+#qxygbdqvlp .gt_left {
   text-align: left;
 }
 
-#qsqgnyattp .gt_center {
+#qxygbdqvlp .gt_center {
   text-align: center;
 }
 
-#qsqgnyattp .gt_right {
+#qxygbdqvlp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qsqgnyattp .gt_font_normal {
+#qxygbdqvlp .gt_font_normal {
   font-weight: normal;
 }
 
-#qsqgnyattp .gt_font_bold {
+#qxygbdqvlp .gt_font_bold {
   font-weight: bold;
 }
 
-#qsqgnyattp .gt_font_italic {
+#qxygbdqvlp .gt_font_italic {
   font-style: italic;
 }
 
-#qsqgnyattp .gt_super {
+#qxygbdqvlp .gt_super {
   font-size: 65%;
 }
 
-#qsqgnyattp .gt_footnote_marks {
+#qxygbdqvlp .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qsqgnyattp .gt_asterisk {
+#qxygbdqvlp .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qsqgnyattp .gt_indent_1 {
+#qxygbdqvlp .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qsqgnyattp .gt_indent_2 {
+#qxygbdqvlp .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qsqgnyattp .gt_indent_3 {
+#qxygbdqvlp .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qsqgnyattp .gt_indent_4 {
+#qxygbdqvlp .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qsqgnyattp .gt_indent_5 {
+#qxygbdqvlp .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qsqgnyattp .katex-display {
+#qxygbdqvlp .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qsqgnyattp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#qxygbdqvlp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2194,56 +2267,68 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #B0E2FF">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #B0E2FF">sequential</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF">11,291.89 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF"> 278.4 kB</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF">11,342.61 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">  250.3 kB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #B0E2FF">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #B0E2FF">outer</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 5,328.50 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">   6.9 MB</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 5,247.86 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">13 MB </td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #B0E2FF">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #B0E2FF">chunksize</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 3,711.79 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">  27.6 MB</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 3,687.32 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">   27.6 MB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #B0E2FF">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #B0E2FF">nested</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 4,399.25 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">  17.4 MB</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 4,430.23 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">   17.4 MB</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #B0E2FF">R</td>
 <td class="gt_row gt_left" headers="expression" style="background-color: #B0E2FF">singleloop</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 3,700.71 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF">7 MB </td>
+<td class="gt_row gt_right" headers="median" style="background-color: #B0E2FF"> 3,714.72 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #B0E2FF"> 7 MB </td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
-<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">openmp1</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">    24.25 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B"> 204.4 kB</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">omp1</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">    25.91 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  204.4 kB</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
-<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">openmp4</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">     6.34 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B"> 209.1 kB</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">omp4</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">     6.83 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  209.1 kB</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
-<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">rcppparallel1</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">    24.36 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B"> 204.4 kB</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">parallel1</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">    25.98 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  204.4 kB</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
-<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">rcppparallel4</td>
-<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">     6.44 ms</td>
-<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B"> 209.1 kB</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">parallel4</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">     6.87 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  204.4 kB</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">thread1</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">    25.92 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  204.4 kB</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="lang" style="background-color: #FFEC8B">C++</td>
+<td class="gt_row gt_left" headers="expression" style="background-color: #FFEC8B">thread4</td>
+<td class="gt_row gt_right" headers="median" style="background-color: #FFEC8B">     6.77 ms</td>
+<td class="gt_row gt_right" headers="mem_alloc" style="background-color: #FFEC8B">  204.4 kB</td>
 </tr>
 </tbody>
 </table>
@@ -2254,7 +2339,7 @@ x_i^{(1)}(t_1), \dots, x_i^{(1)}(t_P), x_i^{(2)}(t_1), \dots, x_i^{(2)}(t_P), \d
 </section>
 <section id="interpretation" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
-<p><strong>General observation.</strong> Using C++ is much faster than using R. This is in particular due to never copying the data. It also provides linear speed-up as expected.</p>
+<p><strong>General observation.</strong> Using C++ is much faster than using R. This is in particular due to never copying the data. It also provides linear speed-up as expected. There are no notable differences between the different C++ implementations.</p>
 <p><strong>R implementation.</strong> The original Hausdorff distance implementation has a double loop.</p>
 <ul>
 <li>The outer loop generates unbalanced chunks, which is not optimal (<code>outer</code> entry).</li>
